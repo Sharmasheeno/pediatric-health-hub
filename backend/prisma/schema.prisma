@@ -1,0 +1,396 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// =======================
+// ENUMS
+// =======================
+enum Role {
+  PARENT
+  DOCTOR
+  FACILITY
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  RESCHEDULED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum VaccineStatus {
+  UPCOMING
+  DUE
+  COMPLETED
+  MISSED
+}
+
+// =======================
+// SYSTEM & AUTH
+// =======================
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  role          Role
+  isActive          Boolean   @default(true)
+  refreshToken      String?   @db.Text
+  resetToken        String?
+  resetTokenExp     DateTime?
+  isEmailVerified   Boolean   @default(false)
+  verifyToken       String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  parentProfile   ParentProfile?
+  doctorProfile   DoctorProfile?
+  facilityProfile FacilityProfile?
+
+  notifications   Notification[]
+  auditLogs       AuditLog[]     @relation("UserAuditLogs")
+  conversations   ChatbotSession[]
+  growthRecords   GrowthRecord[] @relation("UserGrowthRecords")
+}
+
+// =======================
+// PROFILES
+// =======================
+model ParentProfile {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  phoneNumber String?
+  address     String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  children    Child[]
+}
+
+model FacilityProfile {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  address     String    @db.Text
+  phoneNumber String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  doctors     DoctorProfile[] 
+}
+
+model DoctorProfile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facilityId      String?
+  facility        FacilityProfile? @relation(fields: [facilityId], references: [id])
+  firstName       String
+  lastName        String
+  licenseNumber   String   @unique
+  specialization  String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  appointments    Appointment[]
+  consultations   ConsultationNote[]
+  availabilities  DoctorAvailability[]
+}
+
+model DoctorAvailability {
+  id        String   @id @default(uuid())
+  doctorId  String
+  doctor    DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  dayOfWeek Int      // 0 = Sunday, 1 = Monday
+  startTime String   // e.g. "09:00"
+  endTime   String   // e.g. "17:00"
+  isActive  Boolean  @default(true)
+  
+  @@index([doctorId])
+}
+
+// =======================
+// CLINICAL RECORDS
+// =======================
+model Child {
+  id              String   @id @default(uuid())
+  parentId        String
+  parent          ParentProfile @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  firstName       String
+  lastName        String
+  dateOfBirth     DateTime
+  gender          String
+  bloodType       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  medicalRecords  MedicalRecord[]
+  allergies       Allergy[]
+  medications     Medication[]
+  illnesses       IllnessHistory[]
+  consultations   ConsultationNote[]
+  vaccinations    Vaccination[]
+  growthRecords   GrowthRecord[]
+  appointments    Appointment[]
+}
+
+// Legacy generalized model (Decoupled, phased out in favor of ConsultationNote/Illness)
+model MedicalRecord {
+  id              String   @id @default(uuid())
+  childId         String
+  child           Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  diagnosis       String   @db.Text
+  treatment       String?  @db.Text
+  notes           String?  @db.Text
+  recordedAt      DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+  
+  @@index([childId])
+}
+
+model Allergy {
+  id        String   @id @default(uuid())
+  childId   String
+  child     Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  allergen  String
+  severity  String
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Medication {
+  id        String   @id @default(uuid())
+  childId   String
+  child     Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  name      String
+  dosage    String
+  startDate DateTime
+  endDate   DateTime?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IllnessHistory {
+  id              String   @id @default(uuid())
+  childId         String
+  child           Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  illnessName     String
+  diagnosisDate   DateTime
+  recoveryDate    DateTime?
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ConsultationNote {
+  id            String   @id @default(uuid())
+  childId       String
+  child         Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  doctorId      String
+  doctor        DoctorProfile @relation(fields: [doctorId], references: [id])
+  appointmentId String?
+  notes         String   @db.Text
+  treatmentPlan String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  attachments   Attachment[]
+}
+
+model Attachment {
+  id                 String   @id @default(uuid())
+  consultationNoteId String
+  consultationNote   ConsultationNote @relation(fields: [consultationNoteId], references: [id], onDelete: Cascade)
+  fileUrl            String
+  fileName           String
+  uploadedAt         DateTime @default(now())
+}
+
+model Vaccination {
+  id              String   @id @default(uuid())
+  childId         String
+  child           Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  vaccineName     String
+  doseNumber      Int      @default(1)
+  scheduledDate   DateTime
+  administeredDate DateTime?
+  status          VaccineStatus @default(UPCOMING)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  reminders       VaccinationReminder[]
+  @@index([childId])
+  @@index([status])
+}
+
+model VaccineTemplate {
+  id              String   @id @default(uuid())
+  vaccineName     String
+  doseNumber      Int      @default(1)
+  daysAfterBirth  Int      // Protocol mapping boundary
+  description     String?  @db.Text
+  isMandatory     Boolean  @default(true)
+  createdAt       DateTime @default(now())
+}
+
+model VaccinationReminder {
+  id              String   @id @default(uuid())
+  vaccinationId   String
+  vaccination     Vaccination @relation(fields: [vaccinationId], references: [id], onDelete: Cascade)
+  sendDate        DateTime
+  isSent          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model GrowthRecord {
+  id              String   @id @default(uuid())
+  childId         String
+  child           Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  recordedById    String
+  author          User     @relation("UserGrowthRecords", fields: [recordedById], references: [id])
+  recorderRole    String   // 'PARENT' or 'DOCTOR'
+  measurementDate DateTime
+  weightKg        Float?
+  heightCm        Float?
+  headCircumCm    Float?
+  milestoneNotes  String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+  
+  @@index([childId])
+}
+
+// =======================
+// OPERATIONS & SCHEDULING
+// =======================
+model Appointment {
+  id              String   @id @default(uuid())
+  childId         String
+  child           Child    @relation(fields: [childId], references: [id])
+  doctorId        String
+  doctor          DoctorProfile @relation(fields: [doctorId], references: [id])
+  scheduledAt     DateTime
+  status          AppointmentStatus @default(PENDING)
+  reason          String?  @db.Text
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+
+  teleconsultation Teleconsultation?
+  
+  @@index([doctorId, scheduledAt])
+}
+
+model Teleconsultation {
+  id              String   @id @default(uuid())
+  appointmentId   String   @unique
+  appointment     Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  roomUrl         String?  @db.Text
+  startedAt       DateTime?
+  endedAt         DateTime?
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+}
+
+// =======================
+// SYSTEM CONTENT & AI
+// =======================
+model EducationalContent {
+  id              String   @id @default(uuid())
+  title           String
+  content         String   @db.LongText
+  category        String
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+}
+
+model EmergencyContact {
+  id              String   @id @default(uuid())
+  name            String
+  phoneNumber     String
+  type            String   // HOSPITAL, AMBULANCE, POISON_CONTROL
+  region          String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  deletedAt       DateTime?
+}
+
+model ChatbotSession {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  summary         String?  @db.Text
+  createdAt       DateTime @default(now())
+  
+  messages        ChatbotMessage[]
+}
+
+model ChatbotMessage {
+  id              String   @id @default(uuid())
+  sessionId       String
+  session         ChatbotSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sender          String   // USER or AI
+  message         String   @db.Text
+  timestamp       DateTime @default(now())
+}
+
+model ChatbotTemplate {
+  id              String   @id @default(uuid())
+  triggerKeyword  String   @unique
+  response        String   @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Notification {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  body            String   @db.Text
+  isRead          Boolean  @default(false)
+  type            String   // APPOINTMENT, VACCINE, SYSTEM
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation("UserAuditLogs", fields: [userId], references: [id])
+  action          String
+  entity          String   
+  entityId        String?
+  details         String?  @db.Text
+  ipAddress       String?
+  createdAt       DateTime @default(now())
+}
