@@ -33,4 +33,49 @@ const getAudits = async (req, res, next) => {
     } catch(err) { next(err); }
 };
 
-module.exports = { getTelemetry, getUsers, toggleSuspension, getAudits };
+const getChatbotTemplates = async (req, res, next) => {
+    try {
+        const templates = await adminService.getChatbotTemplates();
+        return successResponse(res, templates, "Chatbot templates retrieved successfully", 200);
+    } catch (err) { next(err); }
+};
+
+const upsertChatbotTemplate = async (req, res, next) => {
+    try {
+        const template = await adminService.upsertChatbotTemplate(req.body.triggerKeyword, req.body.response);
+        await logAction(
+            req.user.id,
+            'MANAGE_CHATBOT_TEMPLATE',
+            'ChatbotTemplate',
+            template.id,
+            { triggerKeyword: template.triggerKeyword },
+            req
+        );
+        return successResponse(res, template, "Chatbot template saved successfully", 200);
+    } catch (err) { next(err); }
+};
+
+const deleteChatbotTemplate = async (req, res, next) => {
+    try {
+        const deleted = await adminService.deleteChatbotTemplate(req.params.templateId);
+        await logAction(
+            req.user.id,
+            'DELETE_CHATBOT_TEMPLATE',
+            'ChatbotTemplate',
+            deleted.id,
+            { triggerKeyword: deleted.triggerKeyword },
+            req
+        );
+        return successResponse(res, { id: deleted.id }, "Chatbot template deleted successfully", 200);
+    } catch (err) { next(err); }
+};
+
+module.exports = {
+    getTelemetry,
+    getUsers,
+    toggleSuspension,
+    getAudits,
+    getChatbotTemplates,
+    upsertChatbotTemplate,
+    deleteChatbotTemplate
+};

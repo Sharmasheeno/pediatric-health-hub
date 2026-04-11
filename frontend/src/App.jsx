@@ -14,6 +14,7 @@ import { TeleconsultSession } from './pages/dashboard/TeleconsultSession';
 import { Chatbot } from './pages/dashboard/Chatbot';
 import { AdminDashboard } from './pages/admin/AdminDashboard'; 
 import { ManageUsers } from './pages/admin/ManageUsers';
+import { ManageChatbotTemplates } from './pages/admin/ManageChatbotTemplates';
 import { MainDashboard } from './pages/dashboard/MainDashboard';
 import { 
   PatientListPlaceholder
@@ -74,6 +75,7 @@ function App() {
              <Route path="/chatbot" element={<Chatbot />} />
              <Route path="/admin" element={<AdminDashboard />} />
              <Route path="/admin/users" element={<ManageUsers />} />
+             <Route path="/admin/chatbot-templates" element={<ManageChatbotTemplates />} />
              <Route path="/education" element={<HealthEducation />} />
              <Route path="/emergency" element={<EmergencyGuidance />} />
              <Route path="/patients" element={<PatientRecords />} />

@@ -90,6 +90,9 @@ export const DashboardLayout = () => {
                                 <Link to="/admin/users" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
                                     <div className="flex items-center gap-3"><Users size={18} /> Manage Users</div>
                                 </Link>
+                                <Link to="/admin/chatbot-templates" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
+                                    <div className="flex items-center gap-3"><Bot size={18} /> Chatbot Templates</div>
+                                </Link>
                                 <Link to="/admin" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors mb-6">
                                     <div className="flex items-center gap-3"><ShieldX size={18} /> Monitor Security</div>
                                 </Link>
