@@ -39,43 +39,4 @@ const getAudits = async (limit = 100) => {
     });
 };
 
-const getChatbotTemplates = async () => {
-    return prisma.chatbotTemplate.findMany({
-        orderBy: { updatedAt: 'desc' }
-    });
-};
-
-const upsertChatbotTemplate = async (triggerKeyword, response) => {
-    const normalize = (value = '') => value.toLowerCase().replace(/[^\w\s,|]/g, ' ').replace(/\s+/g, ' ').trim();
-    const normalizedParts = triggerKeyword
-        .split(/[,\n|]/)
-        .map((part) => normalize(part))
-        .filter(Boolean);
-
-    if (!normalizedParts.length) {
-        throw Object.assign(new Error('Trigger keyword cannot be empty'), { statusCode: 400 });
-    }
-
-    const normalizedTriggerKeyword = normalizedParts.join(', ');
-    return prisma.chatbotTemplate.upsert({
-        where: { triggerKeyword: normalizedTriggerKeyword },
-        update: { response },
-        create: { triggerKeyword: normalizedTriggerKeyword, response }
-    });
-};
-
-const deleteChatbotTemplate = async (templateId) => {
-    return prisma.chatbotTemplate.delete({
-        where: { id: templateId }
-    });
-};
-
-module.exports = {
-    getTelemetry,
-    getUsers,
-    toggleUserSuspension,
-    getAudits,
-    getChatbotTemplates,
-    upsertChatbotTemplate,
-    deleteChatbotTemplate
-};
+module.exports = { getTelemetry, getUsers, toggleUserSuspension, getAudits };

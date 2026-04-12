@@ -1,13 +1,15 @@
-import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/axios';
 import { HeartPulse, FolderOpen, Activity, Syringe, Search } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
 
 export const PatientRecords = () => {
+    const navigate = useNavigate();
     const { data: patients, isLoading } = useQuery({
         queryKey: ['doctorPatients'],
         queryFn: async () => {
+            console.log("PatientRecords mounted - HMR check");
             const res = await api.get('/children');
             return res.data.data || [];
         }
@@ -47,18 +49,18 @@ export const PatientRecords = () => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 pt-4 border-t border-slate-100">
-                                <button className="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-teal-600 py-2 rounded transition-colors group/btn">
-                                    <FolderOpen size={18} className="mb-1" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">History</span>
+                            <div className="flex items-center justify-between gap-2 pt-4 border-t border-slate-100 w-full bg-white relative z-50">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}`} className="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-teal-600 hover:bg-slate-50 py-3 rounded-lg transition-colors cursor-pointer">
+                                    <FolderOpen size={18} className="mb-1 pointer-events-none" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">History</span>
                                 </button>
-                                <button className="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 py-2 rounded transition-colors group/btn">
-                                    <Activity size={18} className="mb-1" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">Growth</span>
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/growth`} className="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 hover:bg-slate-50 py-3 rounded-lg transition-colors cursor-pointer">
+                                    <Activity size={18} className="mb-1 pointer-events-none" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">Growth</span>
                                 </button>
-                                <button className="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-purple-500 py-2 rounded transition-colors group/btn">
-                                    <Syringe size={18} className="mb-1" />
-                                    <span className="text-[9px] font-black uppercase tracking-widest">Vax</span>
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/vaccines`} className="flex-1 flex flex-col items-center justify-center text-slate-400 hover:text-purple-500 hover:bg-slate-50 py-3 rounded-lg transition-colors cursor-pointer">
+                                    <Syringe size={18} className="mb-1 pointer-events-none" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">Vax</span>
                                 </button>
                             </div>
                         </CardContent>

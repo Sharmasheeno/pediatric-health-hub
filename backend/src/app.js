@@ -8,8 +8,12 @@ const { startCron } = require('./cron/vaccineCron');
 const app = express();
 
 // Security Middlewares
-app.use(helmet());
-app.use(cors());
+app.use(helmet({ crossOriginEmbedderPolicy: false }));
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+}));
 app.use(logger);
 
 // Body parser
@@ -39,6 +43,7 @@ const chatbotRoutes = require('./routes/chatbot.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const adminRoutes = require('./routes/admin.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const chatRoutes = require('./routes/chat.routes');
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -58,6 +63,7 @@ app.use('/api/v1/chatbot', chatbotRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/chat', chatRoutes);
 
 // Global Error Handler must be the last middleware
 app.use(errorHandler);

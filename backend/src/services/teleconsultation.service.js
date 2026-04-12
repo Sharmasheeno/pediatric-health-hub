@@ -7,16 +7,16 @@ const generateRoom = async (appointmentId) => {
        throw Object.assign(new Error("Appointment not confirmed or missing entirely"), { statusCode: 400 });
     }
 
-    // Proxy Daily.co WebRTC instantiation securely server-side.
-    // In production, execute: fetch('https://api.daily.co/v1/rooms', { method: 'POST' }) protecting the bearer token.
-    const generatedUrl = `https://pediatric-health.daily.co/room-${appointmentId.substring(0,8)}-secure`;
+    // Self-hosted WebRTC: room is identified by appointmentId.
+    // The actual video call runs peer-to-peer via Socket.IO signaling on the backend.
+    const roomIdentifier = `webrtc-room:${appointmentId}`;
 
     return prisma.teleconsultation.upsert({
         where: { appointmentId },
-        update: { roomUrl: generatedUrl },
+        update: { roomUrl: roomIdentifier, startedAt: new Date() },
         create: {
             appointmentId,
-            roomUrl: generatedUrl,
+            roomUrl: roomIdentifier,
             startedAt: new Date()
         }
     });
@@ -25,18 +25,26 @@ const generateRoom = async (appointmentId) => {
 const getRoomAccess = async (appointmentId) => {
     const session = await prisma.teleconsultation.findUnique({ 
         where: { appointmentId },
-        include: { appointment: true }
+        include: { appointment: { include: { doctor: true, child: { include: { parent: true } } } } }
     });
     
-    if (!session || session.endedAt) throw Object.assign(new Error("Consultation room invalid or already terminated permanently"), { statusCode: 403 });
+    if (!session || session.endedAt) {
+        throw Object.assign(new Error("Consultation room is invalid, not started yet, or already terminated."), { statusCode: 403 });
+    }
     return session;
 };
 
 const endRoom = async (appointmentId, notes) => {
-    return prisma.teleconsultation.update({
-        where: { appointmentId },
-        data: { endedAt: new Date(), notes }
-    });
+    return prisma.$transaction([
+        prisma.teleconsultation.update({
+            where: { appointmentId },
+            data: { endedAt: new Date(), notes }
+        }),
+        prisma.appointment.update({
+            where: { id: appointmentId },
+            data: { status: 'COMPLETED' }
+        })
+    ]);
 };
 
 module.exports = { generateRoom, getRoomAccess, endRoom };

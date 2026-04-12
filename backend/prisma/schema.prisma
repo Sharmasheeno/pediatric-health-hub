@@ -59,6 +59,8 @@ model User {
   auditLogs       AuditLog[]     @relation("UserAuditLogs")
   conversations   ChatbotSession[]
   growthRecords   GrowthRecord[] @relation("UserGrowthRecords")
+  sentMessages    DirectMessage[] @relation("SentMessages")
+  receivedMessages DirectMessage[] @relation("ReceivedMessages")
 }
 
 // =======================
@@ -393,4 +395,17 @@ model AuditLog {
   details         String?  @db.Text
   ipAddress       String?
   createdAt       DateTime @default(now())
+}
+
+model DirectMessage {
+  id          String   @id @default(uuid())
+  senderId    String
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  content     String   @db.Text
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  @@index([senderId, receiverId])
 }

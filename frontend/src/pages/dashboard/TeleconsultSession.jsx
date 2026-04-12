@@ -1,80 +1,191 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/axios';
-import { Button } from '../../components/ui/Button';
-import { Shield, PhoneOff, AlertTriangle } from 'lucide-react';
+import { useWebRTC } from '../../hooks/useWebRTC';
 import useAuthStore from '../../store/authStore';
+import {
+  Mic, MicOff, Video, VideoOff, PhoneOff,
+  Shield, WifiOff, Loader2, UserCircle2
+} from 'lucide-react';
 
 export const TeleconsultSession = () => {
-    const { appointmentId } = useParams();
-    const navigate = useNavigate();
-    const { user } = useAuthStore();
-    const [roomUrl, setRoomUrl] = useState(null);
-    const [errorMsg, setError] = useState("");
+  const { appointmentId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const isDoctor = user?.role === 'DOCTOR';
 
-    useEffect(() => {
-        const fetchRoom = async () => {
-            // MVP Demo Bypass: Route the mock UI layouts directly to a live WebRTC sandbox instance
-            if (appointmentId === 'app-982' || appointmentId === 'app-71b') {
-                setTimeout(() => setRoomUrl(`https://meet.jit.si/PediatricHealthHub_DemoRoom_${appointmentId}`), 800);
-                return;
-            }
+  const {
+    localRef,
+    remoteRef,
+    isMuted,
+    isVideoOff,
+    toggleMic,
+    toggleCamera,
+    endCall,
+    connectionState,
+  } = useWebRTC(appointmentId, user?.role);
 
-            try {
-                // Dynamically validates token vs ownership DB rules on the backend
-                const res = await api.get(`/teleconsultations/${appointmentId}`);
-                setRoomUrl(res.data.data.roomUrl);
-            } catch (err) {
-                setError(err.response?.data?.message || "Secure room negotiation failed. Session is invalid, expired, or outside authorization boundaries.");
-            }
-        };
-        fetchRoom();
-    }, [appointmentId]);
-
-    const endCall = async () => {
-        if (user?.role === 'DOCTOR' || user?.role === 'ADMIN') {
-            try {
-                await api.patch(`/teleconsultations/${appointmentId}/end`, { notes: "Session concluded cleanly by provider authorization." });
-            } catch(e) { console.error("Failed to execute termination sequence", e); }
-        }
-        navigate('/dashboard');
-    };
-
-    if (errorMsg) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[500px] px-4 max-w-2xl mx-auto text-center space-y-5">
-                <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center p-3 shadow-sm border border-red-100"><AlertTriangle size={36} /></div>
-                <h2 className="text-3xl font-extrabold text-slate-800 tracking-tight">Connection Rejected</h2>
-                <p className="text-slate-600 font-medium text-lg max-w-md">{errorMsg}</p>
-                <Button onClick={() => navigate(-1)} variant="outline" className="mt-4">Return to Secure Interface</Button>
-            </div>
-        )
+  // When the doctor ends a call, also mark it as ended on the backend
+  const handleEndCall = async () => {
+    endCall();
+    if (isDoctor) {
+      try {
+        await api.patch(`/teleconsultations/${appointmentId}/end`, {
+          notes: 'Session concluded by provider.'
+        });
+      } catch (e) {
+        console.error('Failed to log session end:', e);
+      }
     }
+    navigate('/teleconsult');
+  };
 
-    if (!roomUrl) {
-        return <div className="p-16 text-center text-slate-500 font-semibold tracking-wide animate-pulse">Negotiating End-to-End Encrypted Tunnel...</div>;
+  // If disconnected after being connected, go back
+  useEffect(() => {
+    if (connectionState === 'disconnected') {
+      const timer = setTimeout(() => navigate('/teleconsult'), 4000);
+      return () => clearTimeout(timer);
     }
+  }, [connectionState, navigate]);
 
-    return (
-        <div className="w-full h-[calc(100vh-100px)] bg-slate-900 rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(8,_112,_184,_0.07)] border border-slate-700 relative flex flex-col">
-            <div className="flex justify-between items-center px-6 py-4 bg-slate-800/90 backdrop-blur border-b border-slate-700/80">
-                <div className="flex items-center gap-2 text-emerald-400 font-semibold tracking-wide">
-                    <Shield size={18} className="animate-pulse" /> Health Hub Encrypted Uplink Established
-                </div>
-                <button onClick={endCall} className="flex items-center gap-2 bg-red-500 hover:bg-red-600 focus:ring-4 focus:ring-red-500/20 text-white px-5 py-2.5 rounded-lg text-sm font-bold transition-all shadow-md">
-                    <PhoneOff size={16} /> {user?.role === 'DOCTOR' ? 'Terminate Session For All' : 'Leave Call Securely'}
-                </button>
-            </div>
-            
-            <div className="flex-1 w-full bg-black relative">
-                {/* Standard robust iframe integration ensuring isolated execution of native WebRTC components (Daily.co / Jitsi) */}
-                <iframe
-                    src={`${roomUrl}?api=true`}
-                    allow="camera; microphone; fullscreen; display-capture; autoplay"
-                    className="w-full h-full border-none"
-                    title="Pediatric Health Virtual Consultation Room"
-                ></iframe>
-            </div>
+  return (
+    <div className="w-full h-[calc(100vh-88px)] bg-[#0d1117] flex flex-col overflow-hidden rounded-xl relative">
+
+      {/* ── Top Status Bar ──────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-between px-6 py-3 bg-[#161b22] border-b border-white/5 z-10 flex-shrink-0">
+        <div className="flex items-center gap-2.5">
+          <Shield size={16} className="text-[#14c39a]" />
+          <span className="text-[#14c39a] text-sm font-bold tracking-wide">
+            Encrypted P2P Session
+          </span>
+          <span className="text-slate-500 text-xs font-mono">· Room: {appointmentId?.slice(0, 12)}…</span>
         </div>
-    );
+
+        {/* Connection state pill */}
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
+          connectionState === 'connected'
+            ? 'bg-[#14c39a]/15 text-[#14c39a]'
+            : connectionState === 'disconnected'
+            ? 'bg-red-500/15 text-red-400'
+            : 'bg-yellow-500/15 text-yellow-400'
+        }`}>
+          {connectionState === 'connected' && <span className="w-2 h-2 rounded-full bg-[#14c39a] animate-pulse" />}
+          {connectionState === 'connecting' && <Loader2 size={12} className="animate-spin" />}
+          {connectionState === 'disconnected' && <WifiOff size={12} />}
+          {connectionState === 'connected'    ? 'Live'       :
+           connectionState === 'connecting'   ? 'Connecting' :
+           'Call Ended — Returning...'}
+        </div>
+      </div>
+
+      {/* ── Video Grid ──────────────────────────────────────────────────────── */}
+      <div className="flex-1 relative overflow-hidden bg-[#0d1117]">
+
+        {/* Remote Video (full screen background) */}
+        <video
+          ref={remoteRef}
+          autoPlay
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+
+        {/* Remote video placeholder when not yet connected */}
+        {connectionState !== 'connected' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 bg-[#0d1117]">
+            <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <UserCircle2 size={56} className="text-white/20" />
+            </div>
+            <div className="text-center space-y-2">
+              <p className="text-white/60 font-semibold text-lg">
+                {connectionState === 'connecting'
+                  ? `Waiting for ${isDoctor ? 'patient' : 'doctor'} to join...`
+                  : 'Call has ended'}
+              </p>
+              {connectionState === 'connecting' && (
+                <div className="flex items-center justify-center gap-2 text-[#14c39a] text-sm">
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>Establishing encrypted tunnel...</span>
+                </div>
+              )}
+              {connectionState === 'disconnected' && (
+                <p className="text-red-400/80 text-sm">
+                  Redirecting you back in a moment...
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Local Video (Picture-in-Picture corner) */}
+        <div className="absolute bottom-4 right-4 w-44 h-32 sm:w-56 sm:h-40 rounded-xl overflow-hidden border-2 border-white/20 shadow-2xl shadow-black/50 bg-[#161b22] group">
+          <video
+            ref={localRef}
+            autoPlay
+            playsInline
+            muted
+            className={`w-full h-full object-cover transition-opacity ${isVideoOff ? 'opacity-0' : 'opacity-100'}`}
+          />
+          {isVideoOff && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#161b22]">
+              <VideoOff size={28} className="text-white/30" />
+            </div>
+          )}
+          <div className="absolute bottom-2 left-2 text-[10px] font-bold uppercase tracking-widest text-white/50 bg-black/40 px-2 py-0.5 rounded-full">
+            You
+          </div>
+        </div>
+      </div>
+
+      {/* ── Control Bar ─────────────────────────────────────────────────────── */}
+      <div className="flex-shrink-0 bg-[#161b22] border-t border-white/5 px-6 py-4">
+        <div className="flex items-center justify-center gap-4">
+
+          {/* Mic toggle */}
+          <button
+            id="btn-toggle-mic"
+            onClick={toggleMic}
+            title={isMuted ? 'Unmute' : 'Mute'}
+            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 ${
+              isMuted
+                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 focus:ring-red-500/20'
+                : 'bg-white/10 text-white hover:bg-white/20 focus:ring-white/10'
+            }`}
+          >
+            {isMuted ? <MicOff size={22} /> : <Mic size={22} />}
+          </button>
+
+          {/* Camera toggle */}
+          <button
+            id="btn-toggle-camera"
+            onClick={toggleCamera}
+            title={isVideoOff ? 'Turn camera on' : 'Turn camera off'}
+            className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 ${
+              isVideoOff
+                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 focus:ring-red-500/20'
+                : 'bg-white/10 text-white hover:bg-white/20 focus:ring-white/10'
+            }`}
+          >
+            {isVideoOff ? <VideoOff size={22} /> : <Video size={22} />}
+          </button>
+
+          {/* End call — always visible, prominent */}
+          <button
+            id="btn-end-call"
+            onClick={handleEndCall}
+            title="End call"
+            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/30"
+          >
+            <PhoneOff size={26} />
+          </button>
+        </div>
+
+        {/* Role label */}
+        <p className="text-center text-white/25 text-xs font-medium mt-3 tracking-wide">
+          {isDoctor
+            ? '"Terminate Session For All" — ends the room for both parties'
+            : 'Click the red button to leave the call'}
+        </p>
+      </div>
+    </div>
+  );
 };

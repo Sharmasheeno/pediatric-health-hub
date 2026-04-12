@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { User, AlertCircle, Baby } from 'lucide-react';
+import { User, AlertCircle, Baby, Calendar as CalendarIcon, Clock } from 'lucide-react';
 import { api } from '../../lib/axios';
 import { useQuery } from '@tanstack/react-query';
 
@@ -9,6 +9,15 @@ export const BookingFlow = () => {
   const [step, setStep] = useState(1);
   const [selectedChild, setSelectedChild] = useState(null);
   const [selectedDoc, setSelectedDoc] = useState(null);
+  
+  // Dynamic Scheduling State
+  const [selectedDate, setSelectedDate] = useState(() => {
+     const tmrw = new Date();
+     tmrw.setDate(tmrw.getDate() + 1);
+     return tmrw.toISOString().split('T')[0];
+  });
+  const [selectedTime, setSelectedTime] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -30,22 +39,25 @@ export const BookingFlow = () => {
   });
 
   const handleBook = async () => {
-    if(!selectedChild) {
-        setError("Please select a child profile to attach the clinical record.");
+    if(!selectedChild || !selectedDate || !selectedTime) {
+        setError("Please select a date and specific time slot.");
         return;
     }
     setLoading(true);
     setError("");
     try {
+      // Construct exact ISO timestamp based on parent's selection
+      const exactScheduledAt = new Date(`${selectedDate}T${selectedTime}:00`).toISOString();
+
       await api.post('/appointments', {
         childId: selectedChild.id,
         doctorId: selectedDoc.id,
-        scheduledAt: new Date().toISOString()
+        scheduledAt: exactScheduledAt
       });
       setSuccess(true);
     } catch(err) {
       if(err.response?.status === 409) {
-          setError("This timeslot was just booked by someone else (MySQL Lock Fired). Please choose another.");
+          setError("This timeslot was just booked by someone else (DB Lock Fired). Please choose another.");
       } else {
           setError("Failed to book appointment. Check authorization scopes.");
       }
@@ -54,18 +66,42 @@ export const BookingFlow = () => {
     }
   }
 
+  // Generate Available Time Slots (9 AM to 4 PM)
+  const availableSlots = (() => {
+    const slots = [];
+    for (let h = 9; h <= 16; h++) {
+        slots.push(`${h.toString().padStart(2, '0')}:00`);
+        if(h !== 16) slots.push(`${h.toString().padStart(2, '0')}:30`);
+    }
+    return slots;
+  })();
+
+  const formatTime = (timeString) => {
+    const [h, m] = timeString.split(':');
+    let hour = parseInt(h);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    return `${hour}:${m} ${ampm}`;
+  };
+
+  const getDayName = (dateString) => {
+      const d = new Date(dateString + "T12:00:00");
+      return d.toLocaleDateString('en-US', { weekday: 'long' });
+  };
+
   if (success) {
       return (
           <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 text-2xl">✓</div>
               <h2 className="text-2xl font-bold text-slate-800">Booking Confirmed!</h2>
-              <p className="text-slate-600 mt-2">You will receive a notification reminder securely 24 hours prior.</p>
+              <p className="text-slate-600 mt-2">The provider has received your requested slot.</p>
           </div>
       )
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-12">
+      {/* STEPS INDICATOR */}
       <div className="flex items-center justify-between px-4">
          <div className={`font-semibold ${step >= 1 ? 'text-blue-600' : 'text-slate-400'}`}>1. Select Specialist</div>
          <div className="flex-1 h-px bg-slate-200 mx-4"></div>
@@ -119,7 +155,7 @@ export const BookingFlow = () => {
                         <Button variant="outline">Link Record</Button>
                      </div>
                 )) : (
-                     <div className="text-center font-bold text-red-500 py-10">You have no children registered. <br/> Access My Registered Children to create a profile.</div>
+                     <div className="text-center font-bold text-red-500 py-10">You have no children registered.</div>
                 )}
              </CardContent>
           </Card>
@@ -127,30 +163,69 @@ export const BookingFlow = () => {
 
       {step === 3 && selectedDoc && selectedChild && (
           <Card>
-              <CardHeader>
+              <CardHeader className="border-b border-slate-100 pb-5 mb-5">
                   <CardTitle>Schedule with Dr. {selectedDoc.lastName} for {selectedChild.firstName}</CardTitle>
                   <button onClick={() => setStep(2)} className="text-sm font-medium text-blue-600 hover:text-blue-700">← Change Patient</button>
               </CardHeader>
               <CardContent>
                   {errorMsg && <div className="p-4 bg-red-50 text-red-700 flex items-center gap-2 rounded-lg mb-6 text-sm font-medium"><AlertCircle size={20} /> {errorMsg}</div>}
                   
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                     <div className="p-4 border border-slate-200 rounded-lg text-center cursor-pointer hover:bg-blue-50 hover:border-blue-300 transition-colors">
-                         <div className="text-sm font-medium text-slate-600">Monday</div>
-                         <div className="text-lg font-bold text-blue-600 mt-1">09:00 AM</div>
+                  {/* DYNAMIC DATE/TIME PICKER */}
+                  <div className="space-y-6 mb-8">
+                     
+                     {/* Calendar Row */}
+                     <div>
+                         <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">
+                             <CalendarIcon size={16} className="text-blue-600" />
+                             Select Date
+                         </label>
+                         <input 
+                             type="date" 
+                             min={new Date().toISOString().split('T')[0]}
+                             value={selectedDate}
+                             onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(null); }}
+                             className="w-full md:w-64 p-3 border border-slate-300 rounded-lg text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                         />
                      </div>
-                     <div className="p-4 border border-blue-600 rounded-lg text-center cursor-pointer bg-blue-50 ring-2 ring-blue-600 ring-offset-2">
-                         <div className="text-sm font-medium text-slate-600">Monday</div>
-                         <div className="text-lg font-bold text-blue-600 mt-1">09:30 AM</div>
-                     </div>
-                     <div className="p-4 border border-slate-200 rounded-lg text-center opacity-50 bg-slate-50 cursor-not-allowed">
-                         <div className="text-sm font-medium text-slate-400">Monday</div>
-                         <div className="text-lg font-bold text-slate-400 mt-1">10:00 AM</div>
-                         <div className="text-xs text-slate-500 mt-2 font-medium">Booked</div>
+
+                     <div className="h-px bg-slate-100 w-full"></div>
+
+                     {/* Timeslot Matrix */}
+                     <div>
+                         <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider">
+                             <Clock size={16} className="text-blue-600" />
+                             Available Slots for {getDayName(selectedDate)}
+                         </label>
+
+                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                             {availableSlots.map(timeStr => {
+                                 const isSelected = selectedTime === timeStr;
+                                 return (
+                                     <button
+                                        key={timeStr}
+                                        onClick={() => setSelectedTime(timeStr)}
+                                        className={`p-3 rounded-lg text-sm font-bold border transition-all ${
+                                            isSelected 
+                                                ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105' 
+                                                : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50'
+                                        }`}
+                                     >
+                                         {formatTime(timeStr)}
+                                     </button>
+                                 );
+                             })}
+                         </div>
                      </div>
                   </div>
 
-                  <Button className="w-full h-12 text-lg" onClick={handleBook} isLoading={loading}>Secure Appointment Slot</Button>
+                  <Button 
+                     className="w-full h-14 text-lg mt-6 shadow-lg shadow-blue-500/20" 
+                     onClick={handleBook} 
+                     isLoading={loading}
+                     disabled={!selectedTime}
+                  >
+                     Secure Real-Time Slot
+                  </Button>
               </CardContent>
           </Card>
       )}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
 import { api } from '../../lib/axios';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
@@ -11,7 +11,30 @@ import useAuthStore from '../../store/authStore';
 export const GrowthDashboard = () => {
   const { id } = useParams();
   const { user } = useAuthStore();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('chart'); // 'chart' | 'timeline'
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({ weightKg: '', heightCm: '', headCircumCm: '', milestoneNotes: '' });
+
+  const submitRecord = useMutation({
+      mutationFn: async (payload) => await api.post('/growth', payload),
+      onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['growth', id] });
+          setIsModalOpen(false);
+          setFormData({ weightKg: '', heightCm: '', headCircumCm: '', milestoneNotes: '' });
+      },
+      onError: (err) => alert(err.response?.data?.message || err.message)
+  });
+
+  const handleSubmit = (e) => {
+      e.preventDefault();
+      const payload = { childId: id, measurementDate: new Date().toISOString() };
+      if(formData.weightKg) payload.weightKg = parseFloat(formData.weightKg);
+      if(formData.heightCm) payload.heightCm = parseFloat(formData.heightCm);
+      if(formData.headCircumCm) payload.headCircumCm = parseFloat(formData.headCircumCm);
+      if(formData.milestoneNotes) payload.milestoneNotes = formData.milestoneNotes;
+      submitRecord.mutate(payload);
+  };
 
   // Fetch normalized Recharts data payload
   const { data, isLoading, isError } = useQuery({
@@ -34,7 +57,7 @@ export const GrowthDashboard = () => {
            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><Ruler className="text-blue-600" /> Growth & Milestones</h1>
            <p className="text-slate-600 text-sm mt-1">Physical tracking and cognitive milestone timeline mapping seamlessly to Recharts.</p>
         </div>
-        <Button variant="default" className="flex gap-2">
+        <Button onClick={() => setIsModalOpen(true)} variant="default" className="flex gap-2">
             <UserPlus size={16} /> Append Measurement
         </Button>
       </div>
@@ -120,6 +143,41 @@ export const GrowthDashboard = () => {
                   )}
               </CardContent>
           </Card>
+      )}
+      {/* Modal overlay */}
+      {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+              <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col">
+                  <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                      <h2 className="text-xl font-bold text-slate-800">Log Measurement</h2>
+                      <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-red-500 font-bold transition-colors">✕</button>
+                  </div>
+                  <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Weight (kg)</label>
+                              <input type="number" step="0.1" value={formData.weightKg} onChange={(e) => setFormData({...formData, weightKg: e.target.value})} className="w-full border border-slate-200 rounded-lg px-4 py-2 text-slate-700 bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all shadow-sm" />
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Height (cm)</label>
+                              <input type="number" step="0.1" value={formData.heightCm} onChange={(e) => setFormData({...formData, heightCm: e.target.value})} className="w-full border border-slate-200 rounded-lg px-4 py-2 text-slate-700 bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all shadow-sm" />
+                          </div>
+                      </div>
+                      <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Head Circumference (cm)</label>
+                          <input type="number" step="0.1" value={formData.headCircumCm} onChange={(e) => setFormData({...formData, headCircumCm: e.target.value})} className="w-full border border-slate-200 rounded-lg px-4 py-2 text-slate-700 bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all shadow-sm" />
+                      </div>
+                      <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Clinical / Developmental Notes</label>
+                          <textarea value={formData.milestoneNotes} onChange={(e) => setFormData({...formData, milestoneNotes: e.target.value})} className="w-full h-24 border border-slate-200 rounded-lg px-4 py-2 text-slate-700 bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all shadow-sm" placeholder="e.g., patient is walking..."></textarea>
+                      </div>
+                      <div className="pt-4 flex gap-3">
+                          <Button type="button" onClick={() => setIsModalOpen(false)} variant="outline" className="flex-1">Cancel</Button>
+                          <Button type="submit" isLoading={submitRecord.isPending} className="flex-1 bg-blue-600 hover:bg-blue-700">Save Record</Button>
+                      </div>
+                  </form>
+              </div>
+          </div>
       )}
     </div>
   );

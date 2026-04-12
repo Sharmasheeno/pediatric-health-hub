@@ -54,6 +54,9 @@ export const DashboardLayout = () => {
                                 <Link to="/vaccines" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
                                     <div className="flex items-center gap-3"><Syringe size={18} /> Vaccinations</div>
                                 </Link>
+                                <Link to="/messages" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
+                                    <div className="flex items-center gap-3"><Mail size={18} /> Message Doctor</div>
+                                </Link>
                                 <Link to="/teleconsult" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
                                     <div className="flex items-center gap-3"><PhoneCall size={18} /> Tele-Consultation</div>
                                 </Link>
@@ -78,8 +81,20 @@ export const DashboardLayout = () => {
                                 <Link to="/patients" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
                                     <div className="flex items-center gap-3"><HeartPulse size={18} /> Patient Records</div>
                                 </Link>
+                                <Link to="/messages" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
+                                    <div className="flex items-center gap-3"><Mail size={18} /> Parent Messages</div>
+                                </Link>
                                 <Link to="/teleconsult" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors mb-6">
                                     <div className="flex items-center gap-3"><Stethoscope size={18} /> Provide Consultation</div>
+                                </Link>
+                            </>
+                        )}
+
+                        {/* FACILITY FEATURES */}
+                        {user?.role === 'FACILITY' && (
+                            <>
+                                <Link to="/facility/doctors" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors mb-6">
+                                    <div className="flex items-center gap-3"><Stethoscope size={18} /> My Clinical Staff</div>
                                 </Link>
                             </>
                         )}
@@ -88,13 +103,16 @@ export const DashboardLayout = () => {
                         {user?.role === 'ADMIN' && (
                             <>
                                 <Link to="/admin/users" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
-                                    <div className="flex items-center gap-3"><Users size={18} /> Manage Users</div>
+                                    <div className="flex items-center gap-3"><Users size={18} /> Identity Access</div>
                                 </Link>
-                                <Link to="/admin/chatbot-templates" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
-                                    <div className="flex items-center gap-3"><Bot size={18} /> Chatbot Templates</div>
+                                <Link to="/admin/doctors" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
+                                    <div className="flex items-center gap-3"><Stethoscope size={18} /> Doctor Registry</div>
+                                </Link>
+                                <Link to="/admin/facilities" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors">
+                                    <div className="flex items-center gap-3"><Layers size={18} /> Facility Registry</div>
                                 </Link>
                                 <Link to="/admin" className="flex items-center justify-between px-4 py-3 text-slate-500 hover:text-[#8244e0] hover:bg-slate-50 rounded-md font-semibold text-[13px] transition-colors mb-6">
-                                    <div className="flex items-center gap-3"><ShieldX size={18} /> Monitor Security</div>
+                                    <div className="flex items-center gap-3"><ShieldX size={18} /> System Audit</div>
                                 </Link>
                             </>
                         )}

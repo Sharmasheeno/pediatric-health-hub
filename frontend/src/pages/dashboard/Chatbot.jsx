@@ -1,193 +1,144 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../../lib/axios';
-import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Bot, Send, ShieldAlert, User } from 'lucide-react';
-
-const STARTER_PROMPTS = [
-    'General pediatric guidance',
-    'Latest child health record',
-    'Vaccine guidance',
-    'How to book appointment'
-];
+import { Bot, Send, User, AlertTriangle, ShieldAlert } from 'lucide-react';
+import useAuthStore from '../../store/authStore';
+import { Link } from 'react-router-dom';
 
 export const Chatbot = () => {
+    const { user } = useAuthStore();
     const [sessionId, setSessionId] = useState(null);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState('');
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
         const initChat = async () => {
             try {
-                setErrorMsg('');
-                const sessionRes = await api.post('/chatbot/session');
-                const id = sessionRes.data.data.id;
-                setSessionId(id);
-
-                const historyRes = await api.get(`/chatbot/${id}/history`);
-                const history = historyRes?.data?.data || [];
-                setMessages(history);
-            } catch (error) {
-                setErrorMsg(error.response?.data?.message || 'Unable to initialize chatbot');
-            }
+                const res = await api.post('/chatbot/session');
+                setSessionId(res.data.data.id);
+            } catch(e) { console.error('Chat context initialization failed', e); }
         };
         initChat();
     }, []);
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages, loading]);
+    }, [messages]);
 
-    const sendMessage = async (text) => {
-        const trimmed = text.trim();
-        if (!trimmed || !sessionId || loading) return;
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if(!input.trim() || !sessionId) return;
 
-        const localUserMessage = {
-            id: `local-user-${Date.now()}`,
-            sender: 'USER',
-            message: trimmed
-        };
-
+        const userMsg = input.trim();
         setInput('');
-        setMessages((prev) => [...prev, localUserMessage]);
+        setMessages(prev => [...prev, { id: Date.now().toString(), sender: 'USER', message: userMsg }]);
         setLoading(true);
-        setErrorMsg('');
 
         try {
-            const res = await api.post(`/chatbot/${sessionId}/chat`, { message: trimmed });
-            setMessages((prev) => [...prev, res.data.data]);
-        } catch (error) {
-            const msg = error.response?.data?.message || 'Failed to get chatbot response';
-            setErrorMsg(msg);
-            setMessages((prev) => [
-                ...prev,
-                {
-                    id: `local-ai-error-${Date.now()}`,
-                    sender: 'AI',
-                    message: 'I hit a temporary issue. Please try again.'
-                }
-            ]);
+            const res = await api.post(`/chatbot/${sessionId}/chat`, { message: userMsg });
+            setMessages(prev => [...prev, res.data.data]);
+        } catch(err) {
+            setMessages(prev => [...prev, { id: 'error', sender: 'AI', message: "System error: Unable to reach secure moderation proxies." }]);
         } finally {
             setLoading(false);
         }
     };
 
-    const onSubmit = async (event) => {
-        event.preventDefault();
-        await sendMessage(input);
-    };
-
     return (
-        <div className="max-w-5xl mx-auto h-[calc(100vh-130px)] flex flex-col space-y-4">
+        <div className="max-w-4xl mx-auto h-[calc(100vh-120px)] flex flex-col space-y-4">
             <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 flex gap-4 shadow-sm items-start">
                 <ShieldAlert className="text-orange-600 shrink-0 mt-0.5" />
                 <div>
                     <h3 className="text-orange-900 font-bold tracking-tight">Clinical Disclaimer</h3>
-                    <p className="text-orange-800 text-sm mt-1 leading-relaxed">
-                        I am the Health Assistant AI, not a licensed medical professional. I cannot diagnose conditions or prescribe medications.
-                        If this is a medical emergency, please call 911 or visit an emergency room immediately.
-                    </p>
+                    <p className="text-orange-800 text-sm mt-1 leading-relaxed">I am the Health Assistant AI, not a licensed medical professional. I cannot diagnose conditions or prescribe medications. If this is a medical emergency, please call 911 or visit an emergency room immediately.</p>
                 </div>
             </div>
 
-            <Card className="flex-1 flex flex-col overflow-hidden border-slate-200 shadow-sm">
-                <CardHeader className="bg-white border-b border-slate-100">
-                    <CardTitle className="flex items-center gap-3 text-slate-800">
-                        <div className="p-2 bg-slate-900 text-white rounded-lg"><Bot size={20} /></div>
-                        <div>
-                            <div className="font-bold">Pediatric Health Assistant</div>
-                            <div className="text-xs text-emerald-600 font-semibold uppercase tracking-wide">ChatGPT-style Workspace</div>
+            <Card className="flex-1 flex flex-col overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border-t-[6px] border-t-blue-600">
+                <CardHeader className="bg-white border-b border-slate-100 pb-4 shadow-sm z-10">
+                    <CardTitle className="flex items-center justify-between text-blue-700">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-blue-600 text-white shadow-sm rounded-lg"><Bot size={22} /></div>
+                            <div>
+                                <span className="font-extrabold tracking-tight">Health Assistant</span>
+                                <div className="text-xs font-semibold uppercase tracking-wider text-green-500 flex items-center gap-1.5 mt-0.5">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div> Secure RAG Link Active
+                                </div>
+                            </div>
                         </div>
                     </CardTitle>
                 </CardHeader>
 
-                <CardContent className="flex-1 p-0 flex flex-col min-h-0">
-                    <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 bg-slate-50/70">
-                        {messages.length === 0 && !loading && (
-                            <div className="max-w-3xl mx-auto">
-                                <div className="text-center text-slate-500 mb-6">Ask anything about pediatric care and this app workflow.</div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    {STARTER_PROMPTS.map((prompt) => (
-                                        <button
-                                            key={prompt}
-                                            type="button"
-                                            onClick={() => sendMessage(prompt)}
-                                            className="text-left p-3 rounded-lg border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 text-sm text-slate-700 transition-colors"
-                                        >
-                                            {prompt}
-                                        </button>
-                                    ))}
+                <CardContent className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-slate-50/50">
+                    {messages.length === 0 && (
+                        <div className="text-center text-slate-400 mt-12 text-sm font-medium">
+                            Semantic session secured. How can I assist with general guidance today?
+                        </div>
+                    )}
+                    
+                    {messages.map(m => {
+                        const isUser = m.sender === 'USER';
+                        const isEmergency = m.message.includes('EMERGENCY WARNING');
+                        return (
+                            <div key={m.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`flex gap-3 max-w-[85%] sm:max-w-[75%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                                    <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm border ${isUser ? 'bg-white border-slate-200 text-slate-500' : 'bg-blue-600 border-transparent text-white'}`}>
+                                        {isUser ? <User size={18} /> : <Bot size={18} />}
+                                    </div>
+                                    <div className={`p-4 rounded-2xl text-[15px] shadow-sm ${
+                                        isUser ? 'bg-blue-600 text-white rounded-tr-none' : 
+                                        isEmergency ? 'bg-red-50 border-2 border-red-200 text-red-900 rounded-tl-none font-medium' : 
+                                        'bg-white border border-slate-200 border-b-slate-300 text-slate-700 rounded-tl-none leading-relaxed'
+                                    }`}>
+                                        <div className="whitespace-pre-wrap">{m.message}</div>
+                                        {isEmergency && (
+                                            <div className="mt-5 flex gap-3">
+                                                <Button variant="destructive" size="default" className="shadow-sm font-bold tracking-wide" onClick={() => window.location.href='tel:911'}><AlertTriangle size={16} className="mr-2" /> Dial 911 Now</Button>
+                                                <Link to="/appointments"><Button variant="outline" size="default" className="bg-white text-red-700 border-red-200 hover:bg-red-50 font-bold">Find Doctor</Button></Link>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        )}
-
-                        <div className="space-y-5">
-                            {messages.map((m) => {
-                                const isUser = m.sender === 'USER';
-                                return (
-                                    <div key={m.id} className={`w-full flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[92%] sm:max-w-[80%] rounded-2xl border px-4 py-3 shadow-sm ${
-                                            isUser
-                                                ? 'bg-slate-900 text-white border-slate-900 rounded-br-md'
-                                                : 'bg-white text-slate-800 border-slate-200 rounded-bl-md'
-                                        }`}>
-                                            <div className="flex items-center gap-2 mb-2 text-xs font-semibold opacity-75 uppercase tracking-wide">
-                                                {isUser ? <User size={14} /> : <Bot size={14} />}
-                                                {isUser ? 'You' : 'Assistant'}
-                                            </div>
-                                            <div className="whitespace-pre-wrap leading-relaxed">{m.message}</div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-
-                            {loading && (
-                                <div className="w-full flex justify-start">
-                                    <div className="max-w-[80%] rounded-2xl border border-slate-200 bg-white px-4 py-3 rounded-bl-md shadow-sm">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                                            <Bot size={14} />
-                                            Assistant
-                                        </div>
-                                        <div className="flex gap-1.5">
-                                            <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce"></div>
-                                            <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0.12s' }}></div>
-                                            <div className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: '0.24s' }}></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                        )
+                    })}
+                    {loading && (
+                        <div className="flex justify-start">
+                             <div className="flex gap-3 max-w-[80%] flex-row">
+                                 <div className="w-9 h-9 rounded-full bg-blue-600 border-transparent text-white flex items-center justify-center shrink-0 shadow-sm"><Bot size={18} /></div>
+                                 <div className="p-4 py-5 rounded-2xl bg-white border border-slate-200 text-slate-400 rounded-tl-none flex gap-2.5 items-center shadow-sm">
+                                     <div className="w-2.5 h-2.5 bg-blue-400/50 rounded-full animate-bounce"></div>
+                                     <div className="w-2.5 h-2.5 bg-blue-400/80 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                                     <div className="w-2.5 h-2.5 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                                 </div>
+                             </div>
                         </div>
-                        <div ref={messagesEndRef} />
-                    </div>
-
-                    <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
-                        {errorMsg && <div className="text-sm text-red-600 mb-2">{errorMsg}</div>}
-                        <form onSubmit={onSubmit} className="flex gap-2 sm:gap-3">
-                            <input
-                                type="text"
-                                value={input}
-                                disabled={!sessionId || loading}
-                                onChange={(e) => setInput(e.target.value)}
-                                placeholder={sessionId ? 'Message Pediatric Health Assistant...' : 'Initializing chat...'}
-                                className="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:bg-slate-100 disabled:text-slate-400"
-                            />
-                            <Button
-                                type="submit"
-                                disabled={!sessionId || loading || !input.trim()}
-                                className="rounded-xl px-4 sm:px-5 bg-slate-900 hover:bg-black"
-                            >
-                                <Send size={16} />
-                            </Button>
-                        </form>
-                    </div>
+                    )}
+                    <div ref={messagesEndRef} />
                 </CardContent>
+
+                <div className="p-4 bg-white border-t border-slate-100 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.02)] z-10">
+                    <form onSubmit={handleSend} className="flex gap-3 relative max-w-3xl mx-auto">
+                        <input 
+                            type="text" 
+                            disabled={loading || !sessionId}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            placeholder="Type a general health question here..." 
+                            className="flex-1 border-2 border-slate-200 rounded-xl px-5 py-3.5 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-400/10 disabled:bg-slate-50 disabled:text-slate-400 transition-all font-medium text-slate-700"
+                        />
+                        <Button type="submit" disabled={loading || !input.trim()} className="px-8 rounded-xl bg-blue-600 hover:bg-blue-700 shadow-sm transition-all h-auto disabled:opacity-50">
+                            <Send size={20} className={loading || !input.trim() ? "translate-x-0" : "translate-x-1 transition-transform"} />
+                        </Button>
+                    </form>
+                </div>
             </Card>
         </div>
     );

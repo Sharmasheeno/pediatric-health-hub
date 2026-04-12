@@ -14,8 +14,10 @@ import { TeleconsultSession } from './pages/dashboard/TeleconsultSession';
 import { Chatbot } from './pages/dashboard/Chatbot';
 import { AdminDashboard } from './pages/admin/AdminDashboard'; 
 import { ManageUsers } from './pages/admin/ManageUsers';
-import { ManageChatbotTemplates } from './pages/admin/ManageChatbotTemplates';
+import { AdminDoctors } from './pages/admin/AdminDoctors';
+import { AdminFacilities } from './pages/admin/AdminFacilities';
 import { MainDashboard } from './pages/dashboard/MainDashboard';
+import { FacilityDoctors } from './pages/facility/FacilityDoctors';
 import { 
   PatientListPlaceholder
 } from './pages/dashboard/Placeholders';
@@ -25,6 +27,7 @@ import { HealthEducation } from './pages/dashboard/HealthEducation';
 import { MyChildren } from './pages/dashboard/MyChildren';
 import { DoctorSchedule } from './pages/doctor/DoctorSchedule';
 import { PatientRecords } from './pages/doctor/PatientRecords';
+import { DoctorInbox } from './pages/dashboard/DoctorInbox';
 import useAuthStore from './store/authStore';
 
 // Conditional Router for Appointment overlap
@@ -75,10 +78,13 @@ function App() {
              <Route path="/chatbot" element={<Chatbot />} />
              <Route path="/admin" element={<AdminDashboard />} />
              <Route path="/admin/users" element={<ManageUsers />} />
-             <Route path="/admin/chatbot-templates" element={<ManageChatbotTemplates />} />
+             <Route path="/admin/doctors" element={<AdminDoctors />} />
+             <Route path="/admin/facilities" element={<AdminFacilities />} />
              <Route path="/education" element={<HealthEducation />} />
              <Route path="/emergency" element={<EmergencyGuidance />} />
              <Route path="/patients" element={<PatientRecords />} />
+             <Route path="/messages" element={<DoctorInbox />} />
+             <Route path="/facility/doctors" element={<FacilityDoctors />} />
           </Route>
         </Route>
         
