@@ -33,9 +33,23 @@ const createDoctor = async (data) => {
 };
 
 const deleteDoctor = async (id) => {
-    return prisma.doctorProfile.update({
-        where: { id },
-        data: { deletedAt: new Date() }
+    return await prisma.$transaction(async (tx) => {
+        // Soft delete the doctor profile
+        const profile = await tx.doctorProfile.update({
+            where: { id },
+            data: { deletedAt: new Date() }
+        });
+        
+        // Cascade cancellation to all pending or active appointments
+        await tx.appointment.updateMany({
+            where: {
+                doctorId: id,
+                status: { in: ['PENDING', 'CONFIRMED'] }
+            },
+            data: { status: 'CANCELLED' }
+        });
+        
+        return profile;
     });
 };
 

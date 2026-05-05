@@ -22,7 +22,20 @@ const login = async (req, res, next) => {
 
 const getProfile = async (req, res, next) => {
   try {
-    return successResponse(res, { user: req.user }, 'Profile retrieved successfully');
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
+    
+    let profile = null;
+    if (req.user.role === 'PARENT') {
+      profile = await prisma.parentProfile.findUnique({ where: { userId: req.user.id } });
+    } else if (req.user.role === 'DOCTOR') {
+      profile = await prisma.doctorProfile.findUnique({ where: { userId: req.user.id } });
+    } else if (req.user.role === 'FACILITY') {
+      profile = await prisma.facilityProfile.findUnique({ where: { userId: req.user.id } });
+    }
+    
+    const fullUser = { ...req.user, profile };
+    return successResponse(res, { user: fullUser }, 'Profile retrieved successfully');
   } catch (error) {
     next(error);
   }
@@ -30,9 +43,9 @@ const getProfile = async (req, res, next) => {
 
 const forgotPassword = async (req, res, next) => {
   try {
-    const token = await authService.forgotPassword(req.body.email);
-    // Testing override: return token in response temporarily
-    return successResponse(res, { localTestToken: token }, 'Password reset linked dispatched.', 200);
+    await authService.forgotPassword(req.body.email);
+    // Always return success to prevent email enumeration
+    return successResponse(res, null, 'If an account with that email exists, a verification code has been sent.', 200);
   } catch (error) { next(error); }
 };
 

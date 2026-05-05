@@ -33,6 +33,11 @@ const createDoctor = async (req, res, next) => {
             if (profile) req.body.facilityId = profile.id;
         }
         
+        // Sanitize empty strings from frontend select dropdowns to prevent P2003 Foreign Key crashes
+        if (req.body.facilityId === "") {
+            req.body.facilityId = null;
+        }
+        
         const doctor = await doctorService.createDoctor(req.body);
         await logAction(req.user.id, 'CREATE_PROFILE', 'DoctorProfile', doctor.id, null, req);
         return successResponse(res, doctor, 'Doctor registered successfully', 201);
@@ -49,6 +54,9 @@ const deleteDoctor = async (req, res, next) => {
 
 const updateDoctor = async (req, res, next) => {
   try {
+    if (req.body.facilityId === "") {
+        req.body.facilityId = null;
+    }
     const doctor = await doctorService.updateDoctor(req.params.id, req.body);
     await logAction(req.user.id, 'UPDATE_PROFILE', 'DoctorProfile', doctor.id, null, req);
     return successResponse(res, doctor, 'Doctor updated successfully');

@@ -93,6 +93,28 @@ async function main() {
   });
   console.log(`✅ Default Parent Created: ${parentUser.email} / parent123`);
 
+  // 3.5 Create Default FACILITY Profile
+  const facilityPassword = await bcrypt.hash('facility123', saltRound);
+  const facilityUser = await prisma.user.upsert({
+    where: { email: 'facility@pediatric-hub.com' },
+    update: {},
+    create: {
+      email: 'facility@pediatric-hub.com',
+      password: facilityPassword,
+      role: 'FACILITY',
+      isActive: true,
+      isEmailVerified: true,
+      facilityProfile: {
+          create: {
+              name: 'Central Pediatric Clinic',
+              address: '123 Health Ave, Medical District',
+              phoneNumber: '+1-555-200-1234'
+          }
+      }
+    },
+  });
+  console.log(`✅ Default Facility Created: ${facilityUser.email} / facility123`);
+
   // 4. Create Baseline Chatbot Trigger Templates
   for (const tpl of defaultChatbotTemplates) {
     await prisma.chatbotTemplate.upsert({

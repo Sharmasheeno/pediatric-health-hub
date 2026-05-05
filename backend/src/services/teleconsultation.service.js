@@ -3,8 +3,16 @@ const prisma = new PrismaClient();
 
 const generateRoom = async (appointmentId) => {
     const appt = await prisma.appointment.findUnique({ where: { id: appointmentId } });
-    if (!appt || appt.status !== 'CONFIRMED') {
-       throw Object.assign(new Error("Appointment not confirmed or missing entirely"), { statusCode: 400 });
+    if (!appt) {
+       throw Object.assign(new Error("Appointment not found"), { statusCode: 404 });
+    }
+    if (appt.status === 'CANCELLED' || appt.status === 'COMPLETED') {
+       throw Object.assign(new Error("This appointment is no longer active"), { statusCode: 400 });
+    }
+
+    // Auto-confirm PENDING appointments when a call is initiated
+    if (appt.status === 'PENDING') {
+        await prisma.appointment.update({ where: { id: appointmentId }, data: { status: 'CONFIRMED' } });
     }
 
     // Self-hosted WebRTC: room is identified by appointmentId.

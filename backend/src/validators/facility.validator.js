@@ -1,9 +1,10 @@
 const { z } = require('zod');
+const { strongPasswordSchema } = require('./auth.validator');
 
 const createFacilitySchema = z.object({
   userId: z.string().uuid().optional(),
   email: z.string().email().optional(),
-  password: z.string().min(6).optional(),
+  password: strongPasswordSchema.optional(),
   name: z.string().min(1),
   address: z.string(),
   phoneNumber: z.string()

@@ -4,7 +4,12 @@ const { successResponse } = require('../utils/responseWrapper');
 
 const createRecord = async (req, res, next) => {
   try {
-    const record = await growthService.addGrowthRecord(req.body);
+    const payload = {
+      ...req.body,
+      recordedById: req.user.id,
+      recorderRole: req.user.role
+    };
+    const record = await growthService.addGrowthRecord(payload);
     await logAction(req.user.id, 'ADD_GROWTH_METRIC', 'GrowthRecord', record.id, null, req);
     return successResponse(res, record, 'Growth metric added', 201);
   } catch (error) { next(error); }

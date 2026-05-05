@@ -99,6 +99,18 @@ const loginUser = async (email, password, req) => {
   }
 
   const { password: _, ...userWithoutPassword } = user;
+  
+  // Attach profile data dynamically
+  let profile = null;
+  if (user.role === 'PARENT') {
+      profile = await prisma.parentProfile.findUnique({ where: { userId: user.id } });
+  } else if (user.role === 'DOCTOR') {
+      profile = await prisma.doctorProfile.findUnique({ where: { userId: user.id } });
+  } else if (user.role === 'FACILITY') {
+      profile = await prisma.facilityProfile.findUnique({ where: { userId: user.id } });
+  }
+  userWithoutPassword.profile = profile;
+
   const token = generateToken(user.id, user.role);
   const refreshToken = crypto.randomBytes(64).toString('hex');
   
@@ -115,19 +127,23 @@ const forgotPassword = async (email) => {
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return null; // Silent abort prevents email enumeration attacks
 
-  const resetToken = crypto.randomBytes(32).toString('hex');
-  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  // Generate a 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
 
   await prisma.user.update({
     where: { email },
     data: {
-      resetToken: hashedToken,
-      resetTokenExp: new Date(Date.now() + 15 * 60 * 1000) // 15 Minute Validity Window
+      resetToken: hashedOtp,
+      resetTokenExp: new Date(Date.now() + 10 * 60 * 1000) // 10 minute validity
     }
   });
 
-  // NOTE: Production logic dispatches the plain 'resetToken' via SMTP right here.
-  return resetToken;
+  // Send OTP via Gmail SMTP
+  const { sendOTPEmail } = require('../utils/emailService');
+  await sendOTPEmail(email, otp);
+
+  return true; // Don't leak the OTP in the response
 };
 
 const resetPassword = async (token, newPassword) => {

@@ -58,43 +58,43 @@ export const DirectMessageClient = () => {
     }
 
     return (
-        <Card className="mb-10 border border-slate-100 shadow-sm bg-white overflow-hidden rounded-xl">
+        <Card className="mb-10 overflow-hidden">
             <div className="flex flex-col md:flex-row h-[450px]">
                 
                 {/* Contacts Sidebar */}
-                <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50 flex flex-col">
-                    <div className="p-4 border-b border-slate-200 bg-slate-100">
-                        <h3 className="font-black text-slate-700 flex items-center gap-2"><MessageSquare size={16}/> Direct Messages</h3>
+                <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-[--border] bg-[--surface-soft] flex flex-col">
+                    <div className="p-4 border-b border-[--border] bg-[--surface-soft]">
+                        <h3 className="font-bold text-[--text-primary] flex items-center gap-2"><MessageSquare size={16}/> Direct Messages</h3>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {contacts.map(c => (
                             <button
                                 key={c.id}
                                 onClick={() => setActiveContact(c)}
-                                className={`w-full text-left px-5 py-4 border-b border-slate-100 transition-colors ${activeContact?.id === c.id ? 'bg-blue-50 border-l-4 border-l-blue-600' : 'hover:bg-slate-100 border-l-4 border-l-transparent'}`}
+                                className={`w-full text-left px-5 py-4 border-b border-[--border] transition-colors ${activeContact?.id === c.id ? 'bg-primary-50 dark:bg-primary-950 border-l-4 border-l-primary-600' : 'hover:bg-[--surface-soft] border-l-4 border-l-transparent'}`}
                             >
-                                <div className="font-bold text-sm text-slate-800 tracking-tight">{c.name}</div>
+                                <div className="font-bold text-sm text-[--text-primary] tracking-tight">{c.name}</div>
                             </button>
                         ))}
                     </div>
                 </div>
 
                 {/* Chat Area */}
-                <div className="w-full md:w-2/3 flex flex-col bg-slate-50 border-t sm:border-t-0 p-4">
+                <div className="w-full md:w-2/3 flex flex-col bg-[--surface-soft] border-t sm:border-t-0 p-4">
                     {activeContact ? (
                         <>
-                            <div className="font-black text-[#6c7293] uppercase tracking-widest text-[11px] mb-4 pb-2 border-b border-slate-200">
+                            <div className="font-bold text-[--text-muted] uppercase tracking-widest text-[11px] mb-4 pb-2 border-b border-[--border]">
                                 Chatting securely with: {activeContact.name}
                             </div>
                             <div className="flex-1 overflow-y-auto flex flex-col gap-3 pb-4 px-2">
                                 {(messages || []).length === 0 ? (
-                                     <div className="m-auto text-sm font-medium text-slate-400">No previous messages. Start a secure thread!</div>
+                                     <div className="m-auto text-sm font-medium text-[--text-muted]">No previous messages. Start a secure thread!</div>
                                 ) : (
                                     messages.map(m => {
                                         const isMe = m.senderId === user.id;
                                         return (
                                             <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`p-3 px-4 max-w-[80%] rounded-2xl text-sm font-medium shadow-sm ${isMe ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-700 rounded-bl-none'}`}>
+                                                <div className={`p-3 px-4 max-w-[80%] rounded-2xl text-sm font-medium shadow-sm ${isMe ? 'bg-primary-600 text-white rounded-br-none' : 'bg-[--surface] border border-[--border] text-[--text-primary] rounded-bl-none'}`}>
                                                     {m.content}
                                                 </div>
                                             </div>
@@ -109,17 +109,17 @@ export const DirectMessageClient = () => {
                                     value={messageInput}
                                     onChange={(e) => setMessageInput(e.target.value)}
                                     placeholder={`Message ${activeContact.name.split(' ')[0]}...`}
-                                    className="flex-1 px-4 py-2 border-2 border-slate-200 rounded-lg text-sm font-medium focus:outline-none focus:border-blue-500"
+                                    className="flex-1 px-4 py-2.5 border-2 border-[--border] rounded-[--radius-sm] text-sm font-medium bg-[--surface] text-[--text-primary] placeholder:text-[--text-muted] focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                     disabled={sendMessage.isLoading}
                                 />
-                                <button type="submit" disabled={!messageInput.trim() || sendMessage.isLoading} className="px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center">
+                                <button type="submit" disabled={!messageInput.trim() || sendMessage.isLoading} className="px-5 bg-primary-600 hover:bg-primary-700 text-white rounded-[--radius-sm] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center">
                                     <Send size={16} />
                                 </button>
                             </form>
                         </>
                     ) : (
-                         <div className="m-auto flex flex-col items-center justify-center text-slate-400">
-                             <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-3"><MessageSquare size={24} className="text-slate-400"/></div>
+                         <div className="m-auto flex flex-col items-center justify-center text-[--text-muted]">
+                             <div className="w-16 h-16 bg-[--surface-soft] rounded-full flex items-center justify-center mb-3 border border-[--border]"><MessageSquare size={24}/></div>
                              <span className="font-bold tracking-tight">Select a contact to connect directly.</span>
                          </div>
                     )}

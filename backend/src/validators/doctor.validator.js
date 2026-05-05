@@ -1,9 +1,10 @@
 const { z } = require('zod');
+const { strongPasswordSchema } = require('./auth.validator');
 
 const createDoctorSchema = z.object({
   userId: z.string().uuid().optional(),
   email: z.string().email().optional(),
-  password: z.string().min(6).optional(),
+  password: strongPasswordSchema.optional(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   licenseNumber: z.string(),

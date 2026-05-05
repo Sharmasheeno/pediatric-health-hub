@@ -36,7 +36,7 @@ const createUser = async (data) => {
           email: data.email,
           password: hashedPassword,
           role: data.role,
-          isVerified: true
+          isEmailVerified: true
       },
       select: { id: true, email: true, role: true }
   });
@@ -51,8 +51,9 @@ const updateUserRole = async (id, role) => {
 };
 
 const deleteUser = async (id) => {
-  return await prisma.user.delete({
-      where: { id }
+  return await prisma.user.update({
+      where: { id },
+      data: { deletedAt: new Date(), isActive: false }
   });
 };
 

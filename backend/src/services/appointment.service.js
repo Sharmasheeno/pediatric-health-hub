@@ -42,7 +42,7 @@ const getDoctorAppointments = async (doctorId) => {
   return prisma.appointment.findMany({
      where: { doctorId, deletedAt: null },
      orderBy: { scheduledAt: 'asc' },
-     include: { child: true, doctor: true }
+     include: { child: true, doctor: true, teleconsultation: true }
   });
 };
 
@@ -50,7 +50,7 @@ const getParentAppointments = async (parentId) => {
   return prisma.appointment.findMany({
     where: { child: { parentId }, deletedAt: null },
     orderBy: { scheduledAt: 'asc' },
-    include: { child: true, doctor: true }
+    include: { child: true, doctor: true, teleconsultation: true }
   });
 };
 

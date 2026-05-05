@@ -44,36 +44,36 @@ export const VaccineTracker = () => {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center text-slate-500 font-medium">Loading mapped vaccine protocols...</div>;
+  if (isLoading) return <div className="p-8 text-center text-[--text-secondary] font-medium">Loading mapped vaccine protocols...</div>;
 
   const due = vaccines?.filter(v => ['UPCOMING', 'DUE'].includes(v.status)) || [];
   const history = vaccines?.filter(v => ['COMPLETED', 'MISSED'].includes(v.status)) || [];
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 rounded-xl border border-slate-200 shadow-sm gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[--surface] p-6 rounded-xl border border-[--border] shadow-sm gap-4">
         <div>
-           <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2"><Syringe className="text-blue-600" /> Immunization Schedule</h1>
-           <p className="text-slate-600 text-sm mt-1">Age-adjusted automated tracking system based on global CDC-style templates.</p>
+           <h1 className="text-2xl font-bold text-[--text-primary] flex items-center gap-2"><Syringe className="text-blue-600" /> Immunization Schedule</h1>
+           <p className="text-[--text-secondary] text-sm mt-1">Age-adjusted automated tracking system based on global CDC-style templates.</p>
         </div>
-        <Button onClick={syncSchedule} isLoading={syncing} variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50 bg-white shadow-sm">
+        <Button onClick={syncSchedule} isLoading={syncing} variant="outline" className="border-blue-200 text-blue-700 hover:bg-primary-50 dark:bg-primary-950 bg-[--surface] shadow-sm">
           {due.length === 0 && history.length === 0 ? 'Initialize Schedule' : 'Sync Latest Templates'}
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="border-t-4 border-t-blue-500 shadow-md">
-             <CardHeader className="bg-gradient-to-r from-blue-50 to-white border-b border-slate-100">
-                 <CardTitle className="text-slate-800 flex items-center gap-2"><Clock size={18} className="text-blue-500" /> Scheduled Doses</CardTitle>
+             <CardHeader className="bg-[--surface-soft] border-b border-[--border]">
+                 <CardTitle className="text-[--text-primary] flex items-center gap-2"><Clock size={18} className="text-blue-500" /> Scheduled Doses</CardTitle>
              </CardHeader>
              <CardContent className="pt-6">
-                 {due.length === 0 ? <p className="text-slate-500 text-sm italic">No upcoming vaccines scheduled. Initialization might be required.</p> : (
+                 {due.length === 0 ? <p className="text-[--text-secondary] text-sm italic">No upcoming vaccines scheduled. Initialization might be required.</p> : (
                      <div className="space-y-3">
                          {due.map(v => (
-                             <div key={v.id} className="flex justify-between items-center p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-300 transition-colors shadow-sm">
+                             <div key={v.id} className="flex justify-between items-center p-4 rounded-xl border border-[--border] bg-[--surface] hover:border-blue-300 transition-colors shadow-sm">
                                  <div>
-                                     <div className="font-bold text-slate-800">{v.vaccineName}</div>
-                                     <div className="text-xs font-medium text-slate-500 mt-1 uppercase tracking-wider">Dose {v.doseNumber} • Target: {new Date(v.scheduledDate).toLocaleDateString()}</div>
+                                     <div className="font-bold text-[--text-primary]">{v.vaccineName}</div>
+                                     <div className="text-xs font-medium text-[--text-secondary] mt-1 uppercase tracking-wider">Dose {v.doseNumber} • Target: {new Date(v.scheduledDate).toLocaleDateString()}</div>
                                  </div>
                                  <div className="flex flex-col items-end gap-2">
                                      <span className={`text-xs px-3 py-1 rounded-full font-bold tracking-wide uppercase ${v.status === 'DUE' ? 'bg-orange-100 text-orange-700 ring-1 ring-orange-200' : 'bg-blue-100 text-blue-700'}`}>
@@ -91,16 +91,16 @@ export const VaccineTracker = () => {
           </Card>
 
           <Card className="shadow-md">
-             <CardHeader className="bg-slate-50 border-b border-slate-100">
-                 <CardTitle className="text-slate-700 flex items-center gap-2"><CheckCircle size={18} className="text-slate-500"/> Clinical Audit History</CardTitle>
+             <CardHeader className="bg-[--surface-soft] border-b border-[--border]">
+                 <CardTitle className="text-[--text-primary] flex items-center gap-2"><CheckCircle size={18} className="text-[--text-secondary]"/> Clinical Audit History</CardTitle>
              </CardHeader>
              <CardContent className="pt-6">
-                 {history.length === 0 ? <p className="text-slate-500 text-sm italic">No past records to display.</p> : (
+                 {history.length === 0 ? <p className="text-[--text-secondary] text-sm italic">No past records to display.</p> : (
                      <div className="space-y-3">
                          {history.map(v => (
-                             <div key={v.id} className={`flex justify-between items-center p-3 rounded-lg border ${v.status === 'MISSED' ? 'border-red-100 bg-red-50/30' : 'border-slate-100 bg-slate-50'}`}>
+                             <div key={v.id} className={`flex justify-between items-center p-3 rounded-lg border ${v.status === 'MISSED' ? 'border-red-100 bg-danger/10/30' : 'border-[--border] bg-[--surface-soft]'}`}>
                                  <div>
-                                     <div className="font-semibold text-slate-700">{v.vaccineName} <span className="text-slate-400 text-xs font-medium ml-1">Dose {v.doseNumber}</span></div>
+                                     <div className="font-semibold text-[--text-primary]">{v.vaccineName} <span className="text-[--text-muted] text-xs font-medium ml-1">Dose {v.doseNumber}</span></div>
                                      {v.status === 'COMPLETED' ? (
                                          <div className="text-xs font-medium text-emerald-600 mt-1 flex items-center gap-1.5"><CheckCircle size={12} /> Logged on {new Date(v.administeredDate).toLocaleDateString()}</div>
                                      ) : (

@@ -54,22 +54,22 @@ export const TeleconsultSession = () => {
       {/* ── Top Status Bar ──────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-6 py-3 bg-[#161b22] border-b border-white/5 z-10 flex-shrink-0">
         <div className="flex items-center gap-2.5">
-          <Shield size={16} className="text-[#14c39a]" />
-          <span className="text-[#14c39a] text-sm font-bold tracking-wide">
+          <Shield size={16} className="text-teal" />
+          <span className="text-teal text-sm font-bold tracking-wide">
             Encrypted P2P Session
           </span>
-          <span className="text-slate-500 text-xs font-mono">· Room: {appointmentId?.slice(0, 12)}…</span>
+          <span className="text-[--text-secondary] text-xs font-mono">· Room: {appointmentId?.slice(0, 12)}…</span>
         </div>
 
         {/* Connection state pill */}
         <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${
           connectionState === 'connected'
-            ? 'bg-[#14c39a]/15 text-[#14c39a]'
+            ? 'bg-teal/15 text-teal'
             : connectionState === 'disconnected'
-            ? 'bg-red-500/15 text-red-400'
+            ? 'bg-danger/100/15 text-red-400'
             : 'bg-yellow-500/15 text-yellow-400'
         }`}>
-          {connectionState === 'connected' && <span className="w-2 h-2 rounded-full bg-[#14c39a] animate-pulse" />}
+          {connectionState === 'connected' && <span className="w-2 h-2 rounded-full bg-teal animate-pulse" />}
           {connectionState === 'connecting' && <Loader2 size={12} className="animate-spin" />}
           {connectionState === 'disconnected' && <WifiOff size={12} />}
           {connectionState === 'connected'    ? 'Live'       :
@@ -102,7 +102,7 @@ export const TeleconsultSession = () => {
                   : 'Call has ended'}
               </p>
               {connectionState === 'connecting' && (
-                <div className="flex items-center justify-center gap-2 text-[#14c39a] text-sm">
+                <div className="flex items-center justify-center gap-2 text-teal text-sm">
                   <Loader2 size={14} className="animate-spin" />
                   <span>Establishing encrypted tunnel...</span>
                 </div>
@@ -147,7 +147,7 @@ export const TeleconsultSession = () => {
             title={isMuted ? 'Unmute' : 'Mute'}
             className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 ${
               isMuted
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 focus:ring-red-500/20'
+                ? 'bg-danger/100/20 text-red-400 hover:bg-danger/100/30 focus:ring-red-500/20'
                 : 'bg-white/10 text-white hover:bg-white/20 focus:ring-white/10'
             }`}
           >
@@ -161,7 +161,7 @@ export const TeleconsultSession = () => {
             title={isVideoOff ? 'Turn camera on' : 'Turn camera off'}
             className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 focus:outline-none focus:ring-4 ${
               isVideoOff
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 focus:ring-red-500/20'
+                ? 'bg-danger/100/20 text-red-400 hover:bg-danger/100/30 focus:ring-red-500/20'
                 : 'bg-white/10 text-white hover:bg-white/20 focus:ring-white/10'
             }`}
           >
@@ -173,7 +173,7 @@ export const TeleconsultSession = () => {
             id="btn-end-call"
             onClick={handleEndCall}
             title="End call"
-            className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/30"
+            className="w-16 h-16 rounded-full bg-danger/100 hover:bg-red-600 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/30"
           >
             <PhoneOff size={26} />
           </button>

@@ -91,10 +91,10 @@ export const BookingFlow = () => {
 
   if (success) {
       return (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-xl shadow-sm border border-slate-200">
-              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6 text-2xl">✓</div>
-              <h2 className="text-2xl font-bold text-slate-800">Booking Confirmed!</h2>
-              <p className="text-slate-600 mt-2">The provider has received your requested slot.</p>
+          <div className="flex flex-col items-center justify-center py-20 bg-[--surface] rounded-xl shadow-sm border border-[--border]">
+              <div className="w-16 h-16 bg-success/10 text-success rounded-full flex items-center justify-center mb-6 text-2xl">✓</div>
+              <h2 className="text-2xl font-bold text-[--text-primary]">Booking Confirmed!</h2>
+              <p className="text-[--text-secondary] mt-2">The provider has received your requested slot.</p>
           </div>
       )
   }
@@ -103,11 +103,11 @@ export const BookingFlow = () => {
     <div className="max-w-3xl mx-auto space-y-8 animate-fade-in pb-12">
       {/* STEPS INDICATOR */}
       <div className="flex items-center justify-between px-4">
-         <div className={`font-semibold ${step >= 1 ? 'text-blue-600' : 'text-slate-400'}`}>1. Select Specialist</div>
-         <div className="flex-1 h-px bg-slate-200 mx-4"></div>
-         <div className={`font-semibold ${step >= 2 ? 'text-blue-600' : 'text-slate-400'}`}>2. Patient Link</div>
-         <div className="flex-1 h-px bg-slate-200 mx-4"></div>
-         <div className={`font-semibold ${step >= 3 ? 'text-blue-600' : 'text-slate-400'}`}>3. Select Time</div>
+         <div className={`font-semibold ${step >= 1 ? 'text-primary-600' : 'text-[--text-muted]'}`}>1. Select Specialist</div>
+         <div className="flex-1 h-px bg-[--border] mx-4"></div>
+         <div className={`font-semibold ${step >= 2 ? 'text-primary-600' : 'text-[--text-muted]'}`}>2. Patient Link</div>
+         <div className="flex-1 h-px bg-[--border] mx-4"></div>
+         <div className={`font-semibold ${step >= 3 ? 'text-primary-600' : 'text-[--text-muted]'}`}>3. Select Time</div>
       </div>
 
       {step === 1 && (
@@ -115,20 +115,20 @@ export const BookingFlow = () => {
             <CardHeader><CardTitle>Available Providers</CardTitle></CardHeader>
             <CardContent className="space-y-4">
                 {loadDocs ? (
-                    <div className="text-center font-bold text-slate-400 py-10 uppercase tracking-widest animate-pulse">Scanning DB Providers...</div>
+                    <div className="text-center font-bold text-[--text-muted] py-10 uppercase tracking-widest animate-pulse">Scanning DB Providers...</div>
                 ) : doctors?.length > 0 ? doctors.map(d => (
-                    <div key={d.id} className="flex justify-between items-center p-5 border border-slate-200 rounded-xl hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer" onClick={() => { setSelectedDoc(d); setStep(2); }}>
+                    <div key={d.id} className="flex justify-between items-center p-5 border border-[--border] rounded-xl hover:border-primary-300 hover:shadow-sm transition-all cursor-pointer" onClick={() => { setSelectedDoc(d); setStep(2); }}>
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center"><User /></div>
+                            <div className="w-12 h-12 bg-primary-50 dark:bg-primary-950 text-primary-600 rounded-full flex items-center justify-center"><User /></div>
                             <div>
-                                <h3 className="font-semibold text-slate-800">Dr. {d.firstName} {d.lastName}</h3>
-                                <p className="text-sm text-slate-500">{d.specialization}</p>
+                                <h3 className="font-semibold text-[--text-primary]">Dr. {d.firstName} {d.lastName}</h3>
+                                <p className="text-sm text-[--text-secondary]">{d.specialization}</p>
                             </div>
                         </div>
-                        <Button variant="outline">Select</Button>
+                        <Button variant="secondary">Select</Button>
                     </div>
                 )) : (
-                    <div className="text-center font-bold text-slate-500 py-10">No verified providers registered in database.</div>
+                    <div className="text-center font-bold text-[--text-secondary] py-10">No verified providers registered in database.</div>
                 )}
             </CardContent>
         </Card>
@@ -138,24 +138,24 @@ export const BookingFlow = () => {
           <Card>
              <CardHeader>
                   <CardTitle>Select Child Record</CardTitle>
-                  <button onClick={() => setStep(1)} className="text-sm font-medium text-blue-600 hover:text-blue-700">← Back</button>
+                  <button onClick={() => setStep(1)} className="text-sm font-medium text-primary-600 hover:text-primary-700">← Back</button>
              </CardHeader>
              <CardContent className="space-y-4">
                 {loadChildren ? (
-                     <div className="text-center font-bold text-slate-400 py-10 uppercase tracking-widest animate-pulse">Syncing Family Graph...</div>
+                     <div className="text-center font-bold text-[--text-muted] py-10 uppercase tracking-widest animate-pulse">Syncing Family Graph...</div>
                 ) : children?.length > 0 ? children.map(c => (
-                     <div key={c.id} className="flex justify-between items-center p-5 border border-slate-200 rounded-xl hover:border-purple-300 hover:shadow-sm transition-all cursor-pointer" onClick={() => { setSelectedChild(c); setStep(3); }}>
+                     <div key={c.id} className="flex justify-between items-center p-5 border border-[--border] rounded-xl hover:border-primary-300 hover:shadow-sm transition-all cursor-pointer" onClick={() => { setSelectedChild(c); setStep(3); }}>
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center"><Baby /></div>
+                            <div className="w-12 h-12 bg-violet/10 text-violet rounded-full flex items-center justify-center"><Baby /></div>
                             <div>
-                                <h3 className="font-semibold text-slate-800">{c.firstName} {c.lastName}</h3>
-                                <p className="text-sm text-slate-500">Born {new Date(c.dateOfBirth).toLocaleDateString()}</p>
+                                <h3 className="font-semibold text-[--text-primary]">{c.firstName} {c.lastName}</h3>
+                                <p className="text-sm text-[--text-secondary]">Born {new Date(c.dateOfBirth).toLocaleDateString()}</p>
                             </div>
                         </div>
-                        <Button variant="outline">Link Record</Button>
+                        <Button variant="secondary">Link Record</Button>
                      </div>
                 )) : (
-                     <div className="text-center font-bold text-red-500 py-10">You have no children registered.</div>
+                     <div className="text-center font-bold text-danger py-10">You have no children registered.</div>
                 )}
              </CardContent>
           </Card>
@@ -163,20 +163,20 @@ export const BookingFlow = () => {
 
       {step === 3 && selectedDoc && selectedChild && (
           <Card>
-              <CardHeader className="border-b border-slate-100 pb-5 mb-5">
+              <CardHeader className="border-b border-[--border] pb-5 mb-5">
                   <CardTitle>Schedule with Dr. {selectedDoc.lastName} for {selectedChild.firstName}</CardTitle>
-                  <button onClick={() => setStep(2)} className="text-sm font-medium text-blue-600 hover:text-blue-700">← Change Patient</button>
+                  <button onClick={() => setStep(2)} className="text-sm font-medium text-primary-600 hover:text-primary-700">← Change Patient</button>
               </CardHeader>
               <CardContent>
-                  {errorMsg && <div className="p-4 bg-red-50 text-red-700 flex items-center gap-2 rounded-lg mb-6 text-sm font-medium"><AlertCircle size={20} /> {errorMsg}</div>}
+                  {errorMsg && <div className="p-4 bg-danger/10 text-danger flex items-center gap-2 rounded-lg mb-6 text-sm font-medium"><AlertCircle size={20} /> {errorMsg}</div>}
                   
                   {/* DYNAMIC DATE/TIME PICKER */}
                   <div className="space-y-6 mb-8">
                      
                      {/* Calendar Row */}
                      <div>
-                         <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider">
-                             <CalendarIcon size={16} className="text-blue-600" />
+                         <label className="flex items-center gap-2 text-sm font-bold text-[--text-primary] mb-3 uppercase tracking-wider">
+                             <CalendarIcon size={16} className="text-primary-600" />
                              Select Date
                          </label>
                          <input 
@@ -184,16 +184,16 @@ export const BookingFlow = () => {
                              min={new Date().toISOString().split('T')[0]}
                              value={selectedDate}
                              onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(null); }}
-                             className="w-full md:w-64 p-3 border border-slate-300 rounded-lg text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                             className="w-full md:w-64 p-3 border border-[--border] rounded-lg bg-[--surface] text-[--text-primary] font-medium focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                          />
                      </div>
 
-                     <div className="h-px bg-slate-100 w-full"></div>
+                     <div className="h-px bg-[--border] w-full"></div>
 
                      {/* Timeslot Matrix */}
                      <div>
-                         <label className="flex items-center gap-2 text-sm font-bold text-slate-700 mb-4 uppercase tracking-wider">
-                             <Clock size={16} className="text-blue-600" />
+                         <label className="flex items-center gap-2 text-sm font-bold text-[--text-primary] mb-4 uppercase tracking-wider">
+                             <Clock size={16} className="text-primary-600" />
                              Available Slots for {getDayName(selectedDate)}
                          </label>
 
@@ -206,8 +206,8 @@ export const BookingFlow = () => {
                                         onClick={() => setSelectedTime(timeStr)}
                                         className={`p-3 rounded-lg text-sm font-bold border transition-all ${
                                             isSelected 
-                                                ? 'bg-blue-600 text-white border-blue-600 shadow-md transform scale-105' 
-                                                : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-blue-50'
+                                                ? 'bg-primary-600 text-white border-primary-600 shadow-md transform scale-105' 
+                                                : 'bg-[--surface] text-[--text-secondary] border-[--border] hover:border-primary-300 hover:bg-primary-50 dark:hover:bg-primary-950'
                                         }`}
                                      >
                                          {formatTime(timeStr)}
@@ -219,7 +219,7 @@ export const BookingFlow = () => {
                   </div>
 
                   <Button 
-                     className="w-full h-14 text-lg mt-6 shadow-lg shadow-blue-500/20" 
+                     className="w-full h-14 text-lg mt-6 shadow-lg" 
                      onClick={handleBook} 
                      isLoading={loading}
                      disabled={!selectedTime}

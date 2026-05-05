@@ -19,6 +19,7 @@ const getTelemetry = async () => {
 
 const getUsers = async () => {
     return prisma.user.findMany({
+        where: { deletedAt: null },
         select: { id: true, email: true, role: true, isActive: true, isEmailVerified: true, createdAt: true },
         orderBy: { createdAt: 'desc' }
     });

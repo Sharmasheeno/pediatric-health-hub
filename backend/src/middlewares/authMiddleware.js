@@ -22,8 +22,8 @@ const authenticate = async (req, res, next) => {
       where: { id: decoded.id }
     });
 
-    if (!user || user.deletedAt) {
-      return errorResponse(res, 'User account no longer active', 401);
+    if (!user || user.deletedAt || !user.isActive) {
+      return errorResponse(res, 'User account suspended or no longer active', 401);
     }
 
     // Attach user to request
