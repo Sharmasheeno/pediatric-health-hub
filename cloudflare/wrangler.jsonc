@@ -1,0 +1,23 @@
+{
+  "$schema": "https://www.schemastore.org/wrangler.json",
+  "name": "pediatric-health-hub-api-proxy",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-23",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    }
+  },
+  "vars": {
+    "BACKEND_ORIGIN": "https://pediatric-health-hub-api.onrender.com",
+    "ALLOWED_ORIGINS": "https://pediatric-health-hub-web.onrender.com"
+  }
+}

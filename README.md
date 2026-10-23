@@ -111,16 +111,17 @@ If you prefer to start the servers manually:
    npm run dev
    ```
 
-## ☁️ Northflank deployment
-This repository includes Dockerfiles for separate frontend and backend services. The backend expects a managed MySQL database.
+## ☁️ Render, TiDB Cloud, and Cloudflare deployment
+The root `render.yaml` defines a free Render Docker web service for the API and a free Render static site for the Vite frontend. The frontend calls the API through a dedicated Cloudflare Worker so the public browser never needs to call the Render API hostname directly. The Worker forwards `/api/*` and `/socket.io/*` to the API, including WebSocket upgrades for teleconsultation signaling.
 
-1. Create a MySQL addon and connect it to the backend service as `DATABASE_URL`.
-2. Create a backend service from `backend/Dockerfile`, expose port `3000`, and set `NODE_ENV=production`, `JWT_SECRET` (a unique random value), and `CORS_ALLOWED_ORIGINS` (the frontend's public HTTPS origin). Set `PORT` to `3000` if the platform does not inject it.
-3. The backend container runs `prisma db push` during startup. Wait for it to become healthy before building the frontend.
-4. Create a frontend service from `frontend/Dockerfile`. Set the build argument `VITE_API_URL` to `https://<backend-domain>/api/v1`, then expose port `80`.
-5. After the database schema is ready, run `npm run bootstrap:admin` once in the backend container with `DATABASE_URL`, `BOOTSTRAP_ADMIN_EMAIL`, and `BOOTSTRAP_ADMIN_PASSWORD` configured. Remove the two bootstrap variables afterward.
+1. Create a MySQL-compatible TiDB Cloud Starter instance. Keep its monthly spending limit at `0` to stay within the free quota. Download the TiDB CA certificate from its connection instructions.
+2. In Render, create a Blueprint from this repository's `render.yaml`. Set the API's `DATABASE_URL` to the TiDB connection URL using `sslaccept=strict` and the mounted CA file path (for example, `/etc/secrets/tidb-ca.pem`). Add the downloaded CA certificate as a Render secret file named `tidb-ca.pem`.
+3. Deploy the Cloudflare Worker from `cloudflare/wrangler.jsonc`. Update `BACKEND_ORIGIN` and `ALLOWED_ORIGINS` there if Render assigns different service hostnames, then run `npx wrangler deploy --config cloudflare/wrangler.jsonc`.
+4. Confirm the API health endpoint responds at `/api/health`. The API container applies the Prisma schema with `prisma db push` on startup.
+5. After the API is healthy, redeploy the Render static site so its build-time `VITE_API_URL` points to the Worker URL plus `/api/v1`.
+6. Bootstrap the first production administrator once the database schema is ready, using `npm run bootstrap:admin` with `DATABASE_URL`, `BOOTSTRAP_ADMIN_EMAIL`, and `BOOTSTRAP_ADMIN_PASSWORD`. Remove the bootstrap variables afterward.
 
-Keep database URLs, JWT secrets, SMTP credentials, and bootstrap passwords in Northflank secrets. Never commit `.env` files. Email-based password recovery requires `SMTP_EMAIL` and `SMTP_PASSWORD`; without them, the app can run but cannot deliver recovery emails.
+The Worker allows only the configured frontend origin and proxies only API and Socket.IO paths. Keep the database URL, JWT secret, SMTP credentials, and bootstrap password in platform secrets; never commit `.env` files. TiDB Starter has a monthly free quota and rejects new connections after the quota is reached until reset. Render free web services sleep after 15 minutes without traffic and share a monthly instance-hour allowance. These free plans are suitable for a demo, not a reliable production service for real patient records. Email-based password recovery requires `SMTP_EMAIL` and `SMTP_PASSWORD`.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Ensure you adhere to the established ESLint rules and UI/UX design language.
