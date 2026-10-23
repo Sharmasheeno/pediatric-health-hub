@@ -7,7 +7,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/axios';
 
 const AGE_REFERENCE_DATE = new Date();
-const LATEST_PEDIATRIC_BIRTH_DATE = (() => {
+const LATEST_ELIGIBLE_BIRTH_DATE = (() => {
+    const today = new Date();
+    return new Date(Date.UTC(
+        today.getUTCFullYear(),
+        today.getUTCMonth(),
+        today.getUTCDate()
+    )).toISOString().slice(0, 10);
+})();
+const EARLIEST_ELIGIBLE_BIRTH_DATE = (() => {
     const today = new Date();
     return new Date(Date.UTC(
         today.getUTCFullYear() - 18,
@@ -15,6 +23,10 @@ const LATEST_PEDIATRIC_BIRTH_DATE = (() => {
         today.getUTCDate() + 1
     )).toISOString().slice(0, 10);
 })();
+const formatDateLabel = (date) => new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeZone: 'UTC'
+}).format(new Date(`${date}T00:00:00Z`));
 
 export const MyChildren = () => {
     const queryClient = useQueryClient();
@@ -51,7 +63,14 @@ export const MyChildren = () => {
             (today.getUTCMonth() + 1 === birthMonth && today.getUTCDate() < birthDay)
         ) age -= 1;
 
-        if (!formData.dateOfBirth || !Number.isFinite(age) || age < 0 || age >= 18) {
+        if (
+            !formData.dateOfBirth ||
+            !Number.isFinite(age) ||
+            age < 0 ||
+            age >= 18 ||
+            formData.dateOfBirth < EARLIEST_ELIGIBLE_BIRTH_DATE ||
+            formData.dateOfBirth > LATEST_ELIGIBLE_BIRTH_DATE
+        ) {
             setFormError('Children must be under 18 years old. Please enter a valid date of birth.');
             return;
         }
@@ -170,8 +189,8 @@ export const MyChildren = () => {
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Date of Birth</label>
-                                <input required value={formData.dateOfBirth} onChange={e=>{ setFormError(''); setFormData({...formData, dateOfBirth: e.target.value}); }} type="date" max={LATEST_PEDIATRIC_BIRTH_DATE} className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold"/>
-                                <p className="text-xs text-[var(--text-muted)]">The child must be under 18 years old.</p>
+                                <input required value={formData.dateOfBirth} onChange={e=>{ setFormError(''); setFormData({...formData, dateOfBirth: e.target.value}); }} type="date" min={EARLIEST_ELIGIBLE_BIRTH_DATE} max={LATEST_ELIGIBLE_BIRTH_DATE} className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold"/>
+                                <p className="text-xs text-[var(--text-muted)]">Choose a date from {formatDateLabel(EARLIEST_ELIGIBLE_BIRTH_DATE)} to {formatDateLabel(LATEST_ELIGIBLE_BIRTH_DATE)}. The child must be under 18.</p>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                 <div className="space-y-1">
