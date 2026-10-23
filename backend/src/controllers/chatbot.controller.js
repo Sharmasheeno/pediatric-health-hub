@@ -19,7 +19,7 @@ const getHistory = async (req, res, next) => {
 
 const sendQuery = async (req, res, next) => {
     try {
-        const aiResponse = await cbService.processMessage(req.params.sessionId, req.user.id, req.body.message);
+        const aiResponse = await cbService.processMessage(req.params.sessionId, req.user.id, req.body.message, req.body.language);
         return successResponse(res, aiResponse, "Semantic proxy completed securely", 200);
     } catch(err) { next(err); }
 };

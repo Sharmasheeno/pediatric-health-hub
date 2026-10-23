@@ -262,7 +262,7 @@ const getSessionMessages = async (sessionId, userId) => {
     return prisma.chatbotMessage.findMany({ where: { sessionId }, orderBy: { timestamp: 'asc' } });
 };
 
-const processMessage = async (sessionId, userId, messageText) => {
+const processMessage = async (sessionId, userId, messageText, preferredLanguage) => {
     // 1. Ownership & Identity validation
     const session = await prisma.chatbotSession.findUnique({ where: { id: sessionId } });
     if (!session || session.userId !== userId) throw Object.assign(new Error("Unauthorized"), { statusCode: 403 });
@@ -274,7 +274,7 @@ const processMessage = async (sessionId, userId, messageText) => {
 
     // Route Somali prompts to Somali intents so they never receive the English
     // generic fallback when the user asks a common child-health question.
-    const isSomali = SOMALI_LANGUAGE_REGEX.test(messageText);
+    const isSomali = preferredLanguage ? preferredLanguage === 'so' : SOMALI_LANGUAGE_REGEX.test(messageText);
 
     // Check urgent symptoms before the topic matcher. Mixed Somali/English
     // messages should receive the same safety guidance as either language.

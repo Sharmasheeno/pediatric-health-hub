@@ -1,7 +1,8 @@
 const { z } = require('zod');
 
 const messageSchema = z.object({
-  message: z.string().min(1)
+  message: z.string().min(1),
+  language: z.enum(['en', 'so']).optional()
 });
 
 const templateSchema = z.object({

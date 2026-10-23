@@ -24,6 +24,7 @@ export const Chatbot = () => {
     const [sessionId, setSessionId] = useState(null);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
+    const [language, setLanguage] = useState('en');
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
@@ -62,10 +63,10 @@ export const Chatbot = () => {
         setLoading(true);
 
         try {
-            const res = await api.post(`/chatbot/${sessionId}/chat`, { message: userMsg });
+            const res = await api.post(`/chatbot/${sessionId}/chat`, { message: userMsg, language });
             setMessages(prev => [...prev, res.data.data]);
         } catch {
-            const isSomali = /(?:asc|asalaamu calaykum|ilmahayg(?:a|u)|qandho|xummad|qufac|tallaal|nafaqo|matag|shuban|hurdo|koritaan|maxaan sameeyaa)/i.test(userMsg);
+            const isSomali = language === 'so' || /(?:asc|asalaamu calaykum|ilmahayg(?:a|u)|qandho|xummad|qufac|tallaal|nafaqo|matag|shuban|hurdo|koritaan|maxaan sameeyaa)/i.test(userMsg);
             const message = isSomali
                 ? 'Cilad ayaa dhacday. Fadlan mar kale isku day.'
                 : 'A system error occurred. Please try again.';
@@ -76,34 +77,40 @@ export const Chatbot = () => {
     };
 
     return (
-        <div className="max-w-4xl mx-auto h-[calc(100vh-120px)] flex flex-col space-y-4">
-            <div className="bg-warning/10 border border-warning/30 rounded-[var(--radius-md)] p-4 flex gap-4 shadow-[var(--shadow-sm)] items-start">
+        <div className="mx-auto flex h-[calc(100dvh-12rem)] min-h-[320px] w-full min-w-0 max-w-4xl flex-col gap-3 sm:gap-4">
+            <div className="flex shrink-0 items-start gap-3 rounded-[var(--radius-md)] border border-warning/30 bg-warning/10 p-3 shadow-[var(--shadow-sm)] sm:gap-4 sm:p-4">
                 <ShieldAlert className="text-warning shrink-0 mt-0.5" />
-                <div>
+                <div className="min-w-0">
                     <h3 className="text-[var(--text-primary)] font-bold tracking-tight">Clinical Disclaimer / Ogeysiis Caafimaad</h3>
-                    <p className="text-[var(--text-secondary)] text-sm mt-1 leading-relaxed">{branding.assistantDisclaimer}</p>
+                    <p className="text-[var(--text-secondary)] text-xs mt-1 leading-relaxed sm:text-sm">{branding.assistantDisclaimer}</p>
                 </div>
             </div>
 
-            <Card className="flex-1 flex flex-col overflow-hidden border-t-4 border-t-primary-600">
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between text-primary-700 dark:text-primary-400">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm rounded-[var(--radius-md)]"><Bot size={22} /></div>
+            <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-t-4 border-t-primary-600">
+                <CardHeader className="shrink-0 flex-wrap gap-3 px-3 py-3 sm:px-6 sm:py-4">
+                    <CardTitle className="min-w-0 text-primary-700 dark:text-primary-400">
+                        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                            <div className="shrink-0 rounded-[var(--radius-md)] bg-primary-600 p-2 text-[var(--color-primary-foreground)] shadow-sm sm:p-2.5"><Bot size={20} /></div>
                             <div>
-                                <span className="font-bold tracking-tight">{branding.assistantName}</span>
-                                <div className="text-xs font-semibold uppercase tracking-wider text-success flex items-center gap-1.5 mt-0.5">
+                                <span className="block truncate font-bold tracking-tight">{branding.assistantName}</span>
+                                <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-success sm:text-xs sm:tracking-wider">
                                     <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div> English & Somali Guidance Ready
                                 </div>
                             </div>
                         </div>
                     </CardTitle>
+                    <div role="group" aria-label="Choose assistant language" className="flex w-full shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 sm:w-auto">
+                        <button type="button" aria-pressed={language === 'en'} onClick={() => setLanguage('en')} className={`min-h-9 flex-1 rounded-md px-3 text-sm font-semibold transition-colors sm:flex-none ${language === 'en' ? 'bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>English</button>
+                        <button type="button" aria-pressed={language === 'so'} onClick={() => setLanguage('so')} className={`min-h-9 flex-1 rounded-md px-3 text-sm font-semibold transition-colors sm:flex-none ${language === 'so' ? 'bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Soomaali</button>
+                    </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 bg-[var(--surface-soft)]">
+                <CardContent className="min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto bg-[var(--surface-soft)] p-3 sm:space-y-6 sm:p-6">
                     {messages.length === 0 && (
-                        <div className="text-center text-[var(--text-muted)] mt-12 text-sm font-medium">
-                            👋 Welcome to the {branding.assistantName}. You can ask in English or Somali about your child's health. / Ku soo dhawoow {branding.assistantName}. Waxaad su'aashaada ku qori kartaa Ingiriisi ama Soomaali; marka ay khusayso, sheeg da'da ilmaha iyo calaamadaha.
+                        <div className="mx-auto mt-3 max-w-xl text-center text-xs font-medium leading-relaxed text-[var(--text-muted)] sm:mt-8 sm:text-sm">
+                            {language === 'so'
+                                ? `Ku soo dhawoow ${branding.assistantName}. Su'aashaada ku qor Af-Soomaali; sheeg da'da ilmaha iyo calaamadaha haddii ay khusayso.`
+                                : `Welcome to the ${branding.assistantName}. Ask in English about your child's health, and include their age and symptoms when relevant.`}
                         </div>
                     )}
 
@@ -113,11 +120,11 @@ export const Chatbot = () => {
                         const isEmergency = m.message.includes('EMERGENCY WARNING') || isSomaliEmergency;
                         return (
                             <div key={m.id} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`flex gap-3 max-w-[85%] sm:max-w-[75%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                                <div className={`flex min-w-0 gap-2 sm:gap-3 max-w-[92%] sm:max-w-[75%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
                                     <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-sm border ${isUser ? 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)]' : 'bg-primary-600 border-transparent text-[var(--color-primary-foreground)]'}`}>
                                         {isUser ? <User size={18} /> : <Bot size={18} />}
                                     </div>
-                                    <div className={`p-4 rounded-2xl text-[15px] shadow-sm ${
+                                    <div className={`min-w-0 break-words p-3 rounded-2xl text-sm shadow-sm sm:p-4 sm:text-[15px] ${
                                         isUser ? 'bg-primary-600 text-[var(--color-primary-foreground)] rounded-tr-none' :
                                         isEmergency ? 'bg-danger/10 border-2 border-danger/30 text-[var(--text-primary)] rounded-tl-none font-medium' :
                                         'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-primary)] rounded-tl-none leading-relaxed'
@@ -148,18 +155,19 @@ export const Chatbot = () => {
                     <div ref={messagesEndRef} />
                 </CardContent>
 
-                <div className="p-4 bg-[var(--surface)] border-t border-[var(--border)] z-10">
-                    <form onSubmit={handleSend} className="flex gap-3 relative max-w-3xl mx-auto">
+                <div className="z-10 shrink-0 border-t border-[var(--border)] bg-[var(--surface)] p-2.5 sm:p-4">
+                    <form onSubmit={handleSend} className="relative mx-auto flex w-full max-w-3xl min-w-0 gap-2 sm:gap-3">
                         <input
                             type="text"
                             disabled={loading || !sessionId}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Ask in English or Somali... / Su'aashaada ku qor Ingiriisi ama Soomaali..."
-                            className="flex-1 border-2 border-[var(--border)] rounded-[var(--radius-sm)] px-5 py-3.5 bg-[var(--surface)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 disabled:opacity-50 transition-all font-medium"
+                            aria-label={language === 'so' ? 'Su’aashaada caafimaad' : 'Your health question'}
+                            placeholder={language === 'so' ? 'Ku qor su’aashaada caafimaad…' : 'Type your health question…'}
+                            className="min-w-0 flex-1 border-2 border-[var(--border)] rounded-[var(--radius-sm)] bg-[var(--surface)] px-3 py-3 text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary-400 focus:ring-4 focus:ring-primary-400/10 disabled:opacity-50 transition-all sm:px-5 sm:py-3.5 sm:text-base"
                         />
-                        <Button type="submit" disabled={loading || !input.trim()} className="px-8 rounded-[var(--radius-sm)] h-auto">
-                            <Send size={20} className={loading || !input.trim() ? "translate-x-0" : "translate-x-1 transition-transform"} />
+                        <Button type="submit" aria-label={language === 'so' ? 'Dir su’aasha' : 'Send question'} disabled={loading || !input.trim() || !sessionId} className="h-auto shrink-0 rounded-[var(--radius-sm)] px-4 sm:px-8">
+                            <Send size={18} className={loading || !input.trim() ? "translate-x-0" : "translate-x-1 transition-transform"} />
                         </Button>
                     </form>
                 </div>
