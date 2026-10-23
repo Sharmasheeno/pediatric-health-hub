@@ -26,10 +26,29 @@ const sendQuery = async (req, res, next) => {
 
 const manageTemplate = async (req, res, next) => {
     try {
-        const tpl = await cbService.upsertTemplate(req.body.triggerKeyword, req.body.response);
-        await logAction(req.user.id, 'MANAGE_CHATBOT_FAQ', 'ChatbotTemplate', tpl.id, { trigger: req.body.triggerKeyword }, req);
-        return successResponse(res, tpl, "Global Template strict-mapped successfully", 200);
+        if (req.body.isClinicallyReviewed && (!req.body.sourceUrl || !req.body.reviewerName)) {
+            return res.status(400).json({ status: 'error', message: 'A source URL and reviewer name are required before publishing a clinical response.' });
+        }
+        const tpl = req.params.templateId
+            ? await cbService.updateTemplate(req.params.templateId, req.body)
+            : await cbService.upsertTemplate(req.body);
+        await logAction(req.user.id, 'MANAGE_CHATBOT_FAQ', 'ChatbotTemplate', tpl.id, { trigger: req.body.triggerKeyword, language: req.body.language, isClinicallyReviewed: req.body.isClinicallyReviewed }, req);
+        return successResponse(res, tpl, "Assistant knowledge entry saved", 200);
     } catch(err) { next(err); }
 };
 
-module.exports = { initSession, getHistory, sendQuery, manageTemplate };
+const getTemplates = async (req, res, next) => {
+    try {
+        return successResponse(res, await cbService.getTemplates(), 'Assistant knowledge entries loaded', 200);
+    } catch (err) { next(err); }
+};
+
+const deleteTemplate = async (req, res, next) => {
+    try {
+        const template = await cbService.deleteTemplate(req.params.templateId);
+        await logAction(req.user.id, 'DELETE_CHATBOT_KNOWLEDGE', 'ChatbotTemplate', template.id, { trigger: template.triggerKeyword, language: template.language }, req);
+        return successResponse(res, { id: template.id }, 'Assistant knowledge entry deleted', 200);
+    } catch (err) { next(err); }
+};
+
+module.exports = { initSession, getHistory, sendQuery, manageTemplate, getTemplates, deleteTemplate };

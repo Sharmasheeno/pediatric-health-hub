@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+**/.env
+**/.env.*
+**/node_modules
+**/dist
+**/.vite
+Screenshoots
+*.log

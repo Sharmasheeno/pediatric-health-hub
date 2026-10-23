@@ -37,7 +37,7 @@ export const Login = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {errorMsg && (
-        <div className="flex items-start gap-3 p-4 bg-danger/10 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-[--radius-sm] text-sm">
+        <div className="flex items-start gap-3 p-4 bg-danger/10 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-[var(--radius-sm)] text-sm">
           <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
           <span className="text-danger dark:text-red-300 font-medium">{errorMsg}</span>
         </div>
@@ -46,16 +46,16 @@ export const Login = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Email */}
         <div className="space-y-1.5">
-          <label className="text-sm font-semibold text-[--text-primary]">Email Address</label>
+          <label className="text-sm font-semibold text-[var(--text-primary)]">Email Address</label>
           <div className="relative">
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[--text-muted]">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
               <Mail size={18} />
             </div>
             <input
               type="email"
               placeholder="you@example.com"
-              className={`w-full h-11 pl-10 pr-4 rounded-[--radius-sm] border bg-[--surface] text-[--text-primary] placeholder:text-[--text-muted] font-medium text-sm transition-all duration-200 outline-none focus:ring-2 focus:ring-[--ring]
-                ${errors.email ? 'border-danger' : 'border-[--border] hover:border-primary-300 focus:border-primary-500'}`}
+              className={`w-full h-11 pl-10 pr-4 rounded-[var(--radius-sm)] border bg-[var(--surface)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-medium text-sm transition-all duration-200 outline-none focus:ring-2 focus:ring-[var(--ring)]
+                ${errors.email ? 'border-danger' : 'border-[var(--border)] hover:border-primary-300 focus:border-primary-500'}`}
               {...register("email")}
             />
           </div>
@@ -68,22 +68,22 @@ export const Login = () => {
         
         {/* Password */}
         <div className="space-y-1.5">
-          <label className="text-sm font-semibold text-[--text-primary]">Password</label>
+          <label className="text-sm font-semibold text-[var(--text-primary)]">Password</label>
           <div className="relative">
-            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[--text-muted]">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
               <Lock size={18} />
             </div>
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
-              className={`w-full h-11 pl-10 pr-12 rounded-[--radius-sm] border bg-[--surface] text-[--text-primary] placeholder:text-[--text-muted] font-medium text-sm transition-all duration-200 outline-none focus:ring-2 focus:ring-[--ring]
-                ${errors.password ? 'border-danger' : 'border-[--border] hover:border-primary-300 focus:border-primary-500'}`}
+              className={`w-full h-11 pl-10 pr-12 rounded-[var(--radius-sm)] border bg-[var(--surface)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] font-medium text-sm transition-all duration-200 outline-none focus:ring-2 focus:ring-[var(--ring)]
+                ${errors.password ? 'border-danger' : 'border-[var(--border)] hover:border-primary-300 focus:border-primary-500'}`}
               {...register("password")}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[--text-muted] hover:text-[--text-secondary] transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -107,7 +107,7 @@ export const Login = () => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full h-11 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white font-semibold text-sm rounded-[--radius-sm] shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          className="w-full h-11 bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-[var(--color-primary-foreground)] font-semibold text-sm rounded-[var(--radius-md)] shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
         >
           {isSubmitting ? (
             <><Loader2 size={18} className="animate-spin" /> Signing in...</>
@@ -117,7 +117,7 @@ export const Login = () => {
         </button>
       </form>
       
-      <p className="text-center text-xs text-[--text-muted] font-medium">
+      <p className="text-center text-xs text-[var(--text-muted)] font-medium">
         🔒 Secured with 256-bit encryption
       </p>
     </div>

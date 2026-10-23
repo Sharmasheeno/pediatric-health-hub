@@ -4,6 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/axios';
 import useAuthStore from '../../store/authStore';
 
+const barHeight = (index, seed = 0, minimum = 20) =>
+    Math.max(minimum, 20 + ((index * 37 + seed * 17) % 81));
+
 const roleConfig = {
     DOCTOR: {
         primaryHeader: "Clinical Portfolio",
@@ -63,7 +66,7 @@ export const MainDashboard = () => {
         }
     });
 
-    if (isLoading) return <div className="p-12 text-center text-[--text-muted] font-bold uppercase tracking-widest animate-pulse">Aggregating Live Telemetry Variables...</div>;
+    if (isLoading) return <div className="p-12 text-center text-[var(--text-muted)] font-bold uppercase tracking-widest animate-pulse">Aggregating Live Telemetry Variables...</div>;
 
     // Calculate dynamic total chart volume
     const chartTotalCount = stats?.charts?.reduce((acc, curr) => acc + (curr.sales || 0) + (curr.orders || 0), 0) || 0;
@@ -74,15 +77,15 @@ export const MainDashboard = () => {
                 
                 {/* Left Column: Status statistics */}
                 <div className="col-span-1 flex flex-col gap-6">
-                    <h2 className="text-[--text-muted] font-bold text-[11px] uppercase tracking-widest mb-[-12px]">{config.primaryHeader}</h2>
+                    <h2 className="text-[var(--text-muted)] font-bold text-[11px] uppercase tracking-widest mb-[-12px]">{config.primaryHeader}</h2>
                     
                     {/* Card 1: Dynamic Primary Stat */}
-                    <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] border border-[--border] p-5 w-full flex flex-col transition-colors">
+                    <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] border border-[var(--border)] p-5 w-full flex flex-col transition-colors">
                         <div className="flex justify-between items-center mb-5">
-                            <span className="text-[--text-muted] text-[10px] font-bold uppercase tracking-widest">{stats?.title1}</span>
+                            <span className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest">{stats?.title1}</span>
                             <span className="text-[10px] font-bold uppercase tracking-widest" style={{color: config.chartMetrics.leftColor}}>LIVE</span>
                         </div>
-                        <div className="text-[36px] font-extrabold text-[--text-primary] tracking-tight leading-none mb-4">{stats?.count1}</div>
+                        <div className="text-[36px] font-extrabold text-[var(--text-primary)] tracking-tight leading-none mb-4">{stats?.count1}</div>
                         <div className="h-14 w-[110%] -ml-3 mt-auto">
                              <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={stats?.charts}>
@@ -99,12 +102,12 @@ export const MainDashboard = () => {
                     </div>
 
                     {/* Card 2: Dynamic Secondary Stat */}
-                    <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] border border-[--border] p-5 w-full flex flex-col transition-colors">
+                    <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] border border-[var(--border)] p-5 w-full flex flex-col transition-colors">
                         <div className="flex justify-between items-center mb-5">
-                            <span className="text-[--text-muted] text-[10px] font-bold uppercase tracking-widest">{stats?.title2}</span>
+                            <span className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest">{stats?.title2}</span>
                             <span className="text-[10px] font-bold uppercase tracking-widest" style={{color: config.chartMetrics.rightColor}}>OK</span>
                         </div>
-                        <div className="text-[32px] font-extrabold text-[--text-primary] tracking-tight leading-none mb-4">{stats?.count2}</div>
+                        <div className="text-[32px] font-extrabold text-[var(--text-primary)] tracking-tight leading-none mb-4">{stats?.count2}</div>
                         <div className="h-[60px] w-[105%] -ml-2 -mb-2 mt-auto">
                              <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={stats?.charts}>
@@ -117,34 +120,34 @@ export const MainDashboard = () => {
 
                     {/* Card 3: Mini Split Cards */}
                     <div className="grid grid-cols-2 gap-6 h-full">
-                        <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] p-4 px-5 text-center flex flex-col border border-[--border] transition-colors">
-                             <div className="text-[--text-muted] text-[10px] font-bold uppercase tracking-widest mb-1.5">{stats?.title3}</div>
+                        <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] p-4 px-5 text-center flex flex-col border border-[var(--border)] transition-colors">
+                             <div className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest mb-1.5">{stats?.title3}</div>
                              <div className="flex justify-center items-center h-full mb-6">
-                                 <span className="text-2xl font-extrabold text-[--text-primary]">{stats?.count3}</span>
+                                 <span className="text-2xl font-extrabold text-[var(--text-primary)]">{stats?.count3}</span>
                              </div>
                              <div className="h-10 mt-auto flex gap-[2px] items-end justify-center w-full">
                                  {Array.from({length: 24}).map((_, i) => (
-                                     <div key={i} className="w-[3px] rounded-t-sm" style={{height: `${Math.max(20, Math.random()*100)}%`, backgroundColor: config.chartMetrics.leftColor}}></div>
+                                     <div key={i} className="w-[3px] rounded-t-sm" style={{height: `${barHeight(i)}%`, backgroundColor: config.chartMetrics.leftColor}}></div>
                                  ))}
                              </div>
                         </div>
-                        <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] p-4 px-5 text-center flex flex-col border border-[--border] transition-colors">
+                        <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] p-4 px-5 text-center flex flex-col border border-[var(--border)] transition-colors">
                              <div className="flex justify-between w-full mb-3">
                                  <div className="text-left w-1/2">
-                                     <div className="text-[--text-muted] text-[10px] font-bold uppercase tracking-widest mb-1">{config.miniMetrics.left}</div>
-                                     <div className="text-sm font-extrabold text-[--text-primary] tracking-tight leading-none">{config.miniMetrics.leftVal}</div>
+                                     <div className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest mb-1">{config.miniMetrics.left}</div>
+                                     <div className="text-sm font-extrabold text-[var(--text-primary)] tracking-tight leading-none">{config.miniMetrics.leftVal}</div>
                                  </div>
                                  <div className="text-right w-1/2">
-                                     <div className="text-[--text-muted] text-[10px] font-bold uppercase tracking-widest mb-1">{config.miniMetrics.right}</div>
-                                     <div className="text-sm font-extrabold text-[--text-primary] tracking-tight leading-none">{config.miniMetrics.rightVal}</div>
+                                     <div className="text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest mb-1">{config.miniMetrics.right}</div>
+                                     <div className="text-sm font-extrabold text-[var(--text-primary)] tracking-tight leading-none">{config.miniMetrics.rightVal}</div>
                                  </div>
                              </div>
                              <div className="flex gap-1 justify-between w-full mt-auto">
                                  <div className="flex gap-[2px] items-end w-1/2 overflow-hidden h-8">
-                                     {Array.from({length: 12}).map((_, i) => <div key={`r-${i}`} className="w-[3px] rounded-t-sm" style={{height: `${Math.max(30, Math.random()*100)}%`, backgroundColor: config.chartMetrics.rightColor}}></div>)}
+                                     {Array.from({length: 12}).map((_, i) => <div key={`r-${i}`} className="w-[3px] rounded-t-sm" style={{height: `${barHeight(i, 1, 30)}%`, backgroundColor: config.chartMetrics.rightColor}}></div>)}
                                  </div>
                                  <div className="flex gap-[2px] items-end w-1/2 justify-end overflow-hidden h-8">
-                                     {Array.from({length: 12}).map((_, i) => <div key={`g-${i}`} className="w-[3px] rounded-t-sm" style={{height: `${Math.max(30, Math.random()*100)}%`, backgroundColor: config.chartMetrics.leftColor}}></div>)}
+                                     {Array.from({length: 12}).map((_, i) => <div key={`g-${i}`} className="w-[3px] rounded-t-sm" style={{height: `${barHeight(i, 2, 30)}%`, backgroundColor: config.chartMetrics.leftColor}}></div>)}
                                  </div>
                              </div>
                         </div>
@@ -153,19 +156,19 @@ export const MainDashboard = () => {
 
                 {/* Right Column: Historical Traffic Statistics */}
                 <div className="col-span-1 lg:col-span-2 flex flex-col gap-6">
-                    <h2 className="text-[--text-muted] font-bold text-[11px] uppercase tracking-widest mb-[-12px]">{config.secondaryHeader}</h2>
+                    <h2 className="text-[var(--text-muted)] font-bold text-[11px] uppercase tracking-widest mb-[-12px]">{config.secondaryHeader}</h2>
                     
-                    <div className="bg-[--surface] p-7 rounded-[--radius-md] shadow-[--shadow-sm] border border-[--border] flex-1 flex flex-col hover:shadow-[--shadow-md] transition-all cursor-default">
+                    <div className="bg-[var(--surface)] p-7 rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] border border-[var(--border)] flex-1 flex flex-col hover:shadow-[var(--shadow-md)] transition-all cursor-default">
                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-10 gap-4">
                             <div>
-                                <h3 className="text-[11px] font-bold text-[--text-muted] uppercase tracking-widest">Calculated Aggregate Trends</h3>
-                                <div className="text-[34px] font-extrabold text-[--text-primary] mt-2 leading-none tracking-tight">{chartTotalCount.toLocaleString()}</div>
+                                <h3 className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Calculated Aggregate Trends</h3>
+                                <div className="text-[34px] font-extrabold text-[var(--text-primary)] mt-2 leading-none tracking-tight">{chartTotalCount.toLocaleString()}</div>
                             </div>
                             <div className="flex gap-8 mt-2 md:mt-0 items-center justify-end">
-                                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[--text-muted]">
+                                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
                                     <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: config.chartMetrics.rightColor}}></div> {config.chartMetrics.left}
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[--text-muted]">
+                                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
                                     <div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: config.chartMetrics.leftColor}}></div> {config.chartMetrics.right}
                                 </div>
                             </div>
@@ -203,9 +206,9 @@ export const MainDashboard = () => {
              {/* Bottom Widgets Sector */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 pb-6">
                  {/* Overall Analytics Slice */}
-                 <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] p-6 flex flex-col items-center justify-between border border-[--border] min-h-[160px] transition-colors">
-                      <div className="w-full flex justify-between uppercase text-[10px] tracking-widest font-bold text-[--text-primary] mb-2">
-                           <span>{config.widgets.analytics.label}</span> <span className="text-[--text-muted] cursor-pointer hover:text-[--text-secondary] transition-colors">Last 30 days ▾</span>
+                 <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] p-6 flex flex-col items-center justify-between border border-[var(--border)] min-h-[160px] transition-colors">
+                      <div className="w-full flex justify-between uppercase text-[10px] tracking-widest font-bold text-[var(--text-primary)] mb-2">
+                           <span>{config.widgets.analytics.label}</span> <span className="text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-secondary)] transition-colors">Last 30 days ▾</span>
                       </div>
                       <div className="relative mt-auto">
                           <svg width="140" height="70" viewBox="0 0 140 70" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -213,14 +216,14 @@ export const MainDashboard = () => {
                               <path d="M140 70C140 31.34 108.66 0 70 0A69.8 69.8 0 0 0 35.8 9.38L70 70H140Z" fill={config.widgets.analytics.color}/>
                               <path d="M35.8 9.38C15.9 20.65 1.5 43.14 0 70H70L35.8 9.38Z" fill="#F59E0B"/>
                           </svg>
-                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70px] h-[35px] bg-[--surface] rounded-t-full flex items-end justify-center pb-2">
+                          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70px] h-[35px] bg-[var(--surface)] rounded-t-full flex items-end justify-center pb-2">
                               <span className="font-extrabold text-xs" style={{color: config.widgets.analytics.color}}>99.9%</span>
                           </div>
                       </div>
                  </div>
                  
                  {/* Email Link Block */}
-                 <div className={`bg-gradient-to-br ${config.widgets.email.bg} rounded-[--radius-md] shadow-[--shadow-md] p-8 flex flex-col justify-center items-center text-center min-h-[160px]`}>
+                 <div className={`bg-gradient-to-br ${config.widgets.email.bg} rounded-[var(--radius-md)] shadow-[var(--shadow-md)] p-8 flex flex-col justify-center items-center text-center min-h-[160px]`}>
                      <h3 className="text-white font-bold tracking-wide mb-5 uppercase text-sm tracking-widest">{config.widgets.email.title}</h3>
                      <input 
                          type="text" 
@@ -231,9 +234,9 @@ export const MainDashboard = () => {
                  </div>
 
                  {/* Server Status Final */}
-                 <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] pt-6 px-6 overflow-hidden flex flex-col border border-[--border] min-h-[160px] relative transition-colors">
-                      <div className="w-full flex justify-between uppercase text-[10px] font-bold tracking-widest text-[--text-muted] mb-2 z-10 relative">
-                           <span className="text-[--text-primary]">{config.widgets.server.label}</span> <span className="cursor-pointer hover:text-[--text-secondary] transition-colors">Live ▾</span>
+                 <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] pt-6 px-6 overflow-hidden flex flex-col border border-[var(--border)] min-h-[160px] relative transition-colors">
+                      <div className="w-full flex justify-between uppercase text-[10px] font-bold tracking-widest text-[var(--text-muted)] mb-2 z-10 relative">
+                           <span className="text-[var(--text-primary)]">{config.widgets.server.label}</span> <span className="cursor-pointer hover:text-[var(--text-secondary)] transition-colors">Live ▾</span>
                       </div>
                       <div className="text-left text-[11px] font-bold mt-2 mb-4 z-10 relative flex items-center gap-2" style={{color: config.widgets.server.lightStatusColor}}>
                           <div className="w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: config.widgets.server.lightStatusColor}}></div> {config.widgets.server.status}

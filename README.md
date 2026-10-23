@@ -62,8 +62,8 @@ Complete oversight of all registered users (Parents, Doctors, Facilities) with s
 <br/><br/>
 <img src="Screenshoots/Screenshot%202026-05-06%20012406.png" alt="Facility Registry" width="800"/>
 
-## 🔑 Default Users & Credentials
-When the database is seeded, the following default accounts are created for testing and deployment purposes:
+## 🔑 Local Demo Accounts
+The demo seed creates these accounts for local development only. It is blocked when `NODE_ENV=production`; do not use these credentials for a deployed system.
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
@@ -71,6 +71,8 @@ When the database is seeded, the following default accounts are created for test
 | **Doctor** | `doctor@pediatric-hub.com` | `doctor123` |
 | **Facility** | `facility@pediatric-hub.com` | `facility123` |
 | **Parent** | `parent@pediatric-hub.com` | `parent123` |
+
+For a deployed environment, create the first administrator with `npm run bootstrap:admin` after configuring `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 12 characters. The command refuses to run once an administrator exists.
 
 ## 🛠️ Tech Stack
 - **Frontend**: React.js (Vite), Tailwind CSS, Zustand (State Management), React Query, React Hook Form, Recharts, Lucide Icons.
@@ -108,6 +110,17 @@ If you prefer to start the servers manually:
    npm install
    npm run dev
    ```
+
+## ☁️ Northflank deployment
+This repository includes Dockerfiles for separate frontend and backend services. The backend expects a managed MySQL database.
+
+1. Create a MySQL addon and connect it to the backend service as `DATABASE_URL`.
+2. Create a backend service from `backend/Dockerfile`, expose port `3000`, and set `NODE_ENV=production`, `JWT_SECRET` (a unique random value), and `CORS_ALLOWED_ORIGINS` (the frontend's public HTTPS origin). Set `PORT` to `3000` if the platform does not inject it.
+3. The backend container runs `prisma db push` during startup. Wait for it to become healthy before building the frontend.
+4. Create a frontend service from `frontend/Dockerfile`. Set the build argument `VITE_API_URL` to `https://<backend-domain>/api/v1`, then expose port `80`.
+5. After the database schema is ready, run `npm run bootstrap:admin` once in the backend container with `DATABASE_URL`, `BOOTSTRAP_ADMIN_EMAIL`, and `BOOTSTRAP_ADMIN_PASSWORD` configured. Remove the two bootstrap variables afterward.
+
+Keep database URLs, JWT secrets, SMTP credentials, and bootstrap passwords in Northflank secrets. Never commit `.env` files. Email-based password recovery requires `SMTP_EMAIL` and `SMTP_PASSWORD`; without them, the app can run but cannot deliver recovery emails.
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Ensure you adhere to the established ESLint rules and UI/UX design language.

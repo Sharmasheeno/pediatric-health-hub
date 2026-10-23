@@ -333,6 +333,26 @@ model EducationalContent {
   deletedAt       DateTime?
 }
 
+model SystemSettings {
+  id                  Int      @id @default(1)
+  organizationName    String   @default("Pediatric Health Hub") @db.VarChar(120)
+  shortName           String   @default("Pediatric Hub") @db.VarChar(60)
+  tagline             String   @default("Pediatric care for every family") @db.VarChar(255)
+  logoDataUrl         String?  @db.LongText
+  primaryColor        String   @default("#2563EB") @db.VarChar(7)
+  supportEmail        String?  @db.VarChar(191)
+  supportPhone        String?  @db.VarChar(40)
+  websiteUrl          String?  @db.VarChar(255)
+  address             String?  @db.Text
+  country             String   @default("Somalia") @db.VarChar(100)
+  timezone            String   @default("Africa/Mogadishu") @db.VarChar(80)
+  currency            String   @default("USD") @db.VarChar(3)
+  assistantName       String   @default("Pediatric Health Assistant") @db.VarChar(100)
+  assistantDisclaimer String   @db.Text
+  updatedAt           DateTime @updatedAt
+  updatedByUserId     String?  @db.VarChar(191)
+}
+
 model EmergencyContact {
   id              String   @id @default(uuid())
   name            String
@@ -367,10 +387,17 @@ model ChatbotMessage {
 
 model ChatbotTemplate {
   id              String   @id @default(uuid())
-  triggerKeyword  String   @unique
+  triggerKeyword  String   @db.VarChar(255)
+  language        String   @default("en") @db.VarChar(2)
   response        String   @db.Text
+  sourceUrl       String?  @db.VarChar(500)
+  reviewerName    String?  @db.VarChar(120)
+  isClinicallyReviewed Boolean @default(false)
+  reviewedAt      DateTime?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@unique([language, triggerKeyword])
 }
 
 model Notification {

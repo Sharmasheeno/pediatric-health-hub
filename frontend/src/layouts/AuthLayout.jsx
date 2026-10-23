@@ -1,19 +1,25 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { Heart, Shield, Users, Activity, Stethoscope, Sun, Moon } from 'lucide-react';
+import { Shield, Users, Activity, Stethoscope, Sun, Moon } from 'lucide-react';
 import useThemeStore from '../store/themeStore';
+import { BrandLogo } from '../components/BrandLogo';
+import { useBranding } from '../contexts/useBranding';
+import { useState } from 'react';
 
 export const AuthLayout = () => {
   const { isDark, toggleTheme } = useThemeStore();
+  const branding = useBranding();
+  const [wideBrandLogo, setWideBrandLogo] = useState(false);
+  const showWideBrandLogo = Boolean(branding.logoDataUrl && wideBrandLogo);
   const location = useLocation();
   const isForgotPassword = location.pathname === '/forgot-password';
 
   return (
-    <div className="min-h-screen flex bg-[--bg] transition-colors duration-300">
+    <div className="min-h-screen flex bg-[var(--bg)] transition-colors duration-300">
       
       {/* Left Panel — Brand */}
       <div className="hidden lg:flex lg:w-[52%] relative overflow-hidden">
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 35%, #1E40AF 65%, #1E3A8A 100%)'
+          background: 'linear-gradient(135deg, #122238 0%, #193954 58%, #16505A 100%)'
         }} />
         
         {/* Decorative orbs */}
@@ -33,11 +39,8 @@ export const AuthLayout = () => {
         <div className="relative z-10 flex flex-col justify-between p-10 xl:p-14 w-full">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-[--radius-md] flex items-center justify-center shadow-lg"
-              style={{ background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <Heart className="w-6 h-6 text-white" fill="currentColor" />
-            </div>
-            <span className="text-white font-bold text-xl tracking-tight">Pediatric Health Hub</span>
+            <BrandLogo className={showWideBrandLogo ? 'h-12 w-52' : 'w-11 h-11'} iconSize={24} onImageLoad={aspectRatio => setWideBrandLogo(aspectRatio >= 2.3)} />
+            {!showWideBrandLogo && <span className="text-white font-bold text-xl tracking-tight">{branding.organizationName}</span>}
           </div>
           
           {/* Hero */}
@@ -68,7 +71,7 @@ export const AuthLayout = () => {
           </div>
           
           <p className="text-blue-200/40 text-xs font-medium">
-            © 2026 Pediatric Health Hub · All rights reserved
+            © {new Date().getFullYear()} {branding.organizationName} · All rights reserved
           </p>
         </div>
       </div>
@@ -78,17 +81,15 @@ export const AuthLayout = () => {
         <div className="flex items-center justify-between px-6 sm:px-10 py-5">
           {/* Mobile logo */}
           <div className="flex items-center gap-2.5 lg:hidden">
-            <div className="w-9 h-9 rounded-[--radius-sm] bg-primary-600 flex items-center justify-center shadow-md">
-              <Heart className="w-5 h-5 text-white" fill="currentColor" />
-            </div>
-            <span className="font-bold text-[--text-primary] text-lg tracking-tight">Pediatric Health Hub</span>
+            <BrandLogo className={showWideBrandLogo ? 'h-11 w-48' : 'w-9 h-9'} onImageLoad={aspectRatio => setWideBrandLogo(aspectRatio >= 2.3)} />
+            {!showWideBrandLogo && <span className="font-bold text-[var(--text-primary)] text-lg tracking-tight">{branding.organizationName}</span>}
           </div>
           <div className="hidden lg:block" />
           
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="w-10 h-10 rounded-[--radius-sm] flex items-center justify-center transition-all duration-200 shadow-sm border border-[--border] bg-[--surface] text-[--text-muted] hover:text-primary-600 hover:border-primary-300"
+            className="w-10 h-10 rounded-[var(--radius-sm)] flex items-center justify-center transition-all duration-200 shadow-sm border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-primary-600 hover:border-primary-300"
             aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDark ? <Sun size={18} /> : <Moon size={18} />}
@@ -98,10 +99,10 @@ export const AuthLayout = () => {
         <div className="flex-1 flex items-center justify-center px-6 sm:px-12 pb-12">
           <div className="w-full max-w-[420px] space-y-8">
             <div className="space-y-2">
-              <h2 className="text-3xl font-extrabold text-[--text-primary] tracking-tight">
+              <h2 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight">
                 {isForgotPassword ? 'Account Recovery' : 'Welcome back'}
               </h2>
-              <p className="text-[--text-secondary] font-medium">
+              <p className="text-[var(--text-secondary)] font-medium">
                 {isForgotPassword 
                   ? 'Securely reset your password using email verification.' 
                   : 'Sign in to access your secure clinical dashboard.'}

@@ -1,23 +1,29 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const env = require('./config/env');
 const logger = require('./middlewares/logger');
 const errorHandler = require('./middlewares/errorHandler');
 const { startCron } = require('./cron/vaccineCron');
 
 const app = express();
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  ...env.CORS_ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+];
 
 // Security Middlewares
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }));
 app.use(logger);
 
 // Body parser
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health Check
@@ -44,6 +50,7 @@ const notificationRoutes = require('./routes/notification.routes');
 const adminRoutes = require('./routes/admin.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const chatRoutes = require('./routes/chat.routes');
+const systemRoutes = require('./routes/system.routes');
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -64,6 +71,7 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/chat', chatRoutes);
+app.use('/api/v1/system', systemRoutes);
 
 // Global Error Handler must be the last middleware
 app.use(errorHandler);

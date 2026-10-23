@@ -8,6 +8,12 @@ const prisma = new PrismaClient();
 const SALT_ROUNDS = 10;
 
 const registerUser = async (userData, req) => {
+  if (userData.role === 'ADMIN') {
+    const error = new Error('Administrator accounts must be provisioned by an existing operator');
+    error.statusCode = 403;
+    throw error;
+  }
+
   const existingUser = await prisma.user.findUnique({
     where: { email: userData.email }
   });

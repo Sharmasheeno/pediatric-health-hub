@@ -16,7 +16,6 @@ export const TeleconsultHub = () => {
 
     // Track which room is being activated (per appointment button)
     const [activatingId, setActivatingId] = useState(null);
-    const [activeCall, setActiveCall] = useState(null);
     const ringtoneRef = useRef(null);
 
     const { data: upcomingSessions, isLoading } = useQuery({
@@ -31,57 +30,47 @@ export const TeleconsultHub = () => {
         refetchInterval: 3000 // Speed up polling for snappy call receiving
     });
 
-    // Ringing detection for doctors
+    const activeCall = isDoctor
+        ? upcomingSessions?.find(session => session.teleconsultation && !session.teleconsultation.endedAt)
+        : null;
+    const activeCallId = activeCall?.id;
+
+    // Ring while a parent-started session is active. The call itself is derived
+    // from the latest query result, so polling never schedules state updates.
     useEffect(() => {
-        if (!isDoctor || !upcomingSessions) return;
+        if (!activeCallId) return undefined;
 
-        // Find an active teleconsultation session that was started by the parent
-        // (i.e. teleconsultation relation exists and endedAt is null)
-        const incomingCall = upcomingSessions.find(session => 
-            session.teleconsultation && !session.teleconsultation.endedAt
-        );
-
-        if (incomingCall && !activeCall) {
-            setActiveCall(incomingCall);
-            // Play a synthetic ringtone sequence using Web Audio API to bypass missing MP3 files
-            if (!ringtoneRef.current) {
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    const ctx = new AudioContext();
-                    const playRing = () => {
-                        if(ctx.state === 'closed') return;
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.type = 'sine';
-                        osc.frequency.setValueAtTime(440, ctx.currentTime);
-                        osc.frequency.setValueAtTime(480, ctx.currentTime + 0.1);
-                        gain.gain.setValueAtTime(0, ctx.currentTime);
-                        gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
-                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.start();
-                        osc.stop(ctx.currentTime + 2);
-                    };
-                    ringtoneRef.current = setInterval(playRing, 2500);
-                    playRing();
-                } catch(e) { console.error("Audio API blocked", e); }
-            }
-        } else if (!incomingCall && activeCall) {
-            setActiveCall(null);
-            if (ringtoneRef.current) {
-                clearInterval(ringtoneRef.current);
-                ringtoneRef.current = null;
-            }
-        }
-
-        return () => {
-            if (ringtoneRef.current) {
-                clearInterval(ringtoneRef.current);
-                ringtoneRef.current = null;
+        let audioContext;
+        const playRing = () => {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioContext ||= new AudioContext();
+                if (audioContext.state === 'closed') return;
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(480, audioContext.currentTime + 0.1);
+                gain.gain.setValueAtTime(0, audioContext.currentTime);
+                gain.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2);
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 2);
+            } catch (error) {
+                console.error('Audio API blocked', error);
             }
         };
-    }, [upcomingSessions, isDoctor, activeCall]);
+
+        playRing();
+        ringtoneRef.current = setInterval(playRing, 2500);
+        return () => {
+            clearInterval(ringtoneRef.current);
+            ringtoneRef.current = null;
+            audioContext?.close();
+        };
+    }, [activeCallId]);
 
     // Doctor-only: activate (generate) the WebRTC room for an appointment
     const startSession = useMutation({
@@ -105,17 +94,17 @@ export const TeleconsultHub = () => {
         <div className="max-w-[1200px] w-full mx-auto space-y-6 animate-fade-in font-sans">
 
             {/* ── Hero Banner ──────────────────────────────────────────────── */}
-            <div className="bg-[--surface] rounded-[--radius-md] shadow-[--shadow-sm] border border-[--border] p-6 sm:p-10 text-center flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden mb-8 transition-colors">
+            <div className="bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-sm)] border border-[var(--border)] p-6 sm:p-10 text-center flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden mb-8 transition-colors">
                 <div className="absolute top-0 right-0 w-72 h-72 bg-teal/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary-600/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
-                <div className="w-16 h-16 bg-teal/10 text-teal rounded-[--radius-md] flex items-center justify-center mb-6 shadow-sm z-10">
+                <div className="w-16 h-16 bg-teal/10 text-teal rounded-[var(--radius-md)] flex items-center justify-center mb-6 shadow-sm z-10">
                     <Video size={30} strokeWidth={2.5} />
                 </div>
-                <h1 className="text-3xl font-extrabold text-[--text-primary] tracking-tight mb-3 z-10">
+                <h1 className="text-3xl font-extrabold text-[var(--text-primary)] tracking-tight mb-3 z-10">
                     Teleconsultation Hub
                 </h1>
-                <p className="text-[--text-secondary] font-medium max-w-[620px] leading-relaxed z-10">
+                <p className="text-[var(--text-secondary)] font-medium max-w-[620px] leading-relaxed z-10">
                     {isDoctor
                         ? "Start a secure, encrypted video session with your patient. Click \"Start Session\" on any confirmed appointment to open the live room — your patient will join from their portal."
                         : "Connect directly with your pediatric doctors from the comfort of your home. When the doctor opens the session, click \"Join Call\" to enter the encrypted video room."}
@@ -143,7 +132,7 @@ export const TeleconsultHub = () => {
                         </div>
                         
                         <h2 className="text-2xl font-black tracking-tight text-white mb-2">Incoming Call</h2>
-                        <p className="text-[--text-secondary] font-medium mb-8">
+                        <p className="text-[var(--text-secondary)] font-medium mb-8">
                             Patient: <span className="text-white font-bold">{activeCall.child?.firstName} {activeCall.child?.lastName}</span>
                         </p>
                         
@@ -163,13 +152,13 @@ export const TeleconsultHub = () => {
             <DirectMessageClient />
 
             {/* ── Upcoming Sessions List ────────────────────────────────────── */}
-            <h2 className="text-[--text-muted] font-bold text-sm tracking-wide mt-8 mb-[-12px]">
+            <h2 className="text-[var(--text-muted)] font-bold text-sm tracking-wide mt-8 mb-[-12px]">
                 Your Upcoming Virtual Appointments
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 {isLoading ? (
-                    <div className="col-span-2 text-center p-12 text-[--text-muted] font-bold uppercase tracking-widest animate-pulse">
+                    <div className="col-span-2 text-center p-12 text-[var(--text-muted)] font-bold uppercase tracking-widest animate-pulse">
                         Syncing Telemetry...
                     </div>
                 ) : upcomingSessions?.length > 0 ? (
@@ -189,12 +178,12 @@ export const TeleconsultHub = () => {
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start mb-5">
                                         <div>
-                                            <h3 className="font-bold text-lg text-[--text-primary] tracking-tight">
+                                            <h3 className="font-bold text-lg text-[var(--text-primary)] tracking-tight">
                                                 {isDoctor
                                                     ? `Patient: ${session.child?.firstName} ${session.child?.lastName}`
                                                     : `Consultation: Dr. ${session.doctor?.lastName}`}
                                             </h3>
-                                            <div className="flex items-center gap-4 mt-1.5 text-xs font-bold text-[--text-muted]">
+                                            <div className="flex items-center gap-4 mt-1.5 text-xs font-bold text-[var(--text-muted)]">
                                                 <span className="flex items-center gap-1.5">
                                                     <Calendar size={13} className="text-primary-500" />
                                                     {new Date(session.scheduledAt).toLocaleDateString()}
@@ -225,7 +214,7 @@ export const TeleconsultHub = () => {
                                         {isExpired ? (
                                             <Button
                                                 variant="secondary"
-                                                className="flex-1 font-bold cursor-not-allowed opacity-80 bg-[--surface-soft] text-[--text-muted] border border-[--border]"
+                                                className="flex-1 font-bold cursor-not-allowed opacity-80 bg-[var(--surface-soft)] text-[var(--text-muted)] border border-[var(--border)]"
                                                 disabled
                                             >
                                                 <StopCircle size={15} className="mr-2" /> Session Expired
@@ -282,12 +271,12 @@ export const TeleconsultHub = () => {
                         );
                     })
                 ) : (
-                    <div className="col-span-1 md:col-span-2 text-center p-14 bg-[--surface] rounded-[--radius-md] border border-[--border]">
-                        <div className="w-16 h-16 bg-[--surface-soft] text-[--text-muted] rounded-full flex items-center justify-center mx-auto mb-4 border border-[--border]">
+                    <div className="col-span-1 md:col-span-2 text-center p-14 bg-[var(--surface)] rounded-[var(--radius-md)] border border-[var(--border)]">
+                        <div className="w-16 h-16 bg-[var(--surface-soft)] text-[var(--text-muted)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
                             <Calendar size={32} />
                         </div>
-                        <h3 className="text-lg font-bold text-[--text-primary]">No Virtual Calls Scheduled</h3>
-                        <p className="text-sm text-[--text-secondary] font-medium mt-1">Your teleconsultation queue is empty.</p>
+                        <h3 className="text-lg font-bold text-[var(--text-primary)]">No Virtual Calls Scheduled</h3>
+                        <p className="text-sm text-[var(--text-secondary)] font-medium mt-1">Your teleconsultation queue is empty.</p>
                     </div>
                 )}
             </div>
@@ -296,7 +285,7 @@ export const TeleconsultHub = () => {
             {!isDoctor && (
                 <div className="mt-8 text-center pt-6">
                     <Link to="/appointments">
-                        <Button className="bg-primary-600 hover:bg-primary-700 text-white font-bold shadow-md px-8 py-6 rounded-[--radius-md]">
+                        <Button className="bg-primary-600 hover:bg-primary-700 text-white font-bold shadow-md px-8 py-6 rounded-[var(--radius-md)]">
                             <Calendar size={18} className="mr-2" /> Schedule New Virtual Appointment
                         </Button>
                     </Link>

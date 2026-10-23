@@ -1,11 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/axios';
 import { HeartPulse, FolderOpen, Activity, Syringe, Search } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
 
 export const PatientRecords = () => {
-    const navigate = useNavigate();
     const { data: patients, isLoading } = useQuery({
         queryKey: ['doctorPatients'],
         queryFn: async () => {
@@ -25,40 +23,41 @@ export const PatientRecords = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {isLoading && <p className="col-span-full text-center text-[var(--text-secondary)]">Loading patient records...</p>}
                 {patients?.map((patient, idx) => (
-                    <Card key={idx} className="hover:shadow-md cursor-pointer transition-all border-[--border] group">
+                    <Card key={idx} className="hover:shadow-md cursor-pointer transition-all border-[var(--border)] group">
                         <CardContent className="p-6">
                             <div className="flex justify-between items-start mb-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform">{patient.firstName.charAt(0)}</div>
                                     <div>
-                                        <h3 className="font-black text-[--text-primary] text-lg leading-tight">{patient.firstName} {patient.lastName}</h3>
-                                        <div className="text-[10px] font-black uppercase text-[--text-muted] tracking-widest">ID: {patient.id}</div>
+                                        <h3 className="font-black text-[var(--text-primary)] text-lg leading-tight">{patient.firstName} {patient.lastName}</h3>
+                                        <div className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">ID: {patient.id}</div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div className="grid grid-cols-2 gap-3 mb-6 relative">
-                                <div className="bg-[--surface-soft] rounded-lg p-3 border border-[--border]">
-                                    <div className="text-[10px] font-black uppercase text-[--text-muted] tracking-widest mb-1">D.O.B</div>
-                                    <div className="font-bold text-[--text-primary] text-sm">{new Date(patient.dateOfBirth).toLocaleDateString()}</div>
+                                <div className="bg-[var(--surface-soft)] rounded-lg p-3 border border-[var(--border)]">
+                                    <div className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest mb-1">D.O.B</div>
+                                    <div className="font-bold text-[var(--text-primary)] text-sm">{new Date(patient.dateOfBirth).toLocaleDateString()}</div>
                                 </div>
-                                <div className="bg-[--surface-soft] rounded-lg p-3 border border-[--border]">
-                                    <div className="text-[10px] font-black uppercase text-[--text-muted] tracking-widest mb-1">Blood Map</div>
+                                <div className="bg-[var(--surface-soft)] rounded-lg p-3 border border-[var(--border)]">
+                                    <div className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest mb-1">Blood Map</div>
                                     <div className="font-black text-danger text-sm">{patient.bloodType}</div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center justify-between gap-2 pt-4 border-t border-[--border] w-full bg-[--surface] relative z-50">
-                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}`} className="flex-1 flex flex-col items-center justify-center text-[--text-muted] hover:text-teal-600 hover:bg-[--surface-soft] py-3 rounded-lg transition-colors cursor-pointer">
+                            <div className="flex items-center justify-between gap-2 pt-4 border-t border-[var(--border)] w-full bg-[var(--surface)] relative z-50">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-teal-600 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
                                     <FolderOpen size={18} className="mb-1 pointer-events-none" />
                                     <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">History</span>
                                 </button>
-                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/growth`} className="flex-1 flex flex-col items-center justify-center text-[--text-muted] hover:text-blue-500 hover:bg-[--surface-soft] py-3 rounded-lg transition-colors cursor-pointer">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/growth`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-blue-500 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
                                     <Activity size={18} className="mb-1 pointer-events-none" />
                                     <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">Growth</span>
                                 </button>
-                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/vaccines`} className="flex-1 flex flex-col items-center justify-center text-[--text-muted] hover:text-purple-500 hover:bg-[--surface-soft] py-3 rounded-lg transition-colors cursor-pointer">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/vaccines`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-purple-500 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
                                     <Syringe size={18} className="mb-1 pointer-events-none" />
                                     <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">Vax</span>
                                 </button>

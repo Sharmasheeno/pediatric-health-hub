@@ -2,19 +2,19 @@ import { cn } from "../../lib/utils";
 import { Loader2 } from "lucide-react";
 
 export const Button = ({ children, variant = "primary", size = "md", className, isLoading, disabled, ...props }) => {
-  const base = "inline-flex items-center justify-center font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none";
+  const base = "inline-flex items-center justify-center font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none";
   
   const variants = {
-    primary: "bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm hover:shadow-md",
-    secondary: "border-2 border-[--border] bg-[--surface] text-[--text-primary] hover:bg-[--surface-soft] hover:border-primary-300 dark:hover:border-primary-600",
-    ghost: "bg-transparent text-[--text-secondary] hover:bg-[--surface-soft] hover:text-[--text-primary]",
+    primary: "bg-primary-600 text-[var(--color-primary-foreground)] hover:bg-primary-700 active:bg-primary-800 shadow-sm hover:shadow-md",
+    secondary: "border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] shadow-sm hover:bg-[var(--surface-soft)] hover:border-primary-300 dark:hover:border-primary-600",
+    ghost: "bg-transparent text-[var(--text-secondary)] hover:bg-[var(--surface-soft)] hover:text-[var(--text-primary)]",
     danger: "bg-danger text-white hover:bg-red-600 active:bg-red-700 shadow-sm",
   };
 
   const sizes = {
     sm: "h-8 px-3 text-xs rounded-lg gap-1.5",
-    md: "h-10 px-4 text-sm rounded-[--radius-sm] gap-2",
-    lg: "h-12 px-6 text-base rounded-[--radius-md] gap-2.5",
+    md: "h-10 px-4 text-sm rounded-[var(--radius-sm)] gap-2",
+    lg: "h-12 px-6 text-base rounded-[var(--radius-md)] gap-2.5",
   };
 
   return (

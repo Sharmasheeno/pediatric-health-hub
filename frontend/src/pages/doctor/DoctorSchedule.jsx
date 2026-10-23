@@ -41,12 +41,12 @@ export const DoctorSchedule = () => {
             <Card className="shadow-sm">
                 <CardContent className="p-0">
                     {isLoading ? (
-                        <div className="p-12 text-center text-[--text-muted] font-bold uppercase tracking-widest animate-pulse">Syncing Scheduling Matrix...</div>
+                        <div className="p-12 text-center text-[var(--text-muted)] font-bold uppercase tracking-widest animate-pulse">Syncing Scheduling Matrix...</div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-[--surface-soft] border-b border-[--border] text-[10px] font-black uppercase tracking-widest text-[--text-secondary]">
+                                    <tr className="bg-[var(--surface-soft)] border-b border-[var(--border)] text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
                                         <th className="p-4 rounded-tl-lg">Patient Information</th>
                                         <th className="p-4">Time Slot</th>
                                         <th className="p-4">Type</th>
@@ -61,19 +61,19 @@ export const DoctorSchedule = () => {
                                         const isCompleted = appointment.status === 'COMPLETED';
 
                                         return (
-                                            <tr key={appointment.id} className="border-b border-[--border] hover:bg-[--surface-soft] transition-colors">
+                                            <tr key={appointment.id} className="border-b border-[var(--border)] hover:bg-[var(--surface-soft)] transition-colors">
                                                 <td className="p-4">
-                                                    <div className="font-bold text-[--text-primary] flex items-center gap-2">
+                                                    <div className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                                                         <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black">{appointment.child?.firstName?.charAt(0) || 'P'}</div>
                                                         <div>
                                                             {appointment.child?.firstName} {appointment.child?.lastName}
-                                                            <div className="text-[10px] font-bold text-[--text-muted] uppercase tracking-widest mt-0.5">ID: {appointment.id?.slice(0,6)} • {appointment.reason || 'General Routine'}</div>
+                                                            <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-0.5">ID: {appointment.id?.slice(0,6)} • {appointment.reason || 'General Routine'}</div>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="p-4">
-                                                    <div className="text-sm font-bold text-[--text-primary] flex items-center gap-1.5"><Clock size={16} className="text-[--text-muted]"/> {new Date(appointment.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                                                    <div className="text-xs font-semibold tracking-wide text-[--text-secondary]">{new Date(appointment.scheduledAt).toLocaleDateString()}</div>
+                                                    <div className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-1.5"><Clock size={16} className="text-[var(--text-muted)]"/> {new Date(appointment.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                                    <div className="text-xs font-semibold tracking-wide text-[var(--text-secondary)]">{new Date(appointment.scheduledAt).toLocaleDateString()}</div>
                                                 </td>
                                                 <td className="p-4">
                                                     <span className="bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest border border-indigo-100 flex items-center gap-1.5 w-max">
@@ -92,7 +92,7 @@ export const DoctorSchedule = () => {
                                                         </div>
                                                     )}
                                                     {isCompleted && (
-                                                        <div className="flex items-center gap-1.5 text-xs font-bold text-[--text-muted]">
+                                                        <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-muted)]">
                                                             <CheckCircle size={14} /> Completed
                                                         </div>
                                                     )}
@@ -113,7 +113,7 @@ export const DoctorSchedule = () => {
                                                         </button>
                                                     )}
                                                     {isCompleted && (
-                                                        <span className="text-xs font-bold text-[--text-muted] uppercase tracking-widest">Archived</span>
+                                                        <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest">Archived</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -122,11 +122,11 @@ export const DoctorSchedule = () => {
                                     {schedule?.length === 0 && (
                                         <tr>
                                             <td colSpan="5" className="p-12 text-center">
-                                                <div className="w-16 h-16 bg-[--surface-soft] rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
+                                                <div className="w-16 h-16 bg-[var(--surface-soft)] rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">
                                                     <Calendar size={32} />
                                                 </div>
-                                                <h3 className="text-lg font-black text-[--text-primary] tracking-tight">No Appointments</h3>
-                                                <p className="text-sm text-[--text-secondary] font-medium mt-1">Your schedule matrix is completely clear.</p>
+                                                <h3 className="text-lg font-black text-[var(--text-primary)] tracking-tight">No Appointments</h3>
+                                                <p className="text-sm text-[var(--text-secondary)] font-medium mt-1">Your schedule matrix is completely clear.</p>
                                             </td>
                                         </tr>
                                     )}

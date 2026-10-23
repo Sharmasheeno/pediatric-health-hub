@@ -3,6 +3,10 @@ const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('The demo seed contains known test credentials and is disabled in production.');
+  }
+
   console.log("🌱 Initiating Pediatric Health Hub Database Seeder...");
 
   const saltRound = 10;

@@ -39,25 +39,25 @@ export const HealthEducation = () => {
                 </div>
             </div>
             
-            <h2 className="text-[--text-muted] font-bold text-[11px] uppercase tracking-widest mt-8 mb-4">Latest Published Resources</h2>
+            <h2 className="text-[var(--text-muted)] font-bold text-[11px] uppercase tracking-widest mt-8 mb-4">Latest Published Resources</h2>
             
             {filteredArticles.length === 0 ? (
-                <div className="p-12 text-center border-2 border-dashed border-[--border] rounded-xl bg-[--surface-soft]/50">
+                <div className="p-12 text-center border-2 border-dashed border-[var(--border)] rounded-xl bg-[var(--surface-soft)]/50">
                     <Search size={32} className="mx-auto text-slate-300 mb-3" />
-                    <h2 className="text-xl font-bold text-[--text-secondary] mb-2">No literature found</h2>
-                    <p className="text-[--text-muted] font-medium max-w-sm mx-auto">Try adjusting your search terms to match different clinical topics or categories.</p>
+                    <h2 className="text-xl font-bold text-[var(--text-secondary)] mb-2">No literature found</h2>
+                    <p className="text-[var(--text-muted)] font-medium max-w-sm mx-auto">Try adjusting your search terms to match different clinical topics or categories.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {filteredArticles.map((article, idx) => (
-                        <Card key={idx} onClick={() => setSelectedArticle(article)} className="hover:shadow-md cursor-pointer transition-all border-[--border] bg-[--surface] rounded hover:-translate-y-0.5 group">
+                        <Card key={idx} onClick={() => setSelectedArticle(article)} className="hover:shadow-md cursor-pointer transition-all border-[var(--border)] bg-[var(--surface)] rounded hover:-translate-y-0.5 group">
                             <CardContent className="p-6 flex items-start gap-5">
                                 <div className={`p-5 rounded group-hover:scale-105 transition-transform ${article.color}`}>
                                     {article.icon}
                                 </div>
                                 <div className="pt-1">
                                     <div className="text-[10px] font-black uppercase tracking-widest text-[#aeb1c4] mb-1.5">{article.category}</div>
-                                    <h3 className="font-black text-[--text-primary] text-lg leading-tight mb-2 tracking-tight">{article.title}</h3>
+                                    <h3 className="font-black text-[var(--text-primary)] text-lg leading-tight mb-2 tracking-tight">{article.title}</h3>
                                     <div className="text-xs font-bold text-teal">{article.readTime} read</div>
                                 </div>
                             </CardContent>
@@ -69,20 +69,20 @@ export const HealthEducation = () => {
             {/* Article Reading View Modal */}
             {selectedArticle && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-                    <div className="bg-[--surface] rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden animate-fade-in relative flex flex-col max-h-[90vh]">
-                        <div className="bg-[--surface-soft] border-b border-[--border] p-6 sm:p-8 flex justify-between items-start">
+                    <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-3xl overflow-hidden animate-fade-in relative flex flex-col max-h-[90vh]">
+                        <div className="bg-[var(--surface-soft)] border-b border-[var(--border)] p-6 sm:p-8 flex justify-between items-start">
                             <div className="flex items-center gap-5">
                                 <div className={`p-4 rounded-xl shadow-sm ${selectedArticle.color}`}>{selectedArticle.icon}</div>
                                 <div>
                                     <div className="text-[10px] font-black uppercase tracking-widest text-[#aeb1c4] mb-1.5">{selectedArticle.category}</div>
-                                    <h2 className="text-2xl font-black tracking-tight text-[--text-primary] leading-tight">{selectedArticle.title}</h2>
+                                    <h2 className="text-2xl font-black tracking-tight text-[var(--text-primary)] leading-tight">{selectedArticle.title}</h2>
                                 </div>
                             </div>
-                            <button onClick={() => setSelectedArticle(null)} className="hover:bg-slate-200 p-2 rounded-full transition-colors text-[--text-muted] hover:text-[--text-primary]"><X size={24}/></button>
+                            <button onClick={() => setSelectedArticle(null)} className="hover:bg-slate-200 p-2 rounded-full transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)]"><X size={24}/></button>
                         </div>
                         
                         <div className="p-8 sm:p-10 overflow-y-auto space-y-6">
-                            <p className="text-base font-medium text-[--text-secondary] leading-relaxed selection:bg-teal/30">
+                            <p className="text-base font-medium text-[var(--text-secondary)] leading-relaxed selection:bg-teal/30">
                                 {selectedArticle.content}
                             </p>
                             <div className="bg-primary-50 dark:bg-primary-950/50 border border-blue-100 p-5 rounded-lg flex gap-4 items-start">
@@ -93,7 +93,7 @@ export const HealthEducation = () => {
                             </div>
                         </div>
                         
-                        <div className="bg-[--surface-soft] p-5 border-t border-[--border] text-center text-[10px] font-black uppercase tracking-widest text-[--text-muted]">
+                        <div className="bg-[var(--surface-soft)] p-5 border-t border-[var(--border)] text-center text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">
                             Verified by Pediatric Health Hub Clinical Board • Est. Read Time: <span className="text-teal">{selectedArticle.readTime}</span>
                         </div>
                     </div>

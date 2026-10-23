@@ -62,7 +62,7 @@ export function useWebRTC(roomId, userRole) {
   const flushPendingIce = useCallback(async () => {
     while (pendingIce.current.length > 0) {
       const candidate = pendingIce.current.shift();
-      try { await pcRef.current?.addIceCandidate(new RTCIceCandidate(candidate)); } catch (e) { /* ignore */ }
+      try { await pcRef.current?.addIceCandidate(new RTCIceCandidate(candidate)); } catch { /* ignore */ }
     }
   }, []);
 
@@ -150,7 +150,7 @@ export function useWebRTC(roomId, userRole) {
         socket.data = socket.data || { peerId: from };
         if (pc.remoteDescription) {
           try { await pc.addIceCandidate(new RTCIceCandidate(candidate)); }
-          catch (e) { /* ignore benign errors */ }
+          catch { /* ignore benign errors */ }
         } else {
           pendingIce.current.push(candidate); // buffer until remote desc is ready
         }

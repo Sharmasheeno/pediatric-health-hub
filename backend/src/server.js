@@ -1,7 +1,12 @@
 const http = require('http');
 const { Server } = require('socket.io');
-const app = require('./app');
 const env = require('./config/env');
+const app = require('./app');
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  ...env.CORS_ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+];
 
 const PORT = env.PORT || 3000;
 
@@ -10,7 +15,7 @@ const httpServer = http.createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }

@@ -58,7 +58,7 @@ export const TeleconsultSession = () => {
           <span className="text-teal text-sm font-bold tracking-wide">
             Encrypted P2P Session
           </span>
-          <span className="text-[--text-secondary] text-xs font-mono">· Room: {appointmentId?.slice(0, 12)}…</span>
+          <span className="text-[var(--text-secondary)] text-xs font-mono">· Room: {appointmentId?.slice(0, 12)}…</span>
         </div>
 
         {/* Connection state pill */}
