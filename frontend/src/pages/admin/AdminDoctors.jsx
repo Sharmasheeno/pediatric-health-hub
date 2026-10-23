@@ -131,7 +131,7 @@ export const AdminDoctors = () => {
                                                 <button aria-label={`Delete Dr. ${doctor.firstName} ${doctor.lastName}`} onClick={() => setDeleteModal(doctor)} className="rounded-lg p-2 text-[var(--text-muted)] transition-colors hover:bg-danger/10 hover:text-danger"><Trash2 size={17} /></button>
                                             </div>
                                         </div>
-                                        <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+                                        <div className="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
                                             <div className="min-w-0">
                                                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Specialization</p>
                                                 <span className="inline-block max-w-full break-words rounded-md bg-primary-50 px-2 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300">{doctor.specialization}</span>
