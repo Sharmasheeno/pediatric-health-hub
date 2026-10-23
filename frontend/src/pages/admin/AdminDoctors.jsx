@@ -131,7 +131,7 @@ export const AdminDoctors = () => {
                                                 <button aria-label={`Delete Dr. ${doctor.firstName} ${doctor.lastName}`} onClick={() => setDeleteModal(doctor)} className="rounded-lg p-2 text-[var(--text-muted)] transition-colors hover:bg-danger/10 hover:text-danger"><Trash2 size={17} /></button>
                                             </div>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                                             <div className="min-w-0">
                                                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Specialization</p>
                                                 <span className="inline-block max-w-full break-words rounded-md bg-primary-50 px-2 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950 dark:text-primary-300">{doctor.specialization}</span>
@@ -139,7 +139,7 @@ export const AdminDoctors = () => {
                                             <div className="min-w-0">
                                                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">Facility / License</p>
                                                 <p className="break-words text-xs font-semibold text-[var(--text-primary)]">{doctor.facility?.name || <span className="italic text-[var(--text-muted)]">Unassigned</span>}</p>
-                                                <p className="mt-1 break-all text-xs text-[var(--text-secondary)]">Lic: {doctor.licenseNumber}</p>
+                                                <p className="mt-1 break-words text-xs text-[var(--text-secondary)]">Lic: {doctor.licenseNumber}</p>
                                             </div>
                                         </div>
                                     </article>
