@@ -19,6 +19,7 @@ export const TeleconsultSession = () => {
     remoteRef,
     isMuted,
     isVideoOff,
+    callError,
     toggleMic,
     toggleCamera,
     endCall,
@@ -97,7 +98,9 @@ export const TeleconsultSession = () => {
             </div>
             <div className="text-center space-y-2">
               <p className="text-white/60 font-semibold text-lg">
-                {connectionState === 'connecting'
+                {callError
+                  ? callError
+                  : connectionState === 'connecting'
                   ? `Waiting for ${isDoctor ? 'patient' : 'doctor'} to join...`
                   : 'Call has ended'}
               </p>
@@ -107,10 +110,8 @@ export const TeleconsultSession = () => {
                   <span>Establishing encrypted tunnel...</span>
                 </div>
               )}
-              {connectionState === 'disconnected' && (
-                <p className="text-red-400/80 text-sm">
-                  Redirecting you back in a moment...
-                </p>
+              {connectionState === 'disconnected' && !callError && (
+                <p className="text-red-400/80 text-sm">Redirecting you back in a moment...</p>
               )}
             </div>
           </div>

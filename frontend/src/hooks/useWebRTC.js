@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io } from 'socket.io-client';
+import useAuthStore from '../store/authStore';
 
 const SIGNAL_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
 
@@ -30,6 +31,7 @@ export function useWebRTC(roomId, userRole) {
   const [isVideoOff,      setIsVideoOff]      = useState(false);
   const [connectionState, setConnectionState] = useState('connecting'); // connecting | connected | disconnected
   const [remoteUserRole,  setRemoteUserRole]  = useState(null);
+  const [callError, setCallError] = useState('');
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   const createPeerConnection = useCallback((socket) => {
@@ -71,14 +73,23 @@ export function useWebRTC(roomId, userRole) {
     if (!roomId || !userRole) return;
 
     let isCancelled = false;
+    setConnectionState('connecting');
+    setCallError('');
+    setRemoteUserRole(null);
 
     const init = async () => {
       // 1. Acquire local camera + microphone
       let stream;
       try {
+        if (!navigator.mediaDevices?.getUserMedia) {
+          throw new Error('Camera and microphone access requires a secure HTTPS connection and a supported browser.');
+        }
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       } catch (err) {
         console.error('[WebRTC] getUserMedia failed:', err);
+        setCallError(err.name === 'NotAllowedError'
+          ? 'Allow camera and microphone access in your browser to join the video call.'
+          : err.message || 'Camera or microphone could not be started.');
         setConnectionState('disconnected');
         return;
       }
@@ -90,8 +101,19 @@ export function useWebRTC(roomId, userRole) {
       if (isCancelled) { stream.getTracks().forEach(t => t.stop()); return; }
 
       // 2. Connect to the signaling server
-      const socket = io(SIGNAL_URL, { transports: ['websocket', 'polling'] });
+      const token = useAuthStore.getState().token;
+      const socket = io(SIGNAL_URL, { auth: { token }, transports: ['websocket', 'polling'] });
       socketRef.current = socket;
+
+      socket.on('connect_error', (err) => {
+        console.error('[WebRTC] Signaling connection failed:', err.message);
+        setCallError(err.message || 'Could not connect to the secure call service.');
+        setConnectionState('disconnected');
+      });
+      socket.on('room-error', ({ message }) => {
+        setCallError(message || 'You could not join this call.');
+        setConnectionState('disconnected');
+      });
 
       socket.on('connect', () => {
         console.log('[WebRTC] Signaling socket connected:', socket.id);
@@ -193,19 +215,19 @@ export function useWebRTC(roomId, userRole) {
   }, []);
 
   const endCall = useCallback(() => {
-    const roomId = socketRef.current?.data?.roomId;
     if (roomId) socketRef.current?.emit('leave-room', { roomId });
     localStream.current?.getTracks().forEach(t => t.stop());
     pcRef.current?.close();
     socketRef.current?.disconnect();
     setConnectionState('disconnected');
-  }, []);
+  }, [roomId]);
 
   return {
     localRef,
     remoteRef,
     isMuted,
     isVideoOff,
+    callError,
     toggleMic,
     toggleCamera,
     endCall,

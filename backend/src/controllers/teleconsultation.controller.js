@@ -17,8 +17,23 @@ const checkDoctorOwnership = async (userId, doctorId) => {
     return d && d.id === doctorId;
 };
 
+const assertAppointmentParticipant = async (user, appointment) => {
+    if (!appointment || appointment.deletedAt) {
+        throw Object.assign(new Error('Appointment not found'), { statusCode: 404 });
+    }
+    if (user.role === 'ADMIN') return;
+
+    const isParent = user.role === 'PARENT' && await checkParentOwnership(user.id, appointment.childId);
+    const isDoctor = user.role === 'DOCTOR' && await checkDoctorOwnership(user.id, appointment.doctorId);
+    if (!isParent && !isDoctor) {
+        throw Object.assign(new Error('You are not a participant in this appointment.'), { statusCode: 403 });
+    }
+};
+
 const createRoom = async (req, res, next) => {
     try {
+        const appointment = await prisma.appointment.findUnique({ where: { id: req.body.appointmentId } });
+        await assertAppointmentParticipant(req.user, appointment);
         const room = await tcService.generateRoom(req.body.appointmentId);
         await logAction(req.user.id, 'CREATE_TELECONSULT_ROOM', 'Teleconsultation', room.id, null, req);
         return successResponse(res, room, "Virtual room generated securely with explicit time restrictions", 201);
@@ -29,14 +44,7 @@ const getRoom = async (req, res, next) => {
     try {
         const room = await tcService.getRoomAccess(req.params.appointmentId);
         
-        // Strict Authorization checks mapping implicitly to physical relationships
-        if (req.user.role === 'PARENT') {
-            const childBelongs = await checkParentOwnership(req.user.id, room.appointment.childId);
-            if (!childBelongs) throw Object.assign(new Error("Unauthorized lateral access to secure session."), { statusCode: 403 });
-        } else if (req.user.role === 'DOCTOR') {
-            const doctorMatches = await checkDoctorOwnership(req.user.id, room.appointment.doctorId);
-            if (!doctorMatches) throw Object.assign(new Error("Unauthorized lateral access to secure session."), { statusCode: 403 });
-        }
+        await assertAppointmentParticipant(req.user, room.appointment);
 
         return successResponse(res, room, "Access granted to secure transmission room", 200);
     } catch(err) { next(err); }
@@ -44,6 +52,8 @@ const getRoom = async (req, res, next) => {
 
 const endRoom = async (req, res, next) => {
     try {
+        const appointment = await prisma.appointment.findUnique({ where: { id: req.params.appointmentId } });
+        await assertAppointmentParticipant(req.user, appointment);
         const room = await tcService.endRoom(req.params.appointmentId, req.body.notes);
         await logAction(req.user.id, 'END_TELECONSULT_ROOM', 'Teleconsultation', room.id, null, req);
         return successResponse(res, room, "Room legally terminated and locked", 200);
