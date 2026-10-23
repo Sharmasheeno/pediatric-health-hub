@@ -122,6 +122,8 @@ io.on('connection', (socket) => {
   socket.on('leave-room', ({ roomId } = {}) => {
     if (!socket.data.roomId || roomId !== socket.data.roomId) return;
     cleanupSocket(socket, roomId);
+    socket.data.roomId = null;
+    socket.data.userRole = null;
     socket.leave(roomId);
     socket.to(roomId).emit('peer-left', { socketId: socket.id });
   });
