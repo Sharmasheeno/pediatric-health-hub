@@ -18,6 +18,7 @@
   },
   "vars": {
     "BACKEND_ORIGIN": "https://pediatric-health-hub-api.onrender.com",
+    "FRONTEND_ORIGIN": "https://pediatric-health-hub-web.onrender.com",
     "ALLOWED_ORIGINS": "https://pediatric-health-hub-web.onrender.com"
   }
 }

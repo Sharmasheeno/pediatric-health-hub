@@ -7,10 +7,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/axios';
 
 const AGE_REFERENCE_DATE = new Date();
+const LATEST_PEDIATRIC_BIRTH_DATE = (() => {
+    const today = new Date();
+    return new Date(Date.UTC(
+        today.getUTCFullYear() - 18,
+        today.getUTCMonth(),
+        today.getUTCDate() + 1
+    )).toISOString().slice(0, 10);
+})();
 
 export const MyChildren = () => {
     const queryClient = useQueryClient();
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formError, setFormError] = useState('');
     const [formData, setFormData] = useState({ firstName: '', lastName: '', dateOfBirth: '', gender: 'MALE', bloodGroup: 'O+' });
 
     // Fetch dynamic real DB array via authorization layer
@@ -33,6 +42,20 @@ export const MyChildren = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        const [birthYear, birthMonth, birthDay] = formData.dateOfBirth.split('-').map(Number);
+        const today = new Date();
+        let age = today.getUTCFullYear() - birthYear;
+        if (
+            today.getUTCMonth() + 1 < birthMonth ||
+            (today.getUTCMonth() + 1 === birthMonth && today.getUTCDate() < birthDay)
+        ) age -= 1;
+
+        if (!formData.dateOfBirth || !Number.isFinite(age) || age < 0 || age >= 18) {
+            setFormError('Children must be under 18 years old. Please enter a valid date of birth.');
+            return;
+        }
+        setFormError('');
         
         // Transform the HTML form payload into the strict Zod validator DB schema
         let isoDate;
@@ -58,6 +81,11 @@ export const MyChildren = () => {
         if (year > 0) return `${year} years${month > 0 ? `, ${month} mos` : ''}`;
         return `${month} months`;
     };
+
+    const registrationError = mutation.error?.response?.data?.errors
+        ?.map((error) => error.message || error.field)
+        .filter(Boolean)
+        .join(' ') || mutation.error?.response?.data?.message || 'We could not save this child record. Please review the details and try again.';
 
     return (
         <div className="w-full mx-auto space-y-6 animate-fade-in font-sans relative">
@@ -123,14 +151,14 @@ export const MyChildren = () => {
 
             {/* Registration Modal Overlay */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-4">
-                    <div className="bg-[var(--surface)] rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-fade-in relative">
-                        <div className="bg-primary-600 p-6 text-white flex justify-between items-center shadow-inner">
-                            <h2 className="text-xl font-black tracking-tight flex items-center gap-2"><Plus size={20} strokeWidth={3}/> Register Child Record</h2>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px] p-3 sm:p-4">
+                    <div className="bg-[var(--surface)] rounded-xl shadow-xl w-full max-w-lg max-h-[calc(100dvh-1.5rem)] overflow-y-auto animate-fade-in relative">
+                        <div className="sticky top-0 z-10 bg-primary-600 p-4 sm:p-6 text-white flex justify-between items-center shadow-inner">
+                            <h2 className="text-lg sm:text-xl font-black tracking-tight flex items-center gap-2"><Plus size={20} strokeWidth={3}/> Register Child Record</h2>
                             <button onClick={() => setIsModalOpen(false)} className="hover:bg-white/20 p-1.5 rounded transition-colors"><X size={20}/></button>
                         </div>
-                        <form onSubmit={handleSubmit} className="p-8 space-y-5">
-                            <div className="grid grid-cols-2 gap-5">
+                        <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-4 sm:space-y-5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">First Name</label>
                                     <input required value={formData.firstName} onChange={e=>setFormData({...formData, firstName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold"/>
@@ -142,9 +170,10 @@ export const MyChildren = () => {
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Date of Birth</label>
-                                <input required value={formData.dateOfBirth} onChange={e=>setFormData({...formData, dateOfBirth: e.target.value})} type="date" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold"/>
+                                <input required value={formData.dateOfBirth} onChange={e=>{ setFormError(''); setFormData({...formData, dateOfBirth: e.target.value}); }} type="date" max={LATEST_PEDIATRIC_BIRTH_DATE} className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold"/>
+                                <p className="text-xs text-[var(--text-muted)]">The child must be under 18 years old.</p>
                             </div>
-                            <div className="grid grid-cols-2 gap-5">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Assigned Sex</label>
                                     <select value={formData.gender} onChange={e=>setFormData({...formData, gender: e.target.value})} className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold">
@@ -163,13 +192,13 @@ export const MyChildren = () => {
                                 </div>
                             </div>
                             
-                            <div className="pt-4 flex gap-3">
+                            <div className="pt-2 sm:pt-4 flex flex-col-reverse sm:flex-row gap-3">
                                 <Button type="button" onClick={() => setIsModalOpen(false)} variant="secondary" className="flex-1 font-bold py-6 rounded-xl">Cancel</Button>
                                 <Button type="submit" disabled={mutation.isPending} className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-bold shadow-sm border-none py-6 rounded-xl">
                                     {mutation.isPending ? 'Registering...' : 'Register Child'}
                                 </Button>
                             </div>
-                            {mutation.isError && <div className="text-danger text-[11px] font-black tracking-widest uppercase text-center mt-2">Action Failed: Clinical Validation Error</div>}
+                            {(formError || mutation.isError) && <div role="alert" className="text-danger text-sm font-semibold text-center mt-2">{formError || registrationError}</div>}
                         </form>
                     </div>
                 </div>

@@ -4,7 +4,7 @@ import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
 import { BrandLogo } from '../components/BrandLogo';
 import { useBranding } from '../contexts/useBranding';
-import { LayoutDashboard, Users, Activity, Settings, LogOut, Bell, Calendar, Mail, Folder, Navigation, LineChart, Table, BookOpen, Layers, ShieldX, FileText, Syringe, HeartPulse, Stethoscope, PhoneCall, Bot, AlertCircle, X, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, Users, Activity, Settings, LogOut, Bell, Calendar, Mail, Folder, Navigation, LineChart, Table, BookOpen, Layers, ShieldX, FileText, Syringe, HeartPulse, Stethoscope, PhoneCall, Bot, AlertCircle, X, Sun, Moon, Menu } from 'lucide-react';
 
 export const DashboardLayout = () => {
     const { user, logout } = useAuthStore();
@@ -13,6 +13,7 @@ export const DashboardLayout = () => {
     const location = useLocation();
     const [showNotifications, setShowNotifications] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+    const [showMobileNav, setShowMobileNav] = useState(false);
     const [wideBrandLogo, setWideBrandLogo] = useState(false);
     const [emailNotifs, setEmailNotifs] = useState(true);
     const [secureMode, setSecureMode] = useState(true);
@@ -157,13 +158,16 @@ export const DashboardLayout = () => {
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
 
                 {/* Top Header */}
-                <header className="h-[68px] bg-[var(--surface)] shrink-0 flex items-center justify-between px-6 lg:px-8 z-10 border-b border-[var(--border)] shadow-[var(--shadow-sm)]">
-                    <div className="flex items-center gap-4 text-sm font-bold">
+                <header className="h-[64px] sm:h-[68px] bg-[var(--surface)] shrink-0 flex items-center justify-between px-3 sm:px-6 lg:px-8 z-10 border-b border-[var(--border)] shadow-[var(--shadow-sm)]">
+                    <div className="flex min-w-0 items-center gap-2 sm:gap-4 text-sm font-bold">
+                        <button onClick={() => setShowMobileNav(true)} className="md:hidden w-10 h-10 shrink-0 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--text-secondary)]" aria-label="Open navigation menu">
+                            <Menu size={19} />
+                        </button>
                         <div className="w-10 h-10 rounded-[var(--radius-md)] bg-primary-600 text-[var(--color-primary-foreground)] overflow-hidden flex items-center justify-center font-bold shrink-0 text-lg uppercase shadow-sm">
                              {user?.profile?.firstName?.charAt(0) || user?.profile?.name?.charAt(0) || user?.role?.charAt(0) || 'U'}
                         </div>
-                        <div className="flex flex-col justify-center">
-                            <span className="text-[14px] text-[var(--text-primary)] leading-tight font-semibold">
+                        <div className="flex min-w-0 flex-col justify-center">
+                            <span className="max-w-[35vw] truncate text-[13px] sm:max-w-none sm:text-[14px] text-[var(--text-primary)] leading-tight font-semibold">
                                 {user?.profile?.firstName
                                     ? `${user.role === 'DOCTOR' ? 'Dr. ' : ''}${user.profile.firstName} ${user.profile.lastName}`
                                     : user?.profile?.name
@@ -177,7 +181,7 @@ export const DashboardLayout = () => {
                         <div className="hidden sm:flex px-4 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider items-center gap-3 bg-[var(--surface)] cursor-default">
                            {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: branding.timezone })} <Calendar size={14} className="text-primary-500"/>
                         </div>
-                        <div className="flex gap-1.5 items-center ml-2 border-l border-[var(--border)] pl-4 relative">
+                        <div className="flex shrink-0 gap-1 sm:gap-1.5 items-center ml-1 sm:ml-2 border-l border-[var(--border)] pl-2 sm:pl-4 relative">
                             {/* Theme Toggle */}
                             <button onClick={toggleTheme} className="w-9 h-9 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--text-muted)] hover:text-primary-600 hover:border-primary-400 transition-colors" aria-label="Toggle theme">
                                 {isDark ? <Sun size={16} /> : <Moon size={16} />}
@@ -249,9 +253,9 @@ export const DashboardLayout = () => {
                 </header>
 
                 {/* Context toolbar */}
-                <div className="h-[52px] bg-[var(--surface)] text-[var(--text-secondary)] shrink-0 flex items-center justify-between px-6 lg:px-8 border-b border-[var(--border)]">
+                <div className="h-11 sm:h-[52px] bg-[var(--surface)] text-[var(--text-secondary)] shrink-0 flex items-center justify-between px-3 sm:px-6 lg:px-8 border-b border-[var(--border)]">
                     <div className="flex items-center gap-5 h-full">
-                        <div className="flex items-center gap-1 border-r border-[var(--border)] pr-5 h-full py-2">
+                        <div className="hidden sm:flex items-center gap-1 border-r border-[var(--border)] pr-5 h-full py-2">
                             {user?.role !== 'ADMIN' && (
                                 <>
                                     <Link to="/appointments" title="Appointments" className="h-full w-9 flex items-center justify-center hover:bg-[var(--surface-soft)] hover:text-primary-600 rounded-[var(--radius-sm)] transition-colors"><Calendar size={15} strokeWidth={2.5}/></Link>
@@ -267,24 +271,66 @@ export const DashboardLayout = () => {
                             )}
                         </div>
                         <div className="flex items-center gap-2.5 tracking-wide">
-                            <span className="font-bold text-base tracking-tight">Dashboard</span>
-                            <span className="text-[var(--text-muted)] text-[11px] font-medium ml-1">Home &rsaquo; Main Dashboard</span>
+                            <span className="font-bold text-sm sm:text-base tracking-tight">Dashboard</span>
+                            <span className="hidden sm:inline text-[var(--text-muted)] text-[11px] font-medium ml-1">Home &rsaquo; Main Dashboard</span>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-2.5 text-[10px] font-bold tracking-widest uppercase text-success">
+                    <div className="hidden sm:flex items-center gap-2.5 text-[10px] font-bold tracking-widest uppercase text-success">
                         <div className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
                         Secure Session Active
                     </div>
                 </div>
 
                 {/* Content Render Pane */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8 scroll-smooth bg-[var(--bg)]">
-                    <div className="w-full max-w-[1400px] mx-auto">
+                <main className="flex-1 min-w-0 overflow-y-auto p-3 sm:p-4 lg:p-8 scroll-smooth bg-[var(--bg)]">
+                    <div className="w-full min-w-0 max-w-[1400px] mx-auto">
                         <Outlet />
                     </div>
                 </main>
             </div>
+            {showMobileNav && (
+                <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
+                    <button className="absolute inset-0 bg-slate-950/45" onClick={() => setShowMobileNav(false)} aria-label="Close navigation menu" />
+                    <aside className="absolute inset-y-0 left-0 flex w-[min(86vw,320px)] flex-col border-r border-[var(--border)] bg-[var(--surface)] shadow-2xl">
+                        <div className="flex h-16 items-center justify-between border-b border-[var(--border)] px-4">
+                            <div className="flex min-w-0 items-center gap-3">
+                                <BrandLogo className={showWideBrandLogo ? 'h-10 w-40' : 'h-10 w-10'} iconSize={22} />
+                                {!showWideBrandLogo && <span className="truncate text-sm font-bold text-[var(--text-primary)]">{branding.shortName}</span>}
+                            </div>
+                            <button onClick={() => setShowMobileNav(false)} className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)]" aria-label="Close navigation menu"><X size={19} /></button>
+                        </div>
+                        <nav className="flex-1 space-y-1 overflow-y-auto p-4">
+                            <Link onClick={() => setShowMobileNav(false)} to="/dashboard" className={navLinkClass('/dashboard')}><LayoutDashboard size={18} /> Dashboard</Link>
+                            {user?.role === 'PARENT' && <>
+                                <Link onClick={() => setShowMobileNav(false)} to="/child/my-children" className={navLinkClass('/child/my-children')}><Activity size={18} /> Child Health Records</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/appointments" className={navLinkClass('/appointments')}><Calendar size={18} /> Book Appointment</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/vaccines" className={navLinkClass('/vaccines')}><Syringe size={18} /> Vaccinations</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/messages" className={navLinkClass('/messages')}><Mail size={18} /> Message Doctor</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/teleconsult" className={navLinkClass('/teleconsult')}><PhoneCall size={18} /> Tele-Consultation</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/education" className={navLinkClass('/education')}><BookOpen size={18} /> Health Education</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/emergency" className={navLinkClass('/emergency')}><AlertCircle size={18} /> Emergency Guidance</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/chatbot" className={navLinkClass('/chatbot')}><Bot size={18} /> AI Chatbot</Link>
+                            </>}
+                            {user?.role === 'DOCTOR' && <>
+                                <Link onClick={() => setShowMobileNav(false)} to="/appointments" className={navLinkClass('/appointments')}><Calendar size={18} /> My Schedule</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/patients" className={navLinkClass('/patients')}><HeartPulse size={18} /> Patient Records</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/messages" className={navLinkClass('/messages')}><Mail size={18} /> Parent Messages</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/teleconsult" className={navLinkClass('/teleconsult')}><Stethoscope size={18} /> Provide Consultation</Link>
+                            </>}
+                            {user?.role === 'FACILITY' && <Link onClick={() => setShowMobileNav(false)} to="/facility/doctors" className={navLinkClass('/facility/doctors')}><Stethoscope size={18} /> My Clinical Staff</Link>}
+                            {user?.role === 'ADMIN' && <>
+                                <Link onClick={() => setShowMobileNav(false)} to="/admin/users" className={navLinkClass('/admin/users')}><Users size={18} /> Identity Access</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/admin/doctors" className={navLinkClass('/admin/doctors')}><Stethoscope size={18} /> Doctor Registry</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/admin/facilities" className={navLinkClass('/admin/facilities')}><Layers size={18} /> Facility Registry</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/admin/settings" className={navLinkClass('/admin/settings')}><Settings size={18} /> Organization Settings</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/admin/assistant-knowledge" className={navLinkClass('/admin/assistant-knowledge')}><Bot size={18} /> Assistant Knowledge</Link>
+                                <Link onClick={() => setShowMobileNav(false)} to="/admin" className={navLinkClass('/admin')}><ShieldX size={18} /> System Audit</Link>
+                            </>}
+                        </nav>
+                    </aside>
+                </div>
+            )}
         </div>
     );
 };

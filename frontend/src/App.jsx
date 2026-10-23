@@ -74,20 +74,20 @@ const PublicLanding = () => {
 
       {/* ── NAVBAR ── */}
       <nav className="fixed top-0 inset-x-0 z-50 bg-[var(--surface)] backdrop-blur-xl border-b border-[var(--border)] shadow-[var(--shadow-sm)]">
-        <div className="max-w-7xl mx-auto px-6 h-[72px] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BrandLogo className={showWideBrandLogo ? 'h-12 w-52' : 'w-10 h-10'} iconSize={20} onImageLoad={aspectRatio => setWideBrandLogo(aspectRatio >= 2.3)} />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 h-[64px] sm:h-[72px] flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+            <BrandLogo className={showWideBrandLogo ? 'h-10 sm:h-12 w-[min(48vw,13rem)] shrink-0' : 'w-10 h-10 shrink-0'} iconSize={20} onImageLoad={aspectRatio => setWideBrandLogo(aspectRatio >= 2.3)} />
             {!showWideBrandLogo && <span className="font-bold text-lg text-[var(--text-primary)] tracking-tight">{branding.organizationName}</span>}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-[var(--radius-sm)] flex items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-primary-600 hover:border-primary-300 transition-all shadow-sm"
+              className="w-10 h-10 shrink-0 rounded-[var(--radius-sm)] flex items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-primary-600 hover:border-primary-300 transition-all shadow-sm"
               aria-label="Toggle theme"
             >
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <a href="/login" className="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-[var(--color-primary-foreground)] rounded-[var(--radius-sm)] font-semibold text-sm shadow-md hover:shadow-lg transition-all">
+            <a href="/login" className="whitespace-nowrap px-3 sm:px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-[var(--color-primary-foreground)] rounded-[var(--radius-sm)] font-semibold text-sm shadow-md hover:shadow-lg transition-all">
               Sign In
             </a>
           </div>
@@ -95,7 +95,7 @@ const PublicLanding = () => {
       </nav>
 
       {/* ── HERO SECTION ── */}
-      <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 px-6 overflow-hidden">
+      <section className="relative pt-24 pb-14 sm:pt-28 sm:pb-20 lg:pt-36 lg:pb-28 px-4 sm:px-6 overflow-hidden">
         {/* Background orbs */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-primary-500/5 dark:bg-primary-400/5 rounded-full blur-3xl -translate-y-1/2" />
         <div className="absolute top-32 right-0 w-72 h-72 bg-teal/10 dark:bg-teal/5 rounded-full blur-3xl animate-float" />
@@ -109,7 +109,7 @@ const PublicLanding = () => {
               Trusted by Clinics & Families
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.1]">
+            <h1 className="text-3xl min-[380px]:text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.1]">
               Smart Healthcare
               <span className="block mt-2" style={{
                 background: 'linear-gradient(135deg, var(--color-primary-600), #14B8A6)',
@@ -132,7 +132,7 @@ const PublicLanding = () => {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-4 gap-6 pt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-4 sm:gap-6 pt-4">
               {stats.map((s, i) => (
                 <div key={i} className="text-center sm:text-left">
                   <div className="text-2xl font-extrabold text-[var(--text-primary)]">{s.value}</div>
@@ -183,7 +183,7 @@ const PublicLanding = () => {
       </section>
 
       {/* ── SERVICES ── */}
-      <section id="services" className="py-20 lg:py-28 px-6">
+      <section id="services" className="py-14 sm:py-20 lg:py-28 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4 animate-fade-in">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-wider">
