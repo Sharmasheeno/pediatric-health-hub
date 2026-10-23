@@ -30,7 +30,7 @@
   --color-violet: #8B5CF6;
 
   /* Font */
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Times New Roman', Times, serif;
 
   /* Radius */
   --radius-sm: 10px;
