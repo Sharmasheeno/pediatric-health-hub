@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
 import { api } from '../lib/axios';
@@ -19,87 +20,76 @@ export const DashboardLayout = () => {
     const [wideBrandLogo, setWideBrandLogo] = useState(false);
     const [emailNotifs, setEmailNotifs] = useState(true);
     const [secureMode, setSecureMode] = useState(true);
-    const [incomingCall, setIncomingCall] = useState(null);
-    const [dismissedCallId, setDismissedCallId] = useState(null);
     const notifRef = useRef(null);
     const settingsRef = useRef(null);
+    const [dismissedIncomingCallId, setDismissedIncomingCallId] = useState(null);
 
-    const showWideBrandLogo = Boolean(branding.logoDataUrl && wideBrandLogo);
-
-    // Listen for doctor-started calls from every parent portal page. The
-    // appointment schedule includes its teleconsultation relation, so polling
-    // also works when the parent is on a page other than the teleconsult hub.
-    useEffect(() => {
-        if (user?.role !== 'PARENT') {
-            setIncomingCall(null);
-            return undefined;
-        }
-
-        let cancelled = false;
-        const checkIncomingCall = async () => {
+    const { data: incomingDoctorCall } = useQuery({
+        queryKey: ['incomingDoctorCall', user?.id],
+        enabled: user?.role === 'PARENT',
+        queryFn: async () => {
             try {
-                const response = await api.get('/appointments/my-schedule');
-                if (cancelled) return;
-                const appointments = response.data.data.appointments || [];
-                const active = appointments.find(appointment =>
-                    appointment.status === 'CONFIRMED' &&
-                    appointment.teleconsultation?.initiatedByRole === 'DOCTOR' &&
-                    appointment.teleconsultation?.startedAt &&
-                    !appointment.teleconsultation?.endedAt &&
-                    location.pathname !== `/teleconsult/${appointment.id}`
-                );
-                setIncomingCall(active || null);
-                if (!active) setDismissedCallId(null);
+            const response = await api.get('/appointments/my-schedule', {
+                params: { _callPoll: Date.now() },
+                headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' }
+            });
+            return response.data.data.appointments?.find(appointment =>
+                appointment.status === 'CONFIRMED' &&
+                appointment.teleconsultation?.initiatedByRole === 'DOCTOR' &&
+                appointment.teleconsultation.startedAt &&
+                !appointment.teleconsultation.endedAt
+            ) || null;
             } catch (error) {
-                // Keep the portal usable during transient network failures; the
-                // next poll will retry and the call can still be joined manually.
-                console.warn('[DashboardLayout] Could not check incoming calls:', error);
+                console.warn('[Teleconsult] Could not refresh incoming-call state:', error);
+                return null;
             }
-        };
+        },
+        refetchInterval: 2500,
+        refetchIntervalInBackground: true
+    });
 
-        checkIncomingCall();
-        const poll = window.setInterval(checkIncomingCall, 2500);
-        return () => {
-            cancelled = true;
-            window.clearInterval(poll);
-        };
-    }, [user?.role, location.pathname]);
+    const shouldShowIncomingCall = incomingDoctorCall &&
+        !location.pathname.match(/^\/teleconsult\/[^/]+$/) &&
+        dismissedIncomingCallId !== incomingDoctorCall.id;
 
-    // A short repeating ring accompanies the visible alert while the browser
-    // allows audio playback. Mobile browsers may require an earlier user tap.
     useEffect(() => {
-        if (!incomingCall || dismissedCallId === incomingCall.id) return undefined;
+        if (!shouldShowIncomingCall) return undefined;
 
         let audioContext;
-        const playRing = () => {
+        const ring = async () => {
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 if (!AudioContext) return;
                 audioContext ||= new AudioContext();
-                if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
-                if (audioContext.state === 'closed') return;
+                if (audioContext.state !== 'running') await audioContext.resume();
+                if (audioContext.state !== 'running') return;
+
                 const oscillator = audioContext.createOscillator();
                 const gain = audioContext.createGain();
-                oscillator.frequency.value = 660;
-                gain.gain.setValueAtTime(0.001, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.16, audioContext.currentTime + 0.04);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.45);
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(520, audioContext.currentTime + 0.18);
+                gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.18, audioContext.currentTime + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.65);
                 oscillator.connect(gain);
                 gain.connect(audioContext.destination);
                 oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.46);
+                oscillator.stop(audioContext.currentTime + 0.7);
             } catch (error) {
-                console.warn('[DashboardLayout] Incoming-call audio unavailable:', error);
+                console.warn('[Teleconsult] Incoming-call audio is unavailable:', error);
             }
         };
 
-        playRing();
-        const ring = window.setInterval(playRing, 1800);
+        ring();
+        const interval = window.setInterval(ring, 2200);
         return () => {
-            window.clearInterval(ring);
-            audioContext?.close().catch(() => {});
+            window.clearInterval(interval);
+            audioContext?.close();
         };
-    }, [incomingCall?.id, dismissedCallId]);
+    }, [shouldShowIncomingCall]);
+
+    const showWideBrandLogo = Boolean(branding.logoDataUrl && wideBrandLogo);
 
     // Click outside handler for dropdowns
     useEffect(() => {
@@ -141,7 +131,7 @@ export const DashboardLayout = () => {
                         )}
                     </div>
                 </div>
-                
+
                 <div className="custom-scrollbar flex-1 overflow-y-auto py-5">
                     <nav aria-label="Primary navigation" className="space-y-1 px-3">
                         <div className="mb-2 flex items-center gap-2 px-3 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
@@ -150,11 +140,12 @@ export const DashboardLayout = () => {
                         <Link to="/dashboard" className={navLinkClass('/dashboard')}>
                             <LayoutDashboard size={18} strokeWidth={2} /> Dashboard
                         </Link>
+
                         <div className="mb-2 mt-6 flex items-center gap-2 px-3 pt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-muted)]">
                             <span>{user?.role === 'ADMIN' ? 'Administration' : user?.role === 'DOCTOR' ? 'Clinical workspace' : 'Care & communication'}</span>
                             <span className="h-px flex-1 bg-[var(--border)]" />
                         </div>
-                        
+
                         {/* PARENT FEATURES */}
                         {user?.role === 'PARENT' && (
                             <>
@@ -250,7 +241,7 @@ export const DashboardLayout = () => {
 
             {/* Main Wrapper */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
-                
+
                 {/* Top Header */}
                 <header className="h-[64px] sm:h-[68px] bg-[var(--surface)] shrink-0 flex items-center justify-between px-3 sm:px-6 lg:px-8 z-10 border-b border-[var(--border)] shadow-[var(--shadow-sm)]">
                     <div className="flex min-w-0 items-center gap-2 sm:gap-4 text-sm font-bold">
@@ -262,10 +253,10 @@ export const DashboardLayout = () => {
                         </div>
                         <div className="flex min-w-0 flex-col justify-center">
                             <span className="max-w-[35vw] truncate text-[13px] sm:max-w-none sm:text-[14px] text-[var(--text-primary)] leading-tight font-semibold">
-                                {user?.profile?.firstName 
-                                    ? `${user.role === 'DOCTOR' ? 'Dr. ' : ''}${user.profile.firstName} ${user.profile.lastName}` 
-                                    : user?.profile?.name 
-                                        ? user.profile.name 
+                                {user?.profile?.firstName
+                                    ? `${user.role === 'DOCTOR' ? 'Dr. ' : ''}${user.profile.firstName} ${user.profile.lastName}`
+                                    : user?.profile?.name
+                                        ? user.profile.name
                                         : `${user?.role || 'Authorized'} User`}
                             </span>
                             <span className="text-[10px] font-bold text-success tracking-widest uppercase">{user?.role} Portal</span>
@@ -282,7 +273,7 @@ export const DashboardLayout = () => {
                             </button>
                             <div ref={settingsRef}>
                                 <button onClick={() => setShowSettings(!showSettings)} className="w-9 h-9 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--text-muted)] hover:text-primary-600 hover:border-primary-400 transition-colors"><Settings size={16} /></button>
-                                
+
                                 {/* Settings Dropdown */}
                                 {showSettings && (
                                     <div className="absolute top-[48px] right-20 w-72 bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[100] border border-[var(--border)] overflow-hidden animate-fade-in flex flex-col">
@@ -310,13 +301,13 @@ export const DashboardLayout = () => {
                                     </div>
                                 )}
                             </div>
-                            
+
                             <div ref={notifRef}>
                                 <button onClick={() => setShowNotifications(!showNotifications)} className="w-9 h-9 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--text-muted)] hover:text-danger hover:border-danger transition-colors relative">
                                     <Bell size={16} />
                                     <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-danger rounded-full ring-2 ring-[var(--surface)]"></span>
                                 </button>
-                                
+
                                 {/* Notifications Flyout */}
                                 {showNotifications && (
                                     <div className="absolute top-[48px] right-10 w-80 bg-[var(--surface)] rounded-[var(--radius-md)] shadow-[var(--shadow-lg)] z-[100] border border-[var(--border)] overflow-hidden animate-fade-in flex flex-col max-h-[400px]">
@@ -340,7 +331,7 @@ export const DashboardLayout = () => {
                                     </div>
                                 )}
                             </div>
-                            
+
                             <button onClick={logout} title="Log Out" className="w-9 h-9 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border)] text-[var(--text-muted)] hover:text-danger hover:border-danger transition-colors ml-1"><LogOut size={16} /></button>
                         </div>
                     </div>
@@ -369,9 +360,9 @@ export const DashboardLayout = () => {
                             <span className="hidden sm:inline text-[var(--text-muted)] text-[11px] font-medium ml-1">Home &rsaquo; Main Dashboard</span>
                         </div>
                     </div>
-                    
+
                     <div className="hidden sm:flex items-center gap-2.5 text-[10px] font-bold tracking-widest uppercase text-success">
-                        <div className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div> 
+                        <div className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.4)]"></div>
                         Secure Session Active
                     </div>
                 </div>
@@ -428,34 +419,31 @@ export const DashboardLayout = () => {
                     </aside>
                 </div>
             )}
-            {user?.role === 'PARENT' && incomingCall && dismissedCallId !== incomingCall.id && (
-                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="incoming-call-title">
-                    <section className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface)] p-6 text-center shadow-2xl sm:p-8">
+            {shouldShowIncomingCall && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="incoming-doctor-call-title">
+                    <section className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-slate-900 p-7 text-center text-white shadow-2xl">
                         <div className="absolute inset-x-0 top-0 h-1.5 animate-pulse bg-primary-500" />
-                        <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary-500/10 text-primary-600 dark:text-primary-300">
-                            <span className="absolute inset-0 animate-ping rounded-full border-2 border-primary-500/50" />
-                            <PhoneCall size={34} />
+                        <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary-500/20 text-primary-300">
+                            <span className="absolute inset-0 animate-ping rounded-full border-2 border-primary-300/50" />
+                            <PhoneCall size={34} aria-hidden="true" />
                         </div>
-                        <h2 id="incoming-call-title" className="text-2xl font-extrabold text-[var(--text-primary)]">Incoming video call</h2>
-                        <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                            Dr. {incomingCall.doctor?.lastName || 'your doctor'} is calling about {incomingCall.child?.firstName || 'your child'}.
-                        </p>
-                        <div className="mt-6 flex gap-3">
+                        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-primary-200">Incoming video call</p>
+                        <h2 id="incoming-doctor-call-title" className="text-2xl font-bold">Dr. {incomingDoctorCall.doctor?.lastName || 'your doctor'} is calling</h2>
+                        <p className="mt-2 text-sm text-slate-300">For {incomingDoctorCall.child?.firstName} {incomingDoctorCall.child?.lastName}</p>
+                        <div className="mt-7 grid grid-cols-2 gap-3">
                             <button
                                 type="button"
-                                onClick={() => setDismissedCallId(incomingCall.id)}
-                                className="flex-1 rounded-xl border border-[var(--border)] px-4 py-3 font-semibold text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]"
-                            >Dismiss
+                                onClick={() => setDismissedIncomingCallId(incomingDoctorCall.id)}
+                                className="min-h-12 rounded-xl border border-white/15 px-4 font-semibold text-slate-200 hover:bg-white/10"
+                            >
+                                Dismiss
                             </button>
                             <button
                                 type="button"
-                                onClick={() => {
-                                    const appointmentId = incomingCall.id;
-                                    setDismissedCallId(appointmentId);
-                                    navigate(`/teleconsult/${appointmentId}`);
-                                }}
-                                className="flex-1 rounded-xl bg-primary-600 px-4 py-3 font-bold text-white shadow-md hover:bg-primary-700"
-                            >Answer call
+                                onClick={() => navigate(`/teleconsult/${incomingDoctorCall.id}`)}
+                                className="min-h-12 rounded-xl bg-primary-600 px-4 font-bold text-white shadow-lg hover:bg-primary-500"
+                            >
+                                Answer call
                             </button>
                         </div>
                     </section>
