@@ -89,7 +89,7 @@ const MARQUEE_ITEMS = [
   { icon: Activity, label: 'Growth Analytics' },
   { icon: Bot, label: 'AI Health Assistant' },
   { icon: BookOpen, label: 'Health Education' },
-  { icon: Shield, label: 'Secure & HIPAA Ready' },
+  { icon: Shield, label: 'Secure Health Records' },
   { icon: Stethoscope, label: 'Trusted Pediatricians' },
 ];
 const PublicLanding = () => {
@@ -131,7 +131,7 @@ const PublicLanding = () => {
   const stats = [
     { value: '4', label: 'Secure Portals' },
     { value: '24/7', label: 'Teleconsult Access' },
-    { value: '100%', label: 'HIPAA Ready' },
+    { value: 'EN / SO', label: 'Assistant languages' },
     { value: '∞', label: 'Children Protected' },
   ];
 
@@ -239,8 +239,8 @@ const PublicLanding = () => {
                       <Shield size={20} className="text-success" />
                     </div>
                     <div>
-                      <div className="text-sm font-bold text-[var(--text-primary)]">Secure & Compliant</div>
-                      <div className="text-xs text-[var(--text-muted)]">HIPAA-ready encryption for all patient data</div>
+                      <div className="text-sm font-bold text-[var(--text-primary)]">Health data protection</div>
+                      <div className="text-xs text-[var(--text-muted)]">Built to help protect patient records</div>
                     </div>
                   </div>
                 </div>
@@ -254,7 +254,7 @@ const PublicLanding = () => {
                 </div>
                 <div>
                   <div className="text-sm font-bold text-[var(--text-primary)]">Vaccine Reminder</div>
-                  <div className="text-xs text-[var(--text-muted)] font-medium">Pentavalent · Due in 5 days</div>
+                  <div className="text-xs text-[var(--text-muted)] font-medium">Vaccine schedules at a glance</div>
                 </div>
               </div>
             </div>
