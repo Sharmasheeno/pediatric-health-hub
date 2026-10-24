@@ -77,8 +77,16 @@ export const Chatbot = () => {
     };
 
     return (
-        <div className="mx-auto flex h-[calc(100dvh-12rem)] min-h-[320px] w-full min-w-0 max-w-4xl flex-col gap-3 sm:gap-4">
-            <div className="flex shrink-0 items-start gap-3 rounded-[var(--radius-md)] border border-warning/30 bg-warning/10 p-3 shadow-[var(--shadow-sm)] sm:gap-4 sm:p-4">
+        <div className="mx-auto flex h-[calc(100dvh-15rem)] min-h-[400px] w-full min-w-0 max-w-4xl flex-col gap-2 sm:h-[calc(100dvh-12rem)] sm:min-h-[320px] sm:gap-4">
+            <details className="shrink-0 rounded-[var(--radius-md)] border border-warning/30 bg-warning/10 px-3 py-2 shadow-[var(--shadow-sm)] sm:hidden">
+                <summary className="flex min-h-8 cursor-pointer list-none items-center gap-2 text-sm font-semibold text-[var(--text-primary)] [&::-webkit-details-marker]:hidden">
+                    <ShieldAlert size={18} className="shrink-0 text-warning" />
+                    <span className="truncate">Clinical disclaimer / Ogeysiis Caafimaad</span>
+                    <span aria-hidden="true" className="ml-auto text-xs text-[var(--text-muted)]">Read</span>
+                </summary>
+                <p className="mt-2 border-t border-warning/20 pt-2 text-xs leading-relaxed text-[var(--text-secondary)]">{branding.assistantDisclaimer}</p>
+            </details>
+            <div className="hidden shrink-0 items-start gap-3 rounded-[var(--radius-md)] border border-warning/30 bg-warning/10 p-3 shadow-[var(--shadow-sm)] sm:flex sm:gap-4 sm:p-4">
                 <ShieldAlert className="text-warning shrink-0 mt-0.5" />
                 <div className="min-w-0">
                     <h3 className="text-[var(--text-primary)] font-bold tracking-tight">Clinical Disclaimer / Ogeysiis Caafimaad</h3>
@@ -87,8 +95,8 @@ export const Chatbot = () => {
             </div>
 
             <Card className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-t-4 border-t-primary-600">
-                <CardHeader className="shrink-0 flex-wrap gap-3 px-3 py-3 sm:px-6 sm:py-4">
-                    <CardTitle className="min-w-0 text-primary-700 dark:text-primary-400">
+                <CardHeader className="shrink-0 flex-nowrap gap-2 px-3 py-2.5 sm:flex-wrap sm:gap-3 sm:px-6 sm:py-4">
+                    <CardTitle className="min-w-0 flex-1 text-primary-700 dark:text-primary-400">
                         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                             <div className="shrink-0 rounded-[var(--radius-md)] bg-primary-600 p-2 text-[var(--color-primary-foreground)] shadow-sm sm:p-2.5"><Bot size={20} /></div>
                             <div>
@@ -99,13 +107,13 @@ export const Chatbot = () => {
                             </div>
                         </div>
                     </CardTitle>
-                    <div role="group" aria-label="Choose assistant language" className="flex w-full shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 sm:w-auto">
-                        <button type="button" aria-pressed={language === 'en'} onClick={() => setLanguage('en')} className={`min-h-9 flex-1 rounded-md px-3 text-sm font-semibold transition-colors sm:flex-none ${language === 'en' ? 'bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>English</button>
-                        <button type="button" aria-pressed={language === 'so'} onClick={() => setLanguage('so')} className={`min-h-9 flex-1 rounded-md px-3 text-sm font-semibold transition-colors sm:flex-none ${language === 'so' ? 'bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Soomaali</button>
+                    <div role="group" aria-label="Choose assistant language" className="flex w-[148px] shrink-0 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-1 sm:w-auto">
+                        <button type="button" aria-pressed={language === 'en'} onClick={() => setLanguage('en')} className={`min-h-9 flex-1 rounded-md px-2 text-xs font-semibold transition-colors sm:px-3 sm:text-sm sm:flex-none ${language === 'en' ? 'bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>English</button>
+                        <button type="button" aria-pressed={language === 'so'} onClick={() => setLanguage('so')} className={`min-h-9 flex-1 rounded-md px-2 text-xs font-semibold transition-colors sm:px-3 sm:text-sm sm:flex-none ${language === 'so' ? 'bg-primary-600 text-[var(--color-primary-foreground)] shadow-sm' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Soomaali</button>
                     </div>
                 </CardHeader>
 
-                <CardContent className="min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto bg-[var(--surface-soft)] p-3 sm:space-y-6 sm:p-6">
+                <CardContent className="min-h-0 min-w-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-[var(--surface-soft)] p-3 text-[15px] sm:space-y-6 sm:p-6 sm:text-base">
                     {messages.length === 0 && (
                         <div className="mx-auto mt-3 max-w-xl text-center text-xs font-medium leading-relaxed text-[var(--text-muted)] sm:mt-8 sm:text-sm">
                             {language === 'so'
