@@ -44,16 +44,17 @@ const getRoomAccess = async (appointmentId) => {
 };
 
 const endRoom = async (appointmentId, notes) => {
-    return prisma.$transaction([
-        prisma.teleconsultation.update({
+    return prisma.$transaction(async (tx) => {
+        const room = await tx.teleconsultation.update({
             where: { appointmentId },
-            data: { endedAt: new Date(), notes }
-        }),
-        prisma.appointment.update({
+            data: { endedAt: new Date(), ...(notes ? { notes } : {}) }
+        });
+        await tx.appointment.update({
             where: { id: appointmentId },
             data: { status: 'COMPLETED' }
-        })
-    ]);
+        });
+        return room;
+    });
 };
 
 module.exports = { generateRoom, getRoomAccess, endRoom };
