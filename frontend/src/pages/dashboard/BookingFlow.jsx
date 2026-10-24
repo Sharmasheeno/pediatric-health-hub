@@ -57,9 +57,11 @@ export const BookingFlow = () => {
       setSuccess(true);
     } catch(err) {
       if(err.response?.status === 409) {
-          setError("This timeslot was just booked by someone else (DB Lock Fired). Please choose another.");
+          setError("This time slot is no longer available. Please choose another.");
+      } else if (err.response?.status === 403) {
+          setError("Your account is not authorized to book this appointment. Please contact support.");
       } else {
-          setError("Failed to book appointment. Check authorization scopes.");
+          setError("We couldn't complete the booking right now. Please try again.");
       }
     } finally {
       setLoading(false);

@@ -1,8 +1,10 @@
-const { Prisma, PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 const createAppointment = async (data) => {
-  // Utilizing Serializable isolation to explicitly prevent race-conditions/double-bookings
+  // Use TiDB's configured transaction isolation. TiDB Cloud Serverless rejects
+  // Prisma's SERIALIZABLE override. Keep the availability check and insert in
+  // one transaction under the database's supported isolation.
   return await prisma.$transaction(async (tx) => {
     const existing = await tx.appointment.findFirst({
       where: {
@@ -17,8 +19,6 @@ const createAppointment = async (data) => {
     }
 
     return await tx.appointment.create({ data });
-  }, {
-    isolationLevel: Prisma.TransactionIsolationLevel.Serializable
   });
 };
 
