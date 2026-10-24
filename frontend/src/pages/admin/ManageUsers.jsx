@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../lib/axios';
-import { Users, Search, Settings, Plus, X, Trash2, Edit3, ShieldAlert } from 'lucide-react';
+import { Users, Search, Settings, Plus, X, Trash2, Edit3, ShieldAlert, UserPlus } from 'lucide-react';
 import { Card, CardContent } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 
@@ -11,6 +11,8 @@ export const ManageUsers = () => {
     const [createModal, setCreateModal] = useState(false);
     const [editModal, setEditModal] = useState(null); // stores user object
     const [deleteModal, setDeleteModal] = useState(null); // stores user object
+    const [profileModal, setProfileModal] = useState(null);
+    const [profileData, setProfileData] = useState({ firstName: '', lastName: '' });
 
     const [formData, setFormData] = useState({ email: '', password: '', role: 'PARENT' });
 
@@ -45,6 +47,15 @@ export const ManageUsers = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
             setEditModal(null);
+        }
+    });
+
+    const profileMutation = useMutation({
+        mutationFn: async ({ id, data }) => await api.post(`/users/${id}/parent-profile`, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+            setProfileModal(null);
+            setProfileData({ firstName: '', lastName: '' });
         }
     });
 
@@ -113,9 +124,26 @@ export const ManageUsers = () => {
                                                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-500">
                                                     <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm animate-pulse"></div> Active
                                                 </div>
+                                                {user.role === 'PARENT' && (
+                                                    <div className={`mt-1 text-[10px] font-semibold ${user.parentProfile ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                                        {user.parentProfile ? 'Parent profile ready' : 'Parent profile needed'}
+                                                    </div>
+                                                )}
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
+                                                    {user.role === 'PARENT' && !user.parentProfile && (
+                                                        <button
+                                                            type="button"
+                                                            title="Create parent profile"
+                                                            aria-label={`Create parent profile for ${user.email}`}
+                                                            onClick={() => {
+                                                                setProfileModal(user);
+                                                                setProfileData({ firstName: 'Test Parent', lastName: 'Test Only' });
+                                                            }}
+                                                            className="text-[var(--text-muted)] hover:text-emerald-600 hover:bg-emerald-50 transition-colors p-2 rounded-lg border border-transparent hover:border-emerald-100 shadow-sm"
+                                                        ><UserPlus size={16} strokeWidth={2.5} /></button>
+                                                    )}
                                                     <button onClick={() => setEditModal(user)} className="text-[var(--text-muted)] hover:text-blue-500 hover:bg-primary-50 dark:bg-primary-950 transition-colors p-2 rounded-lg border border-transparent hover:border-blue-100 shadow-sm"><Edit3 size={16} strokeWidth={2.5} /></button>
                                                     <button onClick={() => setDeleteModal(user)} className="text-[var(--text-muted)] hover:text-danger hover:bg-danger/10 transition-colors p-2 rounded-lg border border-transparent hover:border-red-100 shadow-sm"><Trash2 size={16} strokeWidth={2.5}/></button>
                                                 </div>
@@ -168,6 +196,36 @@ export const ManageUsers = () => {
                                 </Button>
                             </div>
                             {createMutation.isError && <div className="text-danger text-xs font-bold text-center mt-2 p-2 bg-danger/10 rounded border border-danger/30">{createMutation.error?.response?.data?.message || 'Email may already exist or constraint failure.'}</div>}
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Parent profile setup */}
+            {profileModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
+                    <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative">
+                        <div className="bg-primary-600 p-6 text-white flex justify-between items-center shadow-inner">
+                            <h2 className="text-xl font-bold tracking-tight flex items-center gap-2"><UserPlus size={20} /> Create Parent Profile</h2>
+                            <button type="button" aria-label="Close" onClick={() => setProfileModal(null)} className="hover:bg-white/20 p-1.5 rounded transition-colors"><X size={20}/></button>
+                        </div>
+                        <form onSubmit={(e) => { e.preventDefault(); profileMutation.mutate({ id: profileModal.id, data: profileData }); }} className="p-6 space-y-4">
+                            <p className="text-sm text-[var(--text-secondary)]">Set up the parent profile for <strong className="text-[var(--text-primary)]">{profileModal.email}</strong>. This links the account to child records.</p>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] tracking-widest">First name</label>
+                                <input required maxLength={80} value={profileData.firstName} onChange={e => setProfileData({ ...profileData, firstName: e.target.value })} className="w-full border border-[var(--border)] rounded-lg px-4 py-3 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface)]" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-[10px] font-bold uppercase text-[var(--text-muted)] tracking-widest">Last name</label>
+                                <input required maxLength={80} value={profileData.lastName} onChange={e => setProfileData({ ...profileData, lastName: e.target.value })} className="w-full border border-[var(--border)] rounded-lg px-4 py-3 text-sm font-medium text-[var(--text-primary)] bg-[var(--surface)]" />
+                            </div>
+                            {profileMutation.isError && <p role="alert" className="text-sm font-semibold text-danger">{profileMutation.error?.response?.data?.message || 'Could not create the parent profile.'}</p>}
+                            <div className="pt-2 flex gap-3">
+                                <Button type="button" onClick={() => setProfileModal(null)} variant="outline" className="flex-1">Cancel</Button>
+                                <Button type="submit" disabled={profileMutation.isPending} className="flex-1 bg-primary-600 hover:bg-primary-700 text-white border-0">
+                                    {profileMutation.isPending ? 'Creating...' : 'Create Profile'}
+                                </Button>
+                            </div>
                         </form>
                     </div>
                 </div>

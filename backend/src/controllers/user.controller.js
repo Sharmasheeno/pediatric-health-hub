@@ -1,5 +1,6 @@
 const userService = require('../services/user.service');
 const { successResponse } = require('../utils/responseWrapper');
+const { logAction } = require('../services/audit.service');
 
 const getAllUsers = async (req, res, next) => {
   try {
@@ -34,6 +35,14 @@ const updateUserRole = async (req, res, next) => {
     } catch(err) { next(err); }
 };
 
+const createParentProfile = async (req, res, next) => {
+    try {
+        const profile = await userService.createParentProfile(req.params.id, req.body);
+        await logAction(req.user.id, 'CREATE_PARENT_PROFILE', 'ParentProfile', profile.id, { userId: profile.userId }, req);
+        return successResponse(res, profile, 'Parent profile created successfully', 201);
+    } catch(err) { next(err); }
+};
+
 const deleteUser = async (req, res, next) => {
     try {
         await userService.deleteUser(req.params.id);
@@ -41,4 +50,4 @@ const deleteUser = async (req, res, next) => {
     } catch(err) { next(err); }
 };
 
-module.exports = { getAllUsers, getDoctors, createUser, updateUserRole, deleteUser };
+module.exports = { getAllUsers, getDoctors, createUser, updateUserRole, createParentProfile, deleteUser };

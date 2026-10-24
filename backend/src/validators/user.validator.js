@@ -19,4 +19,9 @@ const createUserSchema = z.object({
   })
 });
 
-module.exports = { querySchema, updateUserSchema, createUserSchema };
+const createParentProfileSchema = z.object({
+  firstName: z.string().trim().min(1).max(80),
+  lastName: z.string().trim().min(1).max(80)
+});
+
+module.exports = { querySchema, updateUserSchema, createUserSchema, createParentProfileSchema };
