@@ -99,9 +99,9 @@ export const Chatbot = () => {
                     <CardTitle className="min-w-0 flex-1 text-primary-700 dark:text-primary-400">
                         <div className="flex min-w-0 items-center gap-2 sm:gap-3">
                             <div className="shrink-0 rounded-[var(--radius-md)] bg-primary-600 p-2 text-[var(--color-primary-foreground)] shadow-sm sm:p-2.5"><Bot size={20} /></div>
-                            <div>
+                            <div className="min-w-0">
                                 <span className="block truncate font-bold tracking-tight">{branding.assistantName}</span>
-                                <div className="mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-success sm:text-xs sm:tracking-wider">
+                                <div className="mt-0.5 flex min-w-0 items-center gap-1.5 truncate text-[9px] font-semibold uppercase tracking-wide text-success sm:text-xs sm:tracking-wider">
                                     <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div> English & Somali Guidance Ready
                                 </div>
                             </div>
