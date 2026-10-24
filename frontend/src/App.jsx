@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthLayout } from './layouts/AuthLayout';
 import { DashboardLayout } from './layouts/DashboardLayout';
 import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
-import { Sun, Moon, ArrowRight, Shield, Users, Stethoscope, Activity, Calendar, Syringe, Phone, Bot, BookOpen, ChevronRight } from 'lucide-react';
+import { Sun, Moon, ArrowRight, Shield, Users, Stethoscope, Activity, Calendar, Syringe, Phone, Bot, BookOpen, ChevronRight, ChevronDown } from 'lucide-react';
+import { Reveal } from './components/landing/Reveal';
 import useThemeStore from './store/themeStore';
 import { BrandLogo } from './components/BrandLogo';
 import { useBranding } from './contexts/useBranding';
@@ -47,10 +48,75 @@ const AppointmentRouter = () => {
 /* ============================================================
    PUBLIC LANDING PAGE
    ============================================================ */
+// Counts the leading number of a stat (e.g. "100%") up from zero the first
+// time it scrolls into view; non-numeric values render unchanged.
+const AnimatedNumber = ({ value }) => {
+  const ref = useRef(null);
+  const [display, setDisplay] = useState(value);
+
+  useEffect(() => {
+    const match = String(value).match(/^(\d+)(.*)$/);
+    if (!match || typeof IntersectionObserver === 'undefined') return undefined;
+    const target = parseInt(match[1], 10);
+    const suffix = match[2];
+    const el = ref.current;
+    if (!el) return undefined;
+    let raf;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      const duration = 1400;
+      const start = performance.now();
+      const tick = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        setDisplay(`${Math.round(target * eased)}${suffix}`);
+        if (t < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    }, { threshold: 0.4 });
+    observer.observe(el);
+    return () => { observer.disconnect(); if (raf) cancelAnimationFrame(raf); };
+  }, [value]);
+
+  return <span ref={ref}>{display}</span>;
+};
+
+const MARQUEE_ITEMS = [
+  { icon: Calendar, label: 'Smart Appointments' },
+  { icon: Phone, label: 'Teleconsultation' },
+  { icon: Syringe, label: 'Vaccine Tracking' },
+  { icon: Activity, label: 'Growth Analytics' },
+  { icon: Bot, label: 'AI Health Assistant' },
+  { icon: BookOpen, label: 'Health Education' },
+  { icon: Shield, label: 'Secure & HIPAA Ready' },
+  { icon: Stethoscope, label: 'Trusted Pediatricians' },
+];
 const PublicLanding = () => {
   const { isDark, toggleTheme } = useThemeStore();
   const branding = useBranding();
   const [wideBrandLogo, setWideBrandLogo] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [navScrolled, setNavScrolled] = useState(false);
+
+  // Front scroll progress bar + navbar elevation on scroll (rAF-throttled)
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const el = document.documentElement;
+        const max = el.scrollHeight - el.clientHeight;
+        setScrollProgress(max > 0 ? Math.min(100, (el.scrollTop / max) * 100) : 0);
+        setNavScrolled(el.scrollTop > 8);
+        ticking = false;
+      });
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
   const showWideBrandLogo = Boolean(branding.logoDataUrl && wideBrandLogo);
 
   const services = [
@@ -72,8 +138,16 @@ const PublicLanding = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] transition-colors duration-300">
 
+      {/* ── SCROLL PROGRESS BAR ── */}
+      <div className="fixed top-0 left-0 right-0 h-[3px] z-[60] bg-transparent" aria-hidden="true">
+        <div
+          className="h-full transition-[width] duration-150 ease-out"
+          style={{ width: `${scrollProgress}%`, background: 'linear-gradient(90deg, var(--color-primary-500), var(--color-teal), var(--color-primary-700))' }}
+        />
+      </div>
+
       {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-[var(--surface)] backdrop-blur-xl border-b border-[var(--border)] shadow-[var(--shadow-sm)]">
+      <nav className={`fixed top-0 inset-x-0 z-50 bg-[var(--surface)] backdrop-blur-xl border-b border-[var(--border)] transition-shadow duration-300 ${navScrolled ? 'shadow-[var(--shadow-md)]' : 'shadow-[var(--shadow-sm)]'}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-6 h-[64px] sm:h-[72px] flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <BrandLogo className={showWideBrandLogo ? 'h-10 sm:h-12 w-[min(48vw,13rem)] shrink-0' : 'w-10 h-10 shrink-0'} iconSize={20} onImageLoad={aspectRatio => setWideBrandLogo(aspectRatio >= 2.3)} />
@@ -98,8 +172,8 @@ const PublicLanding = () => {
       <section className="relative pt-24 pb-14 sm:pt-28 sm:pb-20 lg:pt-36 lg:pb-28 px-4 sm:px-6 overflow-hidden">
         {/* Background orbs */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-primary-500/5 dark:bg-primary-400/5 rounded-full blur-3xl -translate-y-1/2" />
-        <div className="absolute top-32 right-0 w-72 h-72 bg-teal/10 dark:bg-teal/5 rounded-full blur-3xl animate-float" />
-        <div className="absolute top-48 left-0 w-56 h-56 bg-violet/10 dark:bg-violet/5 rounded-full blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+        <div className="absolute top-32 right-0 w-72 h-72 bg-teal/10 dark:bg-teal/5 rounded-full blur-3xl animate-drift" />
+        <div className="absolute top-48 left-0 w-56 h-56 bg-violet/10 dark:bg-violet/5 rounded-full blur-3xl animate-drift" style={{ animationDelay: '-6s' }} />
 
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
           {/* Left — Text */}
@@ -111,8 +185,9 @@ const PublicLanding = () => {
 
             <h1 className="text-3xl min-[380px]:text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.1]">
               Smart Healthcare
-              <span className="block mt-2" style={{
-                background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
+              <span className="block mt-2 animate-gradient-pan" style={{
+                background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-teal), var(--color-primary-800), var(--color-primary-600))',
+                backgroundSize: '220% 220%',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
               }}>for Every Child</span>
@@ -135,7 +210,7 @@ const PublicLanding = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-3 gap-y-4 sm:gap-6 pt-4">
               {stats.map((s, i) => (
                 <div key={i} className="text-center sm:text-left">
-                  <div className="text-2xl font-extrabold text-[var(--text-primary)]">{s.value}</div>
+                  <div className="text-2xl font-extrabold text-[var(--text-primary)]"><AnimatedNumber value={s.value} /></div>
                   <div className="text-xs font-medium text-[var(--text-muted)] mt-0.5">{s.label}</div>
                 </div>
               ))}
@@ -145,11 +220,16 @@ const PublicLanding = () => {
           {/* Right — Hero Image */}
           <div className="relative animate-slide-up hidden lg:block">
             <div className="relative rounded-[var(--radius-2xl)] overflow-hidden shadow-2xl border border-[var(--border)]">
-              <img
-                src="https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=800&q=80"
-                alt="Pediatric doctor examining a child"
-                className="w-full h-[480px] object-cover"
-                loading="eager"
+              <video
+                src="/hero-motion.mp4"
+                poster="https://images.unsplash.com/photo-1581056771107-24ca5f033842?w=800&q=80"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-label="Pediatric doctor examining a smiling child while the mother watches"
+                className="w-full h-[480px] object-cover animate-ken-burns"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary-900/40 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
@@ -167,6 +247,17 @@ const PublicLanding = () => {
               </div>
             </div>
             {/* Floating card */}
+            <div className="absolute -right-6 bottom-28 bg-[var(--surface)] rounded-[var(--radius-md)] p-4 shadow-xl border border-[var(--border)] animate-float z-10" style={{ animationDelay: '-4s' }}>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-warning/10 flex items-center justify-center">
+                  <Syringe size={18} className="text-warning" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-[var(--text-primary)]">Vaccine Reminder</div>
+                  <div className="text-xs text-[var(--text-muted)] font-medium">Pentavalent · Due in 5 days</div>
+                </div>
+              </div>
+            </div>
             <div className="absolute -left-8 top-12 bg-[var(--surface)] rounded-[var(--radius-md)] p-4 shadow-xl border border-[var(--border)] animate-float" style={{ animationDelay: '-2s' }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
@@ -180,12 +271,34 @@ const PublicLanding = () => {
             </div>
           </div>
         </div>
+        {/* Scroll cue */}
+        <div className="relative z-10 flex justify-center pb-2 lg:pb-0">
+          <a href="#services" aria-label="Scroll down to services" className="flex flex-col items-center gap-1 text-[var(--text-muted)] hover:text-primary-600 transition-colors">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">Scroll</span>
+            <ChevronDown size={18} className="animate-bounce-soft" />
+          </a>
+        </div>
       </section>
+
+      {/* ── SCROLLING MARQUEE BAR ── */}
+      <div className="relative border-y border-[var(--border)] bg-[var(--surface)] py-4 overflow-hidden" aria-hidden="true">
+        <div className="marquee-track flex w-max animate-marquee gap-0">
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+            <span key={i} className="flex items-center gap-2.5 px-7 text-sm font-bold text-[var(--text-secondary)] whitespace-nowrap">
+              <item.icon size={17} className="text-primary-600 dark:text-primary-400" />
+              {item.label}
+              <span className="ml-7 h-1.5 w-1.5 rounded-full bg-primary-300 dark:bg-primary-700" />
+            </span>
+          ))}
+        </div>
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[var(--surface)] to-transparent" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[var(--surface)] to-transparent" />
+      </div>
 
       {/* ── SERVICES ── */}
       <section id="services" className="py-14 sm:py-20 lg:py-28 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4 animate-fade-in">
+          <Reveal className="text-center mb-16 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-50 dark:bg-primary-950 text-primary-600 dark:text-primary-400 text-xs font-bold uppercase tracking-wider">
               Our Services
             </div>
@@ -195,17 +308,19 @@ const PublicLanding = () => {
             <p className="text-[var(--text-secondary)] font-medium max-w-2xl mx-auto">
               A full-spectrum pediatric management system designed for modern healthcare delivery.
             </p>
-          </div>
+          </Reveal>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((s, i) => (
-              <div key={i} className="group p-6 rounded-[var(--radius-md)] bg-[var(--surface)] border border-[var(--border)] hover:border-primary-300 dark:hover:border-primary-700 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-all duration-300 hover:-translate-y-1">
-                <div className={`w-12 h-12 rounded-[var(--radius-sm)] ${s.color} flex items-center justify-center mb-5`}>
-                  <s.icon size={22} />
+              <Reveal key={i} delay={(i % 3) * 110}>
+                <div className="group h-full p-6 rounded-[var(--radius-md)] bg-[var(--surface)] border border-[var(--border)] hover:border-primary-300 dark:hover:border-primary-700 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-all duration-300 hover:-translate-y-1">
+                  <div className={`w-12 h-12 rounded-[var(--radius-sm)] ${s.color} flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6`}>
+                    <s.icon size={22} />
+                  </div>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{s.title}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{s.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">{s.title}</h3>
-                <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{s.desc}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -215,7 +330,7 @@ const PublicLanding = () => {
       <section className="py-20 lg:py-28 px-6 bg-[var(--surface-soft)]">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image */}
-          <div className="relative rounded-[var(--radius-2xl)] overflow-hidden shadow-xl border border-[var(--border)]">
+          <Reveal variant="left" className="relative rounded-[var(--radius-2xl)] overflow-hidden shadow-xl border border-[var(--border)]">
             <img
               src="https://images.unsplash.com/photo-1609220136736-443140cffec6?w=800&q=80"
               alt="Happy mother with healthy child at pediatric clinic"
@@ -223,10 +338,10 @@ const PublicLanding = () => {
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-primary-900/30 via-transparent to-transparent" />
-          </div>
+          </Reveal>
 
           {/* Text */}
-          <div className="space-y-6">
+          <Reveal variant="right" className="space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-teal/10 text-teal text-xs font-bold uppercase tracking-wider">
               Why Choose Us
             </div>
@@ -254,21 +369,21 @@ const PublicLanding = () => {
             <a href="/login" className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-[var(--color-primary-foreground)] rounded-[var(--radius-sm)] font-semibold text-sm shadow-md hover:shadow-lg transition-all mt-4">
               Start Using the Platform <ArrowRight size={16} />
             </a>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* ── PORTALS OVERVIEW ── */}
       <section className="py-20 lg:py-28 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
+          <Reveal className="text-center mb-16 space-y-4">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[var(--text-primary)] tracking-tight">
               One Platform, Four Portals
             </h2>
             <p className="text-[var(--text-secondary)] font-medium max-w-2xl mx-auto">
               Each user role gets a tailored experience designed for their specific needs.
             </p>
-          </div>
+          </Reveal>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -277,7 +392,8 @@ const PublicLanding = () => {
               { role: 'Facility', icon: Activity, desc: 'Oversee staff, manage departments, monitor facility operations.', img: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&q=80' },
               { role: 'Admin', icon: Shield, desc: 'Control users, permissions, system analytics, and audit logs.', img: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=400&q=80' },
             ].map((p, i) => (
-              <div key={i} className="group rounded-[var(--radius-lg)] overflow-hidden bg-[var(--surface)] border border-[var(--border)] hover:border-primary-300 dark:hover:border-primary-700 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-all duration-300 hover:-translate-y-1">
+              <Reveal key={i} delay={i * 110} className="h-full">
+              <div className="group h-full rounded-[var(--radius-lg)] overflow-hidden bg-[var(--surface)] border border-[var(--border)] hover:border-primary-300 dark:hover:border-primary-700 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-all duration-300 hover:-translate-y-1">
                 <div className="h-40 overflow-hidden">
                   <img src={p.img} alt={`${p.role} portal`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
                 </div>
@@ -289,6 +405,7 @@ const PublicLanding = () => {
                   <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{p.desc}</p>
                 </div>
               </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -296,8 +413,10 @@ const PublicLanding = () => {
 
       {/* ── CTA BANNER ── */}
       <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center rounded-[var(--radius-2xl)] p-12 lg:p-16 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #122238 0%, color-mix(in srgb, var(--color-primary-900) 78%, #193954) 58%, var(--color-primary-800) 100%)'
+        <Reveal variant="zoom">
+        <div className="max-w-4xl mx-auto text-center rounded-[var(--radius-2xl)] p-12 lg:p-16 relative overflow-hidden animate-gradient-pan" style={{
+          background: 'linear-gradient(135deg, #122238 0%, color-mix(in srgb, var(--color-primary-900) 78%, #193954) 58%, var(--color-primary-800) 100%)',
+          backgroundSize: '200% 200%'
         }}>
           <div className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-25" style={{ background: 'radial-gradient(circle, var(--color-primary-400) 0%, transparent 70%)' }} />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, rgba(147,197,253,0.5) 0%, transparent 70%)' }} />
@@ -313,6 +432,7 @@ const PublicLanding = () => {
             </a>
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* ── FOOTER ── */}

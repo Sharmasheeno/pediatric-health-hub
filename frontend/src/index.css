@@ -49,6 +49,12 @@
   --animate-slide-up: slide-up 0.5s ease-out;
   --animate-float: float 6s ease-in-out infinite;
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  /* Landing-page motion (public site) */
+  --animate-marquee: marquee 36s linear infinite;
+  --animate-gradient-pan: gradient-pan 7s ease infinite;
+  --animate-ken-burns: ken-burns 20s ease-in-out infinite alternate;
+  --animate-drift: drift 14s ease-in-out infinite;
+  --animate-bounce-soft: bounce-soft 2.2s ease-in-out infinite;
 
   @keyframes fade-in {
     from { opacity: 0; }
@@ -62,7 +68,53 @@
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
   }
+  /* Infinite ticker — track holds two copies and shifts by exactly one */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  /* Slow pan for animated gradient text / banners (needs background-size 200%) */
+  @keyframes gradient-pan {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  /* Gentle cinematic zoom for the hero video */
+  @keyframes ken-burns {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  /* Slow organic drift for hero background orbs */
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(24px, -18px) scale(1.06); }
+    66% { transform: translate(-18px, 14px) scale(0.97); }
+  }
+  @keyframes bounce-soft {
+    0%, 100% { transform: translateY(0); opacity: 0.9; }
+    50% { transform: translateY(8px); opacity: 0.5; }
+  }
 }
+
+/* ============================================
+   SCROLL-REVEAL (landing) — driven by the Reveal
+   component's IntersectionObserver adding .is-visible
+   ============================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-left { transform: translateX(-38px); }
+.reveal-right { transform: translateX(38px); }
+.reveal-zoom { transform: scale(0.94); }
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Marquee pauses when the visitor hovers it */
+.marquee-track:hover { animation-play-state: paused; }
 
 /* ============================================
    CSS CUSTOM PROPERTIES — LIGHT / DARK SURFACES
