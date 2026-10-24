@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '../../lib/axios';
 import { useWebRTC } from '../../hooks/useWebRTC';
@@ -10,9 +10,10 @@ import {
 
 export const TeleconsultSession = () => {
   const { appointmentId } = useParams();
-  const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const navigate = useNavigate();  const { user } = useAuthStore();
   const isDoctor = user?.role === 'DOCTOR';
+  const [isEnding, setIsEnding] = useState(false);
+  const [endCallError, setEndCallError] = useState('');
 
   const {
     localRef,
@@ -26,18 +27,27 @@ export const TeleconsultSession = () => {
     connectionState,
   } = useWebRTC(appointmentId, user?.role);
 
-  // When the doctor ends a call, also mark it as ended on the backend
+  // Persist the end state before disconnecting so the other participant's
+  // incoming-call poll sees the room as closed.
   const handleEndCall = async () => {
-    endCall();
+    if (isEnding) return;
+    setIsEnding(true);
+    setEndCallError('');
+
     if (isDoctor) {
       try {
         await api.patch(`/teleconsultations/${appointmentId}/end`, {
           notes: 'Session concluded by provider.'
         });
       } catch (e) {
-        console.error('Failed to log session end:', e);
+        console.error('Failed to end teleconsultation on the server:', e);
+        setEndCallError(e.response?.data?.message || 'The call could not be ended on the server. Check your connection and try again.');
+        setIsEnding(false);
+        return;
       }
     }
+
+    endCall();
     navigate('/teleconsult');
   };
 
@@ -139,6 +149,11 @@ export const TeleconsultSession = () => {
 
       {/* ── Control Bar ─────────────────────────────────────────────────────── */}
       <div className="flex-shrink-0 bg-[#161b22] border-t border-white/5 px-6 py-4">
+        {endCallError && (
+          <div role="alert" className="mx-auto mb-3 max-w-lg rounded-lg border border-red-400/30 bg-red-500/10 px-4 py-3 text-center text-sm text-red-200">
+            {endCallError}
+          </div>
+        )}
         <div className="flex items-center justify-center gap-4">
 
           {/* Mic toggle */}
@@ -173,8 +188,9 @@ export const TeleconsultSession = () => {
           <button
             id="btn-end-call"
             onClick={handleEndCall}
-            title="End call"
-            className="w-16 h-16 rounded-full bg-danger/100 hover:bg-red-600 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/30"
+            title={isEnding ? "Ending call…" : "End call"}
+            disabled={isEnding}
+            className="w-16 h-16 rounded-full bg-danger/100 hover:bg-red-600 active:scale-95 text-white flex items-center justify-center shadow-lg shadow-red-500/30 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-500/30 disabled:cursor-wait disabled:opacity-60"
           >
             <PhoneOff size={26} />
           </button>
