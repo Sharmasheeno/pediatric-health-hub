@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import useAuthStore from '../store/authStore';
 import useThemeStore from '../store/themeStore';
+import { api } from '../lib/axios';
 import { BrandLogo } from '../components/BrandLogo';
 import { useBranding } from '../contexts/useBranding';
 import { LayoutDashboard, Users, Activity, Settings, LogOut, Bell, Calendar, Mail, Folder, Navigation, LineChart, Table, BookOpen, Layers, ShieldX, FileText, Syringe, HeartPulse, Stethoscope, PhoneCall, Bot, AlertCircle, X, Sun, Moon, Menu } from 'lucide-react';
@@ -11,6 +13,7 @@ export const DashboardLayout = () => {
     const branding = useBranding();
     const { isDark, toggleTheme } = useThemeStore();
     const location = useLocation();
+    const navigate = useNavigate();
     const [showNotifications, setShowNotifications] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
     const [showMobileNav, setShowMobileNav] = useState(false);
@@ -19,6 +22,64 @@ export const DashboardLayout = () => {
     const [secureMode, setSecureMode] = useState(true);
     const notifRef = useRef(null);
     const settingsRef = useRef(null);
+    const [dismissedIncomingCallId, setDismissedIncomingCallId] = useState(null);
+
+    const { data: incomingDoctorCall } = useQuery({
+        queryKey: ['incomingDoctorCall', user?.id],
+        enabled: user?.role === 'PARENT',
+        queryFn: async () => {
+            const response = await api.get('/appointments/my-schedule');
+            return response.data.data.appointments?.find(appointment =>
+                appointment.status === 'CONFIRMED' &&
+                appointment.teleconsultation?.initiatedByRole === 'DOCTOR' &&
+                appointment.teleconsultation.startedAt &&
+                !appointment.teleconsultation.endedAt
+            ) || null;
+        },
+        refetchInterval: 2500,
+        refetchIntervalInBackground: true
+    });
+
+    const shouldShowIncomingCall = incomingDoctorCall &&
+        !location.pathname.match(/^\/teleconsult\/[^/]+$/) &&
+        dismissedIncomingCallId !== incomingDoctorCall.id;
+
+    useEffect(() => {
+        if (!shouldShowIncomingCall) return undefined;
+
+        let audioContext;
+        const ring = async () => {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                audioContext ||= new AudioContext();
+                if (audioContext.state !== 'running') await audioContext.resume();
+                if (audioContext.state !== 'running') return;
+
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(520, audioContext.currentTime + 0.18);
+                gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.18, audioContext.currentTime + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.65);
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.7);
+            } catch (error) {
+                console.warn('[Teleconsult] Incoming-call audio is unavailable:', error);
+            }
+        };
+
+        ring();
+        const interval = window.setInterval(ring, 2200);
+        return () => {
+            window.clearInterval(interval);
+            audioContext?.close();
+        };
+    }, [shouldShowIncomingCall]);
 
     const showWideBrandLogo = Boolean(branding.logoDataUrl && wideBrandLogo);
 
@@ -329,6 +390,36 @@ export const DashboardLayout = () => {
                             </>}
                         </nav>
                     </aside>
+                </div>
+            )}
+            {shouldShowIncomingCall && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-sm" role="alertdialog" aria-modal="true" aria-labelledby="incoming-doctor-call-title">
+                    <section className="relative w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-slate-900 p-7 text-center text-white shadow-2xl">
+                        <div className="absolute inset-x-0 top-0 h-1.5 animate-pulse bg-primary-500" />
+                        <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary-500/20 text-primary-300">
+                            <span className="absolute inset-0 animate-ping rounded-full border-2 border-primary-300/50" />
+                            <PhoneCall size={34} aria-hidden="true" />
+                        </div>
+                        <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-primary-200">Incoming video call</p>
+                        <h2 id="incoming-doctor-call-title" className="text-2xl font-bold">Dr. {incomingDoctorCall.doctor?.lastName || 'your doctor'} is calling</h2>
+                        <p className="mt-2 text-sm text-slate-300">For {incomingDoctorCall.child?.firstName} {incomingDoctorCall.child?.lastName}</p>
+                        <div className="mt-7 grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setDismissedIncomingCallId(incomingDoctorCall.id)}
+                                className="min-h-12 rounded-xl border border-white/15 px-4 font-semibold text-slate-200 hover:bg-white/10"
+                            >
+                                Dismiss
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => navigate(`/teleconsult/${incomingDoctorCall.id}`)}
+                                className="min-h-12 rounded-xl bg-primary-600 px-4 font-bold text-white shadow-lg hover:bg-primary-500"
+                            >
+                                Answer call
+                            </button>
+                        </div>
+                    </section>
                 </div>
             )}
         </div>

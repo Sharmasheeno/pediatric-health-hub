@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-const generateRoom = async (appointmentId) => {
+const generateRoom = async (appointmentId, initiatedByRole) => {
     const appt = await prisma.appointment.findUnique({ where: { id: appointmentId } });
     if (!appt) {
        throw Object.assign(new Error("Appointment not found"), { statusCode: 404 });
@@ -21,10 +21,11 @@ const generateRoom = async (appointmentId) => {
 
     return prisma.teleconsultation.upsert({
         where: { appointmentId },
-        update: { roomUrl: roomIdentifier, startedAt: new Date() },
+        update: { roomUrl: roomIdentifier, initiatedByRole, startedAt: new Date(), endedAt: null },
         create: {
             appointmentId,
             roomUrl: roomIdentifier,
+            initiatedByRole,
             startedAt: new Date()
         }
     });

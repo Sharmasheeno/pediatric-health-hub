@@ -34,7 +34,7 @@ const createRoom = async (req, res, next) => {
     try {
         const appointment = await prisma.appointment.findUnique({ where: { id: req.body.appointmentId } });
         await assertAppointmentParticipant(req.user, appointment);
-        const room = await tcService.generateRoom(req.body.appointmentId);
+        const room = await tcService.generateRoom(req.body.appointmentId, req.user.role);
         await logAction(req.user.id, 'CREATE_TELECONSULT_ROOM', 'Teleconsultation', room.id, null, req);
         return successResponse(res, room, "Virtual room generated securely with explicit time restrictions", 201);
     } catch(err) { next(err); }
