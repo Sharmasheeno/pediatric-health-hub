@@ -34,10 +34,10 @@ export const TeleconsultSession = () => {
     setIsEnding(true);
     setEndCallError('');
 
-    if (isDoctor) {
+    if (isDoctor || user?.role === 'PARENT' || user?.role === 'ADMIN') {
       try {
         await api.patch(`/teleconsultations/${appointmentId}/end`, {
-          notes: 'Session concluded by provider.'
+          notes: isDoctor ? 'Session concluded by provider.' : 'Session concluded by parent.'
         });
       } catch (e) {
         console.error('Failed to end teleconsultation on the server:', e);
