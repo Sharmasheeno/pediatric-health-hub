@@ -7,6 +7,6 @@ const { authenticate, authorize } = require('../middlewares/authMiddleware');
 
 router.post('/generate', authenticate, authorize(['DOCTOR', 'ADMIN', 'PARENT']), validateRequest(createRoomSchema), tcController.createRoom);
 router.get('/:appointmentId', authenticate, tcController.getRoom);
-router.patch('/:appointmentId/end', authenticate, authorize(['DOCTOR', 'ADMIN']), validateRequest(endRoomSchema), tcController.endRoom);
+router.patch('/:appointmentId/end', authenticate, authorize(['DOCTOR', 'PARENT', 'ADMIN']), validateRequest(endRoomSchema), tcController.endRoom);
 
 module.exports = router;
