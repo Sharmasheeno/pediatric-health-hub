@@ -35,7 +35,7 @@ export const DashboardLayout = () => {
             });
             return response.data.data.appointments?.find(appointment =>
                 appointment.status === 'CONFIRMED' &&
-                appointment.teleconsultation?.initiatedByRole !== 'PARENT' &&
+                appointment.teleconsultation?.initiatedByRole === 'DOCTOR' &&
                 appointment.teleconsultation.startedAt &&
                 !appointment.teleconsultation.endedAt
             ) || null;
