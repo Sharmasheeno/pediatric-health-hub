@@ -57,11 +57,11 @@ export const EmergencyGuidance = () => {
                         <CardContent className="p-6">
                             <h3 className="font-black text-[var(--text-primary)] mb-5 text-[11px] uppercase tracking-widest text-[#aeb1c4]">Nearest Approved Facilities</h3>
                             <div className="space-y-4">
-                                <div className="bg-[var(--surface)] p-5 rounded shadow-sm border border-[var(--border)] hover:border-[#14c39a] transition-colors cursor-pointer group">
+                                <div className="bg-[var(--surface)] p-5 rounded shadow-sm border border-[var(--border)] hover:border-primary-500 transition-colors cursor-pointer group">
                                     <div className="font-black text-[var(--text-primary)] flex items-center gap-2.5 mb-1"><MapPin size={16} className="text-teal group-hover:animate-bounce"/> City General Hospital</div>
                                     <div className="text-xs font-semibold text-[var(--text-secondary)] ml-6">2.4 miles away • Open 24/7</div>
                                 </div>
-                                <div className="bg-[var(--surface)] p-5 rounded shadow-sm border border-[var(--border)] hover:border-[#14c39a] transition-colors cursor-pointer group">
+                                <div className="bg-[var(--surface)] p-5 rounded shadow-sm border border-[var(--border)] hover:border-primary-500 transition-colors cursor-pointer group">
                                     <div className="font-black text-[var(--text-primary)] flex items-center gap-2.5 mb-1"><MapPin size={16} className="text-teal group-hover:animate-bounce"/> Pediatric Urgent Care</div>
                                     <div className="text-xs font-semibold text-[var(--text-secondary)] ml-6">5.1 miles away • Open until 11 PM</div>
                                 </div>

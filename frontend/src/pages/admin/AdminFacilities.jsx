@@ -75,13 +75,13 @@ export const AdminFacilities = () => {
 
     return (
         <div className="w-full space-y-6 animate-fade-in font-sans">
-            <div className="bg-gradient-to-r from-teal-800 to-emerald-900 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-800 to-primary-950 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                 <div className="z-10 w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><Building size={28} className="text-[#a7f3df]" /> Facility Registry</h1>
+                        <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><Building size={28} className="text-primary-100" /> Facility Registry</h1>
                         <p className="text-white/60 font-medium max-w-2xl">Manage clinical institutions, partnered clinics, and physical care locations.</p>
                     </div>
-                    <Button onClick={() => setCreateModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shrink-0 whitespace-nowrap border-none"><Plus size={16} className="mr-2"/> Register Facility</Button>
+                    <Button onClick={() => setCreateModal(true)} className="bg-primary-600 hover:bg-primary-500 text-white shadow-sm shrink-0 whitespace-nowrap border-none"><Plus size={16} className="mr-2"/> Register Facility</Button>
                 </div>
             </div>
 
@@ -93,7 +93,7 @@ export const AdminFacilities = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by facility name..."
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border)] text-sm focus:outline-none focus:border-emerald-500 shadow-inner"
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border)] text-sm focus:outline-none focus:border-primary-500 shadow-inner"
                         />
                         <Search size={16} className="absolute left-3.5 top-2.5 text-[var(--text-muted)]" />
                     </div>
@@ -128,7 +128,7 @@ export const AdminFacilities = () => {
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <button onClick={() => { setFormData({ name: fac.name, address: fac.address, phoneNumber: fac.phoneNumber }); setEditModal(fac); }} className="text-[var(--text-muted)] hover:text-emerald-500 hover:bg-emerald-50 transition-colors p-2 rounded-lg">
+                                                    <button onClick={() => { setFormData({ name: fac.name, address: fac.address, phoneNumber: fac.phoneNumber }); setEditModal(fac); }} className="text-[var(--text-muted)] hover:text-primary-500 hover:bg-primary-50 transition-colors p-2 rounded-lg">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                                     </button>
                                                     <button onClick={() => setDeleteModal(fac)} className="text-[var(--text-muted)] hover:text-danger hover:bg-danger/10 transition-colors p-2 rounded-lg"><Trash2 size={16} strokeWidth={2.5}/></button>
@@ -151,7 +151,7 @@ export const AdminFacilities = () => {
             {createModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
                     <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative">
-                        <div className="bg-emerald-600 p-6 text-white flex justify-between items-center shadow-inner">
+                        <div className="bg-primary-600 p-6 text-white flex justify-between items-center shadow-inner">
                             <h2 className="text-xl font-black tracking-tight flex items-center gap-2"><Plus size={20} /> Register Facility</h2>
                             <button onClick={() => setCreateModal(false)} className="hover:bg-white/20 p-1.5 rounded"><X size={20}/></button>
                         </div>
@@ -161,7 +161,7 @@ export const AdminFacilities = () => {
                                 <select value={formData.userId || ''} onChange={e=>{
                                     const val = e.target.value;
                                     setFormData(prev => ({...prev, userId: val, email: val ? undefined : '', password: val ? undefined : ''}))
-                                }} className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)] bg-[var(--surface)]">
+                                }} className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)] bg-[var(--surface)]">
                                     <option value="">-- Create New User Identity --</option>
                                     {(availableUsers || []).map(u => (
                                         <option key={u.id} value={u.id}>{u.email} (Pending Profile)</option>
@@ -173,30 +173,30 @@ export const AdminFacilities = () => {
                                 <div className="flex gap-4">
                                     <div className="space-y-1 flex-1">
                                         <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Account Email</label>
-                                        <input required={!formData.userId} value={formData.email || ''} onChange={e=>setFormData({...formData, email: e.target.value})} type="email" placeholder="clinic@example.com" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                        <input required={!formData.userId} value={formData.email || ''} onChange={e=>setFormData({...formData, email: e.target.value})} type="email" placeholder="clinic@example.com" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                     </div>
                                     <div className="space-y-1 flex-1">
                                         <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Temporary Password</label>
-                                        <input required={!formData.userId} value={formData.password || ''} onChange={e=>setFormData({...formData, password: e.target.value})} type="password" minLength="6" placeholder="Min 6 characters" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                        <input required={!formData.userId} value={formData.password || ''} onChange={e=>setFormData({...formData, password: e.target.value})} type="password" minLength="6" placeholder="Min 6 characters" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                     </div>
                                 </div>
                             )}
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Facility Name</label>
-                                <input required value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Physical Address</label>
-                                <input required value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Contact Number</label>
-                                <input required value={formData.phoneNumber} onChange={e=>setFormData({...formData, phoneNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.phoneNumber} onChange={e=>setFormData({...formData, phoneNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
 
                             <div className="pt-4 flex gap-3">
                                 <Button type="button" onClick={() => setCreateModal(false)} variant="outline" className="flex-1 py-6 rounded-xl border-2 font-bold">Cancel</Button>
-                                <Button type="submit" disabled={createMutation.isPending} className="flex-1 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
+                                <Button type="submit" disabled={createMutation.isPending} className="flex-1 py-6 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold">
                                     {createMutation.isPending ? 'Registering...' : 'Register Profile'}
                                 </Button>
                             </div>
@@ -227,7 +227,7 @@ export const AdminFacilities = () => {
             {editModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
                     <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative">
-                        <div className="bg-emerald-600 p-6 text-white flex justify-between items-center shadow-inner">
+                        <div className="bg-primary-600 p-6 text-white flex justify-between items-center shadow-inner">
                             <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                 Edit Facility
@@ -237,20 +237,20 @@ export const AdminFacilities = () => {
                         <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate({ id: editModal.id, data: { name: formData.name, address: formData.address, phoneNumber: formData.phoneNumber } }); }} className="p-8 space-y-4">
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Facility Name</label>
-                                <input required value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.name} onChange={e=>setFormData({...formData, name: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Physical Address</label>
-                                <input required value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.address} onChange={e=>setFormData({...formData, address: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Contact Number</label>
-                                <input required value={formData.phoneNumber} onChange={e=>setFormData({...formData, phoneNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.phoneNumber} onChange={e=>setFormData({...formData, phoneNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
 
                             <div className="pt-4 flex gap-3">
                                 <Button type="button" onClick={() => setEditModal(null)} variant="outline" className="flex-1 py-6 rounded-xl border-2 font-bold">Cancel</Button>
-                                <Button type="submit" disabled={updateMutation.isPending} className="flex-1 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
+                                <Button type="submit" disabled={updateMutation.isPending} className="flex-1 py-6 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold">
                                     {updateMutation.isPending ? 'Saving...' : 'Save Profile'}
                                 </Button>
                             </div>

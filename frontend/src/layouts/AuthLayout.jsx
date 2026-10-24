@@ -19,7 +19,7 @@ export const AuthLayout = () => {
       {/* Left Panel — Brand */}
       <div className="hidden lg:flex lg:w-[52%] relative overflow-hidden">
         <div className="absolute inset-0" style={{
-          background: 'linear-gradient(135deg, #122238 0%, #193954 58%, #16505A 100%)'
+          background: 'linear-gradient(135deg, #122238 0%, color-mix(in srgb, var(--color-primary-900) 78%, #193954) 58%, var(--color-primary-800) 100%)'
         }} />
         
         {/* Decorative orbs */}
@@ -49,7 +49,7 @@ export const AuthLayout = () => {
               Care for every
               <span className="block text-primary-200">child, every day.</span>
             </h1>
-            <p className="text-blue-100/80 text-base xl:text-lg leading-relaxed font-medium">
+            <p className="text-primary-100/80 text-base xl:text-lg leading-relaxed font-medium">
               Empowering better pediatric care through trusted technology, seamless collaboration, and compassionate experiences for every child.
             </p>
             
@@ -70,7 +70,7 @@ export const AuthLayout = () => {
             </div>
           </div>
           
-          <p className="text-blue-200/40 text-xs font-medium">
+          <p className="text-primary-200/40 text-xs font-medium">
             © {new Date().getFullYear()} {branding.organizationName} · All rights reserved
           </p>
         </div>

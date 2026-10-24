@@ -20,6 +20,8 @@ const applyBrandColor = (hex) => {
   const whiteContrast = 1.05 / (luminance + 0.05);
   const inkContrast = (luminance + 0.05) / (0.008 + 0.05);
   root.style.setProperty('--color-primary-foreground', whiteContrast >= inkContrast ? '#FFFFFF' : '#142238');
+  root.style.setProperty('--color-teal', hex);
+  root.style.setProperty('--color-violet', hex);
   const shades = { 50: [255, 255, 255, 0.95], 100: [255, 255, 255, 0.88], 200: [255, 255, 255, 0.75], 300: [255, 255, 255, 0.58], 400: [255, 255, 255, 0.32], 500: [255, 255, 255, 0.15], 600: [0, 0, 0, 0], 700: [0, 0, 0, 0.14], 800: [0, 0, 0, 0.27], 900: [0, 0, 0, 0.4], 950: [0, 0, 0, 0.55] };
   Object.entries(shades).forEach(([shade, [r, g, b, amount]]) => {
     const target = `#${[r, g, b].map(value => value.toString(16).padStart(2, '0')).join('')}`;

@@ -16,14 +16,14 @@ export const GlobalVaccineTracker = () => {
 
     return (
         <div className="w-full mx-auto space-y-6 animate-fade-in font-sans">
-            <div className="bg-[#ffb020] rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+            <div className="bg-primary-700 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 rounded-full blur-3xl translate-x-1/4"></div>
                 <div className="z-10 w-full text-center md:text-left flex items-center md:items-start flex-col">
                     <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner shrink-0 mb-4">
                          <Syringe size={24} />
                     </div>
-                    <h1 className="text-3xl font-black tracking-tight mb-2 text-[var(--text-primary)]">Immunization Gateway</h1>
-                    <p className="text-[var(--text-primary)]/80 font-black">Select a patient below to view, manage, and synchronize their formal vaccination schedules.</p>
+                    <h1 className="text-3xl font-black tracking-tight mb-2 text-white">Immunization Gateway</h1>
+                    <p className="text-white/90 font-semibold">Select a patient below to view, manage, and synchronize their formal vaccination schedules.</p>
                 </div>
             </div>
 
@@ -40,10 +40,10 @@ export const GlobalVaccineTracker = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                     {children.map(child => (
                         <Link to={`/child/${child.id}/vaccines`} key={child.id}>
-                            <Card className="border-[var(--border)] hover:shadow-md hover:border-[#ffb020] transition-all cursor-pointer group bg-[var(--surface)]">
+                            <Card className="border-[var(--border)] hover:shadow-md hover:border-primary-500 transition-all cursor-pointer group bg-[var(--surface)]">
                                 <CardContent className="p-6 flex items-center justify-between">
                                     <div className="flex items-center gap-5">
-                                        <div className="w-14 h-14 rounded-full bg-[#ffb020]/10 text-[#ffb020] flex items-center justify-center font-black text-2xl group-hover:bg-[#ffb020] group-hover:text-white transition-colors">
+                                        <div className="w-14 h-14 rounded-full bg-primary-700/10 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black text-2xl group-hover:bg-primary-600 group-hover:text-white transition-colors">
                                             {child.firstName.charAt(0)}
                                         </div>
                                         <div>
@@ -53,8 +53,8 @@ export const GlobalVaccineTracker = () => {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="w-8 h-8 rounded-full bg-[var(--surface-soft)] flex items-center justify-center group-hover:bg-[#ffb020]/10 transition-colors">
-                                        <ChevronRight size={18} className="text-[var(--text-muted)] group-hover:text-[#ffb020]" />
+                                    <div className="w-8 h-8 rounded-full bg-[var(--surface-soft)] flex items-center justify-center group-hover:bg-primary-600/10 transition-colors">
+                                        <ChevronRight size={18} className="text-[var(--text-muted)] group-hover:text-primary-700 dark:group-hover:text-primary-300" />
                                     </div>
                                 </CardContent>
                             </Card>

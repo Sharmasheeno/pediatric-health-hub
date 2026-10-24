@@ -45,10 +45,10 @@ export const AdminDashboard = () => {
                     <div className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 mt-2 uppercase tracking-wide"><div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div> Real-Time Uplink</div>
                 </div>
                 
-                <button onClick={() => setTab('overview')} className={`p-4 rounded-xl text-left font-bold transition-all shadow-sm flex items-center gap-3 ${tab === 'overview' ? 'bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2' : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-blue-300 hover:bg-[var(--surface-soft)]'}`}>
+                <button onClick={() => setTab('overview')} className={`p-4 rounded-xl text-left font-bold transition-all shadow-sm flex items-center gap-3 ${tab === 'overview' ? 'bg-primary-600 text-white ring-2 ring-primary-600 ring-offset-2' : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-primary-300 hover:bg-[var(--surface-soft)]'}`}>
                     <Activity size={18} /> Global Telemetry
                 </button>
-                <button onClick={() => setTab('users')} className={`p-4 rounded-xl text-left font-bold transition-all shadow-sm flex items-center gap-3 ${tab === 'users' ? 'bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2' : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-blue-300 hover:bg-[var(--surface-soft)]'}`}>
+                <button onClick={() => setTab('users')} className={`p-4 rounded-xl text-left font-bold transition-all shadow-sm flex items-center gap-3 ${tab === 'users' ? 'bg-primary-600 text-white ring-2 ring-primary-600 ring-offset-2' : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-primary-300 hover:bg-[var(--surface-soft)]'}`}>
                     <Users size={18} /> Identity Mapping
                 </button>
                 <button onClick={() => setTab('audits')} className={`p-4 rounded-xl text-left font-bold transition-all shadow-sm flex items-center gap-3 ${tab === 'audits' ? 'bg-red-600 text-white ring-2 ring-red-600 ring-offset-2' : 'bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border)] hover:border-red-300 hover:bg-danger/10'}`}>
@@ -69,24 +69,24 @@ export const AdminDashboard = () => {
                             </Button>
                         </div>
 
-                        {telLoading ? <div className="p-16 text-center animate-pulse text-blue-500 font-bold tracking-widest text-lg">AGGREGATING DB VECTORS...</div> : (
+                        {telLoading ? <div className="p-16 text-center animate-pulse text-primary-500 font-bold tracking-widest text-lg">AGGREGATING DB VECTORS...</div> : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <Card className="shadow-md border-t-4 border-t-blue-500 hover:-translate-y-1 transition-transform">
+                                <Card className="shadow-md border-t-4 border-t-primary-500 hover:-translate-y-1 transition-transform">
                                     <CardContent className="pt-8 pb-8">
                                         <div className="text-[var(--text-secondary)] text-sm font-extrabold tracking-widest uppercase mb-3">Total Unified Users</div>
-                                        <div className="text-5xl font-black text-[var(--text-primary)] flex items-center gap-4"><Users className="text-blue-500" size={32} /> {telemetry?.totalUsers}</div>
+                                        <div className="text-5xl font-black text-[var(--text-primary)] flex items-center gap-4"><Users className="text-primary-500" size={32} /> {telemetry?.totalUsers}</div>
                                     </CardContent>
                                 </Card>
-                                <Card className="shadow-md border-t-4 border-t-emerald-500 hover:-translate-y-1 transition-transform">
+                                <Card className="shadow-md border-t-4 border-t-primary-500 hover:-translate-y-1 transition-transform">
                                     <CardContent className="pt-8 pb-8">
                                         <div className="text-[var(--text-secondary)] text-sm font-extrabold tracking-widest uppercase mb-3">Verified Providers</div>
-                                        <div className="text-5xl font-black text-[var(--text-primary)] flex items-center gap-4"><CheckCircle className="text-emerald-500" size={32} /> {telemetry?.totalDoctors}</div>
+                                        <div className="text-5xl font-black text-[var(--text-primary)] flex items-center gap-4"><CheckCircle className="text-primary-600" size={32} /> {telemetry?.totalDoctors}</div>
                                     </CardContent>
                                 </Card>
-                                <Card className="shadow-md border-t-4 border-t-purple-500 hover:-translate-y-1 transition-transform">
+                                <Card className="shadow-md border-t-4 border-t-primary-500 hover:-translate-y-1 transition-transform">
                                     <CardContent className="pt-8 pb-8">
                                         <div className="text-[var(--text-secondary)] text-sm font-extrabold tracking-widest uppercase mb-3">Active WebRTC Links</div>
-                                        <div className="text-5xl font-black text-[var(--text-primary)] flex items-center gap-4"><Video className="text-purple-500" size={32} /> {telemetry?.activeTeleconsults}</div>
+                                        <div className="text-5xl font-black text-[var(--text-primary)] flex items-center gap-4"><Video className="text-primary-600" size={32} /> {telemetry?.activeTeleconsults}</div>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -95,7 +95,7 @@ export const AdminDashboard = () => {
                 )}
 
                 {tab === 'users' && (
-                    <Card className="shadow-md border-t-[6px] border-t-blue-600 overflow-hidden">
+                    <Card className="shadow-md border-t-[6px] border-t-primary-600 overflow-hidden">
                         <CardHeader className="bg-[var(--surface-soft)] border-b border-[var(--border)] py-5"><CardTitle className="tracking-tight text-[var(--text-primary)] font-black">Identity Indexing Array</CardTitle></CardHeader>
                         <CardContent className="p-0">
                             {usersLoading ? <div className="p-16 text-center text-[var(--text-muted)] font-bold tracking-widest">LOADING IDENTITIES...</div> : (
@@ -170,7 +170,7 @@ export const AdminDashboard = () => {
                                                 <tr key={a.id} className="hover:bg-danger/10/30 transition-colors">
                                                     <td className="px-5 py-4 whitespace-nowrap font-medium text-[var(--text-secondary)]">{new Date(a.createdAt).toLocaleString()}</td>
                                                     <td className="px-5 py-4">
-                                                        <div className="font-bold text-blue-600 dark:text-blue-400">{a.user?.email || 'SYSTEM_CORE'}</div>
+                                                        <div className="font-bold text-primary-600 dark:text-primary-400">{a.user?.email || 'SYSTEM_CORE'}</div>
                                                         <div className="text-[10px] bg-[var(--surface-soft)] border border-[var(--border)] px-1.5 py-0.5 rounded text-[var(--text-secondary)] inline-block mt-1.5 font-bold">{a.user?.role}</div>
                                                     </td>
                                                     <td className="px-5 py-4 font-black tracking-wide text-[var(--text-primary)] shrink-0">{a.action}</td>

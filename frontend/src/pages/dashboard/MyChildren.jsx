@@ -148,16 +148,16 @@ export const MyChildren = () => {
                     <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                         {children.map((child, index) => {
                             const palette = [
-                                'from-sky-500 to-blue-700 ring-sky-100 dark:ring-sky-950',
-                                'from-emerald-500 to-teal-700 ring-emerald-100 dark:ring-emerald-950',
-                                'from-violet-500 to-indigo-700 ring-violet-100 dark:ring-violet-950'
+                                'from-primary-600 to-primary-800 ring-primary-100 dark:ring-primary-950',
+                                'from-primary-600 to-primary-800 ring-primary-100 dark:ring-primary-950',
+                                'from-primary-600 to-primary-800 ring-primary-100 dark:ring-primary-950'
                             ][index % 3];
                             const childAppointments = upcomingAppointments.filter((appointment) => appointment.childId === child.id);
                             const GenderIcon = child.gender?.toUpperCase() === 'FEMALE' ? Venus : Mars;
                             const name = `${child.firstName || ''} ${child.lastName || ''}`.trim();
                             return (
                                 <Card key={child.id} className="group relative overflow-hidden rounded-2xl border-[var(--border)] bg-[var(--surface)] transition-all duration-300 hover:-translate-y-1 hover:border-primary-300/80 hover:shadow-[var(--shadow-lg)] dark:hover:border-primary-700">
-                                    <div className="h-2 bg-gradient-to-r from-primary-500 via-teal to-emerald-400" />
+                                    <div className="h-2 bg-gradient-to-r from-primary-500 via-primary-600 to-primary-700" />
                                     <CardContent className="p-5 sm:p-6">
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex min-w-0 items-center gap-4">

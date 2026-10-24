@@ -9,8 +9,8 @@ export const HealthEducation = () => {
     const articles = [
         { title: 'Understanding Essential Infant Nutrition Requirements', category: 'Diet & Nutrition', readTime: '5 min', icon: <BookOpen size={24} className="text-teal"/>, color: 'bg-teal/10', content: "During the first year of life, breast milk or formula provides the vast majority of calories and essential nutrients an infant needs. Around 6 months, iron-fortified cereals and pureed vegetables can be introduced. It is critical to avoid honey before the age of 1 due to botulism risks, and cow's milk should not replace formula or breast milk until after 12 months. Ensure safe textures to prevent choking hazards." },
         { title: 'The Scientific Importance of Vaccination Schedules', category: 'Immunization', readTime: '8 min', icon: <FileText size={24} className="text-primary-600"/>, color: 'bg-primary-600/10', content: "Vaccines stimulate the immune system to build antibodies against dangerous pathogens without causing the disease itself. Adhering to the CDC-recommended pediatric schedule ensures your child is protected during their most vulnerable developmental windows. Herd immunity protects not only your child but immune-compromised individuals within the broader community." },
-        { title: 'Managing & Monitoring Common Childhood Fevers', category: 'General Care', readTime: '6 min', icon: <PlayCircle size={24} className="text-[#ffb020]"/>, color: 'bg-[#ffb020]/10', content: "A fever is typically a sign that the body is fighting an infection. For children over 6 months, a temperature up to 102°F can often be managed at home with adequate hydration and rest. Acetaminophen or Ibuprofen can be used to reduce discomfort, but dosages must be strictly weight-based. Immediate medical attention is required for any fever in infants under 3 months of age." },
-        { title: 'Critical Development Milestones: 6 Months', category: 'Development', readTime: '4 min', icon: <BookOpen size={24} className="text-[#ff4d4f]"/>, color: 'bg-[#ff4d4f]/10', content: "At six months, cognitive and physical development accelerates rapidly. Clinically, you should expect your infant to recognize familiar faces, respond to emotions, string vowels together (babbling), and begin sitting without support. They may also transfer objects from one hand to another. If your child does not show affection for caregivers or resists making distinct vowel sounds, consult your pediatrician." },
+        { title: 'Managing & Monitoring Common Childhood Fevers', category: 'General Care', readTime: '6 min', icon: <PlayCircle size={24} className="text-primary-700 dark:text-primary-300"/>, color: 'bg-primary-600/10', content: "A fever is typically a sign that the body is fighting an infection. For children over 6 months, a temperature up to 102°F can often be managed at home with adequate hydration and rest. Acetaminophen or Ibuprofen can be used to reduce discomfort, but dosages must be strictly weight-based. Immediate medical attention is required for any fever in infants under 3 months of age." },
+        { title: 'Critical Development Milestones: 6 Months', category: 'Development', readTime: '4 min', icon: <BookOpen size={24} className="text-primary-700 dark:text-primary-300"/>, color: 'bg-primary-600/10', content: "At six months, cognitive and physical development accelerates rapidly. Clinically, you should expect your infant to recognize familiar faces, respond to emotions, string vowels together (babbling), and begin sitting without support. They may also transfer objects from one hand to another. If your child does not show affection for caregivers or resists making distinct vowel sounds, consult your pediatrician." },
     ];
 
     // Filter Logic
@@ -21,7 +21,7 @@ export const HealthEducation = () => {
 
     return (
         <div className="w-full mx-auto space-y-6 animate-fade-in font-sans">
-            <div className="bg-gradient-to-r from-[#8244e0] to-[#512da8] rounded shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center overflow-hidden relative">
+            <div className="bg-gradient-to-r from-primary-800 to-primary-950 rounded shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/4"></div>
                 <div className="z-10 w-full text-center md:text-left">
                     <h1 className="text-3xl font-black tracking-tight mb-2">Health Education Library</h1>
@@ -85,9 +85,9 @@ export const HealthEducation = () => {
                             <p className="text-base font-medium text-[var(--text-secondary)] leading-relaxed selection:bg-teal/30">
                                 {selectedArticle.content}
                             </p>
-                            <div className="bg-primary-50 dark:bg-primary-950/50 border border-blue-100 p-5 rounded-lg flex gap-4 items-start">
-                                <BookOpen className="text-blue-500 shrink-0 mt-0.5" size={20} />
-                                <p className="text-sm font-semibold text-blue-800 leading-relaxed">
+                            <div className="bg-primary-50 dark:bg-primary-950/50 border border-primary-100 p-5 rounded-lg flex gap-4 items-start">
+                                <BookOpen className="text-primary-500 shrink-0 mt-0.5" size={20} />
+                                <p className="text-sm font-semibold text-primary-800 leading-relaxed">
                                     For specific clinical concerns regarding your child's health or developmental progress, always consult directly with your assigned Pediatrician via the Tele-consultation portal or secure messaging.
                                 </p>
                             </div>

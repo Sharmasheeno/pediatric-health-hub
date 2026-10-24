@@ -159,8 +159,8 @@ export const ChildProfile = () => {
                                     
                                     {note.treatmentPlan && (
                                         <div className="mt-5 pt-4 border-t border-dashed border-[var(--border)]">
-                                            <div className="text-[10px] font-black tracking-widest text-teal uppercase mb-2 flex items-center gap-2"><Activity size={12}/> Treatment Protocol</div>
-                                            <p className="text-sm text-[var(--text-primary)] bg-teal/10 p-4 rounded-lg border border-teal/20">{note.treatmentPlan}</p>
+                                            <div className="text-[10px] font-black tracking-widest text-primary-700 dark:text-primary-300 uppercase mb-2 flex items-center gap-2"><Activity size={12}/> Treatment Protocol</div>
+                                            <p className="text-sm text-[var(--text-primary)] bg-primary-600/10 p-4 rounded-lg border border-primary-600/20">{note.treatmentPlan}</p>
                                         </div>
                                     )}
                                 </div>
@@ -234,7 +234,7 @@ export const ChildProfile = () => {
                             {modalConfig.type === 'consultation' && (
                                 <div>
                                     <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-1">Treatment Protocol (Optional)</label>
-                                    <textarea value={formData.treatmentPlan || ''} onChange={e => setFormData({...formData, treatmentPlan: e.target.value})} rows="3" className="w-full bg-teal/10 text-[var(--text-primary)] border-2 border-teal/20 rounded-lg px-4 py-2.5 focus:outline-none focus:border-teal text-sm font-bold placeholder-teal/50"></textarea>
+                                    <textarea value={formData.treatmentPlan || ''} onChange={e => setFormData({...formData, treatmentPlan: e.target.value})} rows="3" className="w-full bg-primary-600/10 text-[var(--text-primary)] border-2 border-primary-600/20 rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-600 text-sm font-bold placeholder-primary-600/50"></textarea>
                                 </div>
                             )}
 

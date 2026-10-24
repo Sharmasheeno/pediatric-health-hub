@@ -112,7 +112,7 @@ const PublicLanding = () => {
             <h1 className="text-3xl min-[380px]:text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[var(--text-primary)] tracking-tight leading-[1.1]">
               Smart Healthcare
               <span className="block mt-2" style={{
-                background: 'linear-gradient(135deg, var(--color-primary-600), #14B8A6)',
+                background: 'linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
               }}>for Every Child</span>
@@ -297,7 +297,7 @@ const PublicLanding = () => {
       {/* ── CTA BANNER ── */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center rounded-[var(--radius-2xl)] p-12 lg:p-16 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #122238 0%, #193954 58%, #16505A 100%)'
+          background: 'linear-gradient(135deg, #122238 0%, color-mix(in srgb, var(--color-primary-900) 78%, #193954) 58%, var(--color-primary-800) 100%)'
         }}>
           <div className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-25" style={{ background: 'radial-gradient(circle, var(--color-primary-400) 0%, transparent 70%)' }} />
           <div className="absolute bottom-0 left-0 w-64 h-64 rounded-full opacity-10" style={{ background: 'radial-gradient(circle, rgba(147,197,253,0.5) 0%, transparent 70%)' }} />
@@ -305,7 +305,7 @@ const PublicLanding = () => {
             <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
               Ready to Transform Pediatric Care?
             </h2>
-            <p className="text-blue-100/80 text-lg font-medium max-w-xl mx-auto">
+            <p className="text-primary-100/80 text-lg font-medium max-w-xl mx-auto">
               Join families and healthcare providers who trust {branding.organizationName} for comprehensive child healthcare management.
             </p>
             <a href="/login" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-700 rounded-[var(--radius-md)] font-bold text-base shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5">

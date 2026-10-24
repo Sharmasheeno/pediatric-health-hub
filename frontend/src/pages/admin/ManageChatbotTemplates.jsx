@@ -101,7 +101,7 @@ export const ManageChatbotTemplates = () => {
             <Card className="border-[var(--border)] shadow-sm">
                 <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-3 text-[var(--text-primary)]">
-                        <span className="p-2 rounded-lg bg-blue-600 text-white"><Bot size={18} /></span>
+                        <span className="p-2 rounded-lg bg-primary-600 text-white"><Bot size={18} /></span>
                         Assistant Knowledge Base
                     </CardTitle>
                 </CardHeader>
@@ -127,7 +127,7 @@ export const ManageChatbotTemplates = () => {
                                 value={form.triggerKeyword}
                                 onChange={(e) => setForm((prev) => ({ ...prev, triggerKeyword: e.target.value }))}
                                 placeholder="Comma-separated, for example: feeding, picky eating"
-                                className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                                className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
                             />
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
@@ -149,7 +149,7 @@ export const ManageChatbotTemplates = () => {
                                 value={form.response}
                                 onChange={(e) => setForm((prev) => ({ ...prev, response: e.target.value }))}
                                 placeholder="Answer the question directly in clear language. Include safe next steps, warning signs, and what information would help tailor the guidance. Do not diagnose or prescribe."
-                                className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
+                                className="w-full border border-[var(--border)] rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-500"
                             />
                         </div>
                         <div className="grid gap-4 sm:grid-cols-2">
@@ -165,7 +165,7 @@ export const ManageChatbotTemplates = () => {
                         {uiError && <div className="text-sm text-red-600 font-medium">{uiError}</div>}
                         {notice && <div role="status" className="text-sm text-green-700 font-medium">{notice}</div>}
                         <div className="flex gap-3">
-                            <Button type="submit" isLoading={upsertTemplate.isPending} className="bg-blue-600 hover:bg-blue-700">
+                            <Button type="submit" isLoading={upsertTemplate.isPending} className="bg-primary-600 hover:bg-primary-700">
                                 {editingId ? <Save size={16} className="mr-2" /> : <Plus size={16} className="mr-2" />}
                                 {editingId ? 'Update entry' : 'Save entry'}
                             </Button>

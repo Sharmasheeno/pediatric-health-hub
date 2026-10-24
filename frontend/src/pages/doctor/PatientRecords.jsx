@@ -15,9 +15,9 @@ export const PatientRecords = () => {
 
     return (
         <div className="w-full space-y-6 animate-fade-in font-sans">
-            <div className="bg-gradient-to-r from-teal-500 to-emerald-600 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-700 to-primary-900 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                 <div className="z-10 w-full">
-                    <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><HeartPulse size={28} className="text-teal-100" /> Patient Clinical Records</h1>
+                    <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><HeartPulse size={28} className="text-primary-100" /> Patient Clinical Records</h1>
                     <p className="text-white/80 font-medium max-w-2xl">Access full longitudinal health records, immunization matrices, and growth trajectories for your registered patients.</p>
                 </div>
             </div>
@@ -29,7 +29,7 @@ export const PatientRecords = () => {
                         <CardContent className="p-6">
                             <div className="flex justify-between items-start mb-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform">{patient.firstName.charAt(0)}</div>
+                                    <div className="w-12 h-12 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center font-black text-xl group-hover:scale-105 transition-transform">{patient.firstName.charAt(0)}</div>
                                     <div>
                                         <h3 className="font-black text-[var(--text-primary)] text-lg leading-tight">{patient.firstName} {patient.lastName}</h3>
                                         <div className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">ID: {patient.id}</div>
@@ -49,15 +49,15 @@ export const PatientRecords = () => {
                             </div>
 
                             <div className="flex items-center justify-between gap-2 pt-4 border-t border-[var(--border)] w-full bg-[var(--surface)] relative z-50">
-                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-teal-600 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-primary-600 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
                                     <FolderOpen size={18} className="mb-1 pointer-events-none" />
                                     <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">History</span>
                                 </button>
-                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/growth`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-blue-500 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/growth`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-primary-500 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
                                     <Activity size={18} className="mb-1 pointer-events-none" />
                                     <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">Growth</span>
                                 </button>
-                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/vaccines`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-purple-500 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
+                                <button type="button" onClick={() => window.location.href = `/child/${patient.id}/vaccines`} className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] hover:text-primary-500 hover:bg-[var(--surface-soft)] py-3 rounded-lg transition-colors cursor-pointer">
                                     <Syringe size={18} className="mb-1 pointer-events-none" />
                                     <span className="text-[9px] font-black uppercase tracking-widest pointer-events-none">Vax</span>
                                 </button>

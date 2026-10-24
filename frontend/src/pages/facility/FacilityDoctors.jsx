@@ -62,13 +62,13 @@ export const FacilityDoctors = () => {
 
     return (
         <div className="w-full space-y-6 animate-fade-in font-sans">
-            <div className="bg-gradient-to-r from-teal-800 to-emerald-900 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-800 to-primary-950 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                 <div className="z-10 w-full flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><Stethoscope size={28} className="text-[#a7f3df]" /> My Clinical Staff</h1>
+                        <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><Stethoscope size={28} className="text-primary-100" /> My Clinical Staff</h1>
                         <p className="text-white/60 font-medium max-w-2xl">Manage clinical profiles, licensure data, and specializations for your localized physicians.</p>
                     </div>
-                    <Button onClick={() => setCreateModal(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shrink-0 whitespace-nowrap border-none"><Plus size={16} className="mr-2"/> Recruit Doctor</Button>
+                    <Button onClick={() => setCreateModal(true)} className="bg-primary-600 hover:bg-primary-500 text-white shadow-sm shrink-0 whitespace-nowrap border-none"><Plus size={16} className="mr-2"/> Recruit Doctor</Button>
                 </div>
             </div>
 
@@ -80,7 +80,7 @@ export const FacilityDoctors = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by last name..."
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border)] text-sm focus:outline-none focus:border-emerald-500 shadow-inner"
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border)] text-sm focus:outline-none focus:border-primary-500 shadow-inner"
                         />
                         <Search size={16} className="absolute left-3.5 top-2.5 text-[var(--text-muted)]" />
                     </div>
@@ -107,7 +107,7 @@ export const FacilityDoctors = () => {
                                                 <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-0.5">ID: {doctor.id.slice(0,8)}...</div>
                                             </td>
                                             <td className="p-4">
-                                                <span className="text-xs font-bold bg-emerald-50 text-emerald-600 px-2 py-1 rounded">
+                                                <span className="text-xs font-bold bg-primary-50 text-primary-600 px-2 py-1 rounded">
                                                     {doctor.specialization}
                                                 </span>
                                             </td>
@@ -117,7 +117,7 @@ export const FacilityDoctors = () => {
                                             </td>
                                             <td className="p-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <button onClick={() => { setFormData({ firstName: doctor.firstName, lastName: doctor.lastName, licenseNumber: doctor.licenseNumber, specialization: doctor.specialization }); setEditModal(doctor); }} className="text-[var(--text-muted)] hover:text-emerald-500 hover:bg-emerald-50 transition-colors p-2 rounded-lg"><Edit3 size={16} strokeWidth={2.5}/></button>
+                                                    <button onClick={() => { setFormData({ firstName: doctor.firstName, lastName: doctor.lastName, licenseNumber: doctor.licenseNumber, specialization: doctor.specialization }); setEditModal(doctor); }} className="text-[var(--text-muted)] hover:text-primary-500 hover:bg-primary-50 transition-colors p-2 rounded-lg"><Edit3 size={16} strokeWidth={2.5}/></button>
                                                     <button onClick={() => setDeleteModal(doctor)} className="text-[var(--text-muted)] hover:text-danger hover:bg-danger/10 transition-colors p-2 rounded-lg"><Trash2 size={16} strokeWidth={2.5}/></button>
                                                 </div>
                                             </td>
@@ -138,7 +138,7 @@ export const FacilityDoctors = () => {
             {createModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
                     <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative">
-                        <div className="bg-emerald-600 p-6 text-white flex justify-between items-center shadow-inner">
+                        <div className="bg-primary-600 p-6 text-white flex justify-between items-center shadow-inner">
                             <h2 className="text-xl font-black tracking-tight flex items-center gap-2"><Plus size={20} /> Recruit Doctor</h2>
                             <button onClick={() => setCreateModal(false)} className="hover:bg-white/20 p-1.5 rounded"><X size={20}/></button>
                         </div>
@@ -146,35 +146,35 @@ export const FacilityDoctors = () => {
                             <div className="flex gap-4">
                                 <div className="space-y-1 flex-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Account Email</label>
-                                    <input required value={formData.email || ''} onChange={e=>setFormData({...formData, email: e.target.value})} type="email" placeholder="dr@example.com" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                    <input required value={formData.email || ''} onChange={e=>setFormData({...formData, email: e.target.value})} type="email" placeholder="dr@example.com" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                 </div>
                                 <div className="space-y-1 flex-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Temporary Password</label>
-                                    <input required value={formData.password || ''} onChange={e=>setFormData({...formData, password: e.target.value})} type="password" minLength="6" placeholder="Min 6 characters" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                    <input required value={formData.password || ''} onChange={e=>setFormData({...formData, password: e.target.value})} type="password" minLength="6" placeholder="Min 6 characters" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                 </div>
                             </div>
                             <div className="flex gap-4">
                                 <div className="space-y-1 flex-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">First Name</label>
-                                    <input required value={formData.firstName} onChange={e=>setFormData({...formData, firstName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                    <input required value={formData.firstName} onChange={e=>setFormData({...formData, firstName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                 </div>
                                 <div className="space-y-1 flex-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Last Name</label>
-                                    <input required value={formData.lastName} onChange={e=>setFormData({...formData, lastName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                    <input required value={formData.lastName} onChange={e=>setFormData({...formData, lastName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                 </div>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">License Number</label>
-                                <input required value={formData.licenseNumber} onChange={e=>setFormData({...formData, licenseNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.licenseNumber} onChange={e=>setFormData({...formData, licenseNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Specialization</label>
-                                <input required value={formData.specialization} onChange={e=>setFormData({...formData, specialization: e.target.value})} type="text" placeholder="e.g. Pediatric Pulmonology" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.specialization} onChange={e=>setFormData({...formData, specialization: e.target.value})} type="text" placeholder="e.g. Pediatric Pulmonology" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
 
                             <div className="pt-4 flex gap-3">
                                 <Button type="button" onClick={() => setCreateModal(false)} variant="outline" className="flex-1 py-6 rounded-xl border-2 font-bold">Cancel</Button>
-                                <Button type="submit" disabled={createMutation.isPending} className="flex-1 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
+                                <Button type="submit" disabled={createMutation.isPending} className="flex-1 py-6 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold">
                                     {createMutation.isPending ? 'Registering...' : 'Add To Clinic'}
                                 </Button>
                             </div>
@@ -204,7 +204,7 @@ export const FacilityDoctors = () => {
             {editModal && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
                     <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-md overflow-hidden relative">
-                        <div className="bg-emerald-600 p-6 text-white flex justify-between items-center shadow-inner">
+                        <div className="bg-primary-600 p-6 text-white flex justify-between items-center shadow-inner">
                             <h2 className="text-xl font-black tracking-tight flex items-center gap-2"><Edit3 size={20} /> Edit Profile</h2>
                             <button onClick={() => setEditModal(null)} className="hover:bg-white/20 p-1.5 rounded"><X size={20}/></button>
                         </div>
@@ -212,25 +212,25 @@ export const FacilityDoctors = () => {
                             <div className="flex gap-4">
                                 <div className="space-y-1 flex-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">First Name</label>
-                                    <input required value={formData.firstName} onChange={e=>setFormData({...formData, firstName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                    <input required value={formData.firstName} onChange={e=>setFormData({...formData, firstName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                 </div>
                                 <div className="space-y-1 flex-1">
                                     <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Last Name</label>
-                                    <input required value={formData.lastName} onChange={e=>setFormData({...formData, lastName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                    <input required value={formData.lastName} onChange={e=>setFormData({...formData, lastName: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                                 </div>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">License Number</label>
-                                <input required value={formData.licenseNumber} onChange={e=>setFormData({...formData, licenseNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.licenseNumber} onChange={e=>setFormData({...formData, licenseNumber: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)]">Specialization</label>
-                                <input required value={formData.specialization} onChange={e=>setFormData({...formData, specialization: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-emerald-500 text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.specialization} onChange={e=>setFormData({...formData, specialization: e.target.value})} type="text" className="w-full bg-[var(--surface)] text-[var(--text-primary)] border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
 
                             <div className="pt-4 flex gap-3">
                                 <Button type="button" onClick={() => setEditModal(null)} variant="outline" className="flex-1 py-6 rounded-xl border-2 font-bold">Cancel</Button>
-                                <Button type="submit" disabled={updateMutation.isPending} className="flex-1 py-6 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
+                                <Button type="submit" disabled={updateMutation.isPending} className="flex-1 py-6 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold">
                                     {updateMutation.isPending ? 'Saving...' : 'Save Profile'}
                                 </Button>
                             </div>

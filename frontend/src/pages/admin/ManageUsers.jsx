@@ -77,7 +77,7 @@ export const ManageUsers = () => {
                         <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><Users size={28} className="text-teal" /> Users Management</h1>
                         <p className="text-white/60 font-medium max-w-2xl">Monitor system telemetry and authorization statuses for all Parents, Doctors, and Administrators within the Pediatric Health Hub architecture.</p>
                     </div>
-                    <Button onClick={() => setCreateModal(true)} className="bg-teal hover:bg-[#10a884] text-white shadow-sm shrink-0 whitespace-nowrap border-none"><Plus size={16} className="mr-2"/> Add User</Button>
+                    <Button onClick={() => setCreateModal(true)} className="bg-teal hover:bg-primary-700 text-white shadow-sm shrink-0 whitespace-nowrap border-none"><Plus size={16} className="mr-2"/> Add User</Button>
                 </div>
             </div>
 
@@ -89,7 +89,7 @@ export const ManageUsers = () => {
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search by email..."
-                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border)] text-sm focus:outline-none focus:border-[#8244e0] shadow-inner"
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[var(--border)] text-sm focus:outline-none focus:border-primary-500 shadow-inner"
                         />
                         <Search size={16} className="absolute left-3.5 top-2.5 text-[var(--text-muted)]" />
                     </div>
@@ -144,7 +144,7 @@ export const ManageUsers = () => {
                                                             className="text-[var(--text-muted)] hover:text-emerald-600 hover:bg-emerald-50 transition-colors p-2 rounded-lg border border-transparent hover:border-emerald-100 shadow-sm"
                                                         ><UserPlus size={16} strokeWidth={2.5} /></button>
                                                     )}
-                                                    <button onClick={() => setEditModal(user)} className="text-[var(--text-muted)] hover:text-blue-500 hover:bg-primary-50 dark:bg-primary-950 transition-colors p-2 rounded-lg border border-transparent hover:border-blue-100 shadow-sm"><Edit3 size={16} strokeWidth={2.5} /></button>
+                                                    <button onClick={() => setEditModal(user)} className="text-[var(--text-muted)] hover:text-primary-500 hover:bg-primary-50 dark:bg-primary-950 transition-colors p-2 rounded-lg border border-transparent hover:border-primary-100 shadow-sm"><Edit3 size={16} strokeWidth={2.5} /></button>
                                                     <button onClick={() => setDeleteModal(user)} className="text-[var(--text-muted)] hover:text-danger hover:bg-danger/10 transition-colors p-2 rounded-lg border border-transparent hover:border-red-100 shadow-sm"><Trash2 size={16} strokeWidth={2.5}/></button>
                                                 </div>
                                             </td>
@@ -173,15 +173,15 @@ export const ManageUsers = () => {
                         <form onSubmit={(e) => { e.preventDefault(); createMutation.mutate(formData); }} className="p-8 space-y-5">
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Email Address</label>
-                                <input required value={formData.email} onChange={e=>setFormData({...formData, email: e.target.value})} type="email" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#8244e0] text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.email} onChange={e=>setFormData({...formData, email: e.target.value})} type="email" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Temporary Password</label>
-                                <input required value={formData.password} onChange={e=>setFormData({...formData, password: e.target.value})} type="password" placeholder="Min 6 characters" minLength="6" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#8244e0] text-sm font-bold text-[var(--text-primary)]"/>
+                                <input required value={formData.password} onChange={e=>setFormData({...formData, password: e.target.value})} type="password" placeholder="Min 6 characters" minLength="6" className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-bold text-[var(--text-primary)]"/>
                             </div>
                             <div className="space-y-1">
                                 <label className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-widest">Target Authority Role</label>
-                                <select value={formData.role} onChange={e=>setFormData({...formData, role: e.target.value})} className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#8244e0] text-sm font-black text-[var(--text-primary)]">
+                                <select value={formData.role} onChange={e=>setFormData({...formData, role: e.target.value})} className="w-full border-2 border-[var(--border)] rounded-lg px-4 py-2.5 focus:outline-none focus:border-primary-500 text-sm font-black text-[var(--text-primary)]">
                                     <option value="PARENT">PARENT</option>
                                     <option value="DOCTOR">DOCTOR</option>
                                     <option value="FACILITY">FACILITY</option>
@@ -191,7 +191,7 @@ export const ManageUsers = () => {
 
                             <div className="pt-4 flex gap-3">
                                 <Button type="button" onClick={() => setCreateModal(false)} variant="outline" className="flex-1 py-6 rounded-xl border-2 text-[var(--text-secondary)] font-bold">Cancel</Button>
-                                <Button type="submit" disabled={createMutation.isPending} className="flex-1 py-6 rounded-xl bg-primary-600 hover:bg-[#6a32bf] text-white border-0 shadow-sm font-bold">
+                                <Button type="submit" disabled={createMutation.isPending} className="flex-1 py-6 rounded-xl bg-primary-600 hover:bg-primary-700 text-white border-0 shadow-sm font-bold">
                                     {createMutation.isPending ? 'Executing...' : 'Deploy Origin'}
                                 </Button>
                             </div>
@@ -236,7 +236,7 @@ export const ManageUsers = () => {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fade-in">
                     <div className="bg-[var(--surface)] rounded-xl shadow-2xl w-full max-w-sm overflow-hidden relative text-center">
                         <div className="p-8 pb-0">
-                            <div className="mx-auto w-16 h-16 bg-primary-50 dark:bg-primary-950 text-blue-500 rounded-full flex items-center justify-center mb-4 ring-8 ring-slate-50 shadow-inner">
+                            <div className="mx-auto w-16 h-16 bg-primary-50 dark:bg-primary-950 text-primary-500 rounded-full flex items-center justify-center mb-4 ring-8 ring-slate-50 shadow-inner">
                                 <ShieldAlert size={32} />
                             </div>
                             <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Escalate Role</h2>
@@ -247,7 +247,7 @@ export const ManageUsers = () => {
                                 <select
                                     value={editModal.role}
                                     onChange={e => setEditModal({...editModal, role: e.target.value})}
-                                    className="w-full mt-1 border-2 border-[var(--border)] rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 text-sm font-black text-[var(--text-primary)] bg-[var(--surface-soft)]"
+                                    className="w-full mt-1 border-2 border-[var(--border)] rounded-lg px-4 py-3 focus:outline-none focus:border-primary-500 text-sm font-black text-[var(--text-primary)] bg-[var(--surface-soft)]"
                                 >
                                     <option value="PARENT">PARENT</option>
                                     <option value="DOCTOR">DOCTOR</option>
@@ -261,7 +261,7 @@ export const ManageUsers = () => {
                             <Button
                                 onClick={() => roleMutation.mutate({ id: editModal.id, role: editModal.role })}
                                 disabled={roleMutation.isPending}
-                                className="flex-1 rounded-xl py-6 bg-blue-600 hover:bg-blue-700 text-white font-bold border-0 shadow-sm"
+                                className="flex-1 rounded-xl py-6 bg-primary-600 hover:bg-primary-700 text-white font-bold border-0 shadow-sm"
                             >
                                 {roleMutation.isPending ? 'Saving...' : 'Apply Hierarchy'}
                             </Button>

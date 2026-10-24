@@ -31,7 +31,7 @@ export const DoctorSchedule = () => {
 
     return (
         <div className="w-full space-y-6 animate-fade-in font-sans">
-            <div className="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
+            <div className="bg-gradient-to-r from-primary-800 to-primary-950 rounded-xl shadow-sm p-8 text-white flex flex-col md:flex-row justify-between items-center relative overflow-hidden">
                 <div className="z-10 w-full">
                     <h1 className="text-3xl font-black tracking-tight mb-2 flex items-center gap-3"><Calendar size={28} className="text-[#a7f3df]" /> Clinical Schedule</h1>
                     <p className="text-white/80 font-medium max-w-2xl">Manage your daily appointments, approve pending tele-consultation slots, and launch secured rooms.</p>
@@ -64,7 +64,7 @@ export const DoctorSchedule = () => {
                                             <tr key={appointment.id} className="border-b border-[var(--border)] hover:bg-[var(--surface-soft)] transition-colors">
                                                 <td className="p-4">
                                                     <div className="font-bold text-[var(--text-primary)] flex items-center gap-2">
-                                                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black">{appointment.child?.firstName?.charAt(0) || 'P'}</div>
+                                                        <div className="w-8 h-8 rounded-full bg-primary-600/10 text-primary-700 dark:text-primary-300 flex items-center justify-center font-black">{appointment.child?.firstName?.charAt(0) || 'P'}</div>
                                                         <div>
                                                             {appointment.child?.firstName} {appointment.child?.lastName}
                                                             <div className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mt-0.5">ID: {appointment.id?.slice(0,6)} • {appointment.reason || 'General Routine'}</div>
@@ -76,7 +76,7 @@ export const DoctorSchedule = () => {
                                                     <div className="text-xs font-semibold tracking-wide text-[var(--text-secondary)]">{new Date(appointment.scheduledAt).toLocaleDateString()}</div>
                                                 </td>
                                                 <td className="p-4">
-                                                    <span className="bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest border border-indigo-100 flex items-center gap-1.5 w-max">
+                                                    <span className="bg-primary-600/10 text-primary-700 dark:text-primary-300 px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-widest border border-primary-200 dark:border-primary-800 flex items-center gap-1.5 w-max">
                                                         <Video size={12}/> Tele-Consult
                                                     </span>
                                                 </td>
@@ -108,7 +108,7 @@ export const DoctorSchedule = () => {
                                                     {isConfirmed && (
                                                         <button 
                                                             onClick={() => navigate('/teleconsult')}
-                                                            className="text-sm font-bold text-emerald-600 hover:text-emerald-800 transition-colors bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg border border-emerald-200">
+                                                            className="text-sm font-bold text-primary-700 dark:text-primary-300 hover:text-primary-800 transition-colors bg-primary-600/10 hover:bg-primary-600/15 px-4 py-2 rounded-lg border border-primary-200 dark:border-primary-800">
                                                             Open Hub
                                                         </button>
                                                     )}

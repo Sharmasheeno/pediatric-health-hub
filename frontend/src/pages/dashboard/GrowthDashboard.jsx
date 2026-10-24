@@ -52,7 +52,7 @@ export const GrowthDashboard = () => {
     <div className="max-w-6xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[var(--surface)] p-6 rounded-xl border border-[var(--border)] shadow-sm gap-4">
         <div>
-           <h1 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-2"><Ruler className="text-blue-600" /> Growth & Milestones</h1>
+           <h1 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-2"><Ruler className="text-primary-600" /> Growth & Milestones</h1>
            <p className="text-[var(--text-secondary)] text-sm mt-1">Physical tracking and cognitive milestone timeline mapping seamlessly to Recharts.</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} variant="default" className="flex gap-2">
@@ -61,8 +61,8 @@ export const GrowthDashboard = () => {
       </div>
 
       <div className="flex gap-2 bg-[var(--surface)] p-1.5 rounded-lg border border-[var(--border)] max-w-sm shadow-sm font-medium">
-          <button onClick={() => setActiveTab('chart')} className={`flex-1 py-2 text-sm rounded-md transition-all ${activeTab==='chart' ? 'bg-primary-50 dark:bg-primary-950 text-blue-700 shadow-sm ring-1 ring-blue-100' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Percentile Charts</button>
-          <button onClick={() => setActiveTab('timeline')} className={`flex-1 py-2 text-sm rounded-md transition-all ${activeTab==='timeline' ? 'bg-primary-50 dark:bg-primary-950 text-blue-700 shadow-sm ring-1 ring-blue-100' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Clinical Timeline</button>
+          <button onClick={() => setActiveTab('chart')} className={`flex-1 py-2 text-sm rounded-md transition-all ${activeTab==='chart' ? 'bg-primary-50 dark:bg-primary-950 text-primary-700 shadow-sm ring-1 ring-primary-100' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Percentile Charts</button>
+          <button onClick={() => setActiveTab('timeline')} className={`flex-1 py-2 text-sm rounded-md transition-all ${activeTab==='timeline' ? 'bg-primary-50 dark:bg-primary-950 text-primary-700 shadow-sm ring-1 ring-primary-100' : 'text-[var(--text-secondary)] hover:bg-[var(--surface-soft)]'}`}>Clinical Timeline</button>
       </div>
 
       {activeTab === 'chart' && (
@@ -77,7 +77,7 @@ export const GrowthDashboard = () => {
                                   <XAxis dataKey="ageInMonths" tick={{fontSize: 12, fill: '#64748B'}} tickLine={false} axisLine={false} />
                                   <YAxis tick={{fontSize: 12, fill: '#64748B'}} tickLine={false} axisLine={false} />
                                   <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                                  <Line type="monotone" dataKey="weight" stroke="#3B82F6" strokeWidth={3} dot={{r: 4, strokeWidth: 2, fill: 'white'}} activeDot={{r: 6}} animationDuration={1500} />
+                                  <Line type="monotone" dataKey="weight" stroke="var(--color-primary-600)" strokeWidth={3} dot={{r: 4, strokeWidth: 2, fill: 'white'}} activeDot={{r: 6}} animationDuration={1500} />
                               </LineChart>
                           </ResponsiveContainer>
                       </div>
@@ -94,7 +94,7 @@ export const GrowthDashboard = () => {
                                   <XAxis dataKey="ageInMonths" tick={{fontSize: 12, fill: '#64748B'}} tickLine={false} axisLine={false} />
                                   <YAxis tick={{fontSize: 12, fill: '#64748B'}} tickLine={false} axisLine={false} />
                                   <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #E2E8F0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} cursor={{ stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '4 4' }} />
-                                  <Line type="monotone" dataKey="height" stroke="#10B981" strokeWidth={3} dot={{r: 4, strokeWidth: 2, fill: 'white'}} activeDot={{r: 6}} animationDuration={1500} />
+                                  <Line type="monotone" dataKey="height" stroke="var(--color-primary-800)" strokeWidth={3} dot={{r: 4, strokeWidth: 2, fill: 'white'}} activeDot={{r: 6}} animationDuration={1500} />
                               </LineChart>
                           </ResponsiveContainer>
                       </div>
@@ -104,25 +104,25 @@ export const GrowthDashboard = () => {
       )}
 
       {activeTab === 'timeline' && (
-          <Card className="shadow-md border-t-4 border-t-blue-500">
+          <Card className="shadow-md border-t-4 border-t-primary-500">
               <CardHeader className="bg-[var(--surface-soft)]"><CardTitle className="flex items-center gap-2"><FileText size={18} className="text-[var(--text-secondary)]" /> Milestone Audit History</CardTitle></CardHeader>
               <CardContent className="pt-8">
                   {records?.length === 0 ? <p className="text-[var(--text-secondary)] italic">No historical nodes deployed yet.</p> : (
                       <div className="space-y-0">
                           {records.map(r => (
                               <div key={r.id} className="relative pl-8 pb-8 border-l-2 border-[var(--border)] last:border-0 last:pb-0 group">
-                                  <div className="absolute w-4 h-4 bg-primary-50 dark:bg-primary-9500 rounded-full -left-[9px] top-1 ring-4 ring-white group-hover:scale-110 transition-transform"></div>
-                                  <div className="bg-[var(--surface-soft)] rounded-xl p-5 border border-[var(--border)] hover:border-blue-300 transition-colors shadow-sm">
+                                  <div className="absolute w-4 h-4 bg-primary-50 dark:bg-primary-950 rounded-full -left-[9px] top-1 ring-4 ring-white group-hover:scale-110 transition-transform"></div>
+                                  <div className="bg-[var(--surface-soft)] rounded-xl p-5 border border-[var(--border)] hover:border-primary-300 transition-colors shadow-sm">
                                       <div className="flex justify-between items-center mb-3">
                                           <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">{new Date(r.measurementDate).toLocaleString()}</div>
-                                          <div className={`text-xs px-3 py-1 rounded-md font-bold tracking-wide ${r.recorderRole === 'DOCTOR' ? 'bg-blue-100 text-blue-700 ring-1 ring-blue-200' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] shadow-sm'}`}>
+                                          <div className={`text-xs px-3 py-1 rounded-md font-bold tracking-wide ${r.recorderRole === 'DOCTOR' ? 'bg-primary-100 text-primary-700 ring-1 ring-primary-200' : 'bg-[var(--surface)] border border-[var(--border)] text-[var(--text-secondary)] shadow-sm'}`}>
                                               Author ID: {r.recorderRole}
                                           </div>
                                       </div>
                                       
                                       {(r.weightKg || r.heightCm || r.headCircumCm) && (
                                           <div className="flex flex-wrap gap-4 mt-3 mb-4 pb-4 border-b border-[var(--border)]/60">
-                                              {r.weightKg && <div className="text-sm font-medium text-[var(--text-primary)] bg-[var(--surface)] px-3 py-1.5 rounded shadow-sm border border-[var(--border)]">Weight: <span className="text-blue-600 font-bold ml-1">{r.weightKg} kg</span></div>}
+                                              {r.weightKg && <div className="text-sm font-medium text-[var(--text-primary)] bg-[var(--surface)] px-3 py-1.5 rounded shadow-sm border border-[var(--border)]">Weight: <span className="text-primary-600 font-bold ml-1">{r.weightKg} kg</span></div>}
                                               {r.heightCm && <div className="text-sm font-medium text-[var(--text-primary)] bg-[var(--surface)] px-3 py-1.5 rounded shadow-sm border border-[var(--border)]">Height: <span className="text-emerald-600 font-bold ml-1">{r.heightCm} cm</span></div>}
                                               {r.headCircumCm && <div className="text-sm font-medium text-[var(--text-primary)] bg-[var(--surface)] px-3 py-1.5 rounded shadow-sm border border-[var(--border)]">Head: <span className="text-violet font-bold ml-1">{r.headCircumCm} cm</span></div>}
                                           </div>
@@ -154,24 +154,24 @@ export const GrowthDashboard = () => {
                       <div className="grid grid-cols-2 gap-4">
                           <div>
                               <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-1">Weight (kg)</label>
-                              <input type="number" step="0.1" value={formData.weightKg} onChange={(e) => setFormData({...formData, weightKg: e.target.value})} className="w-full border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" />
+                              <input type="number" step="0.1" value={formData.weightKg} onChange={(e) => setFormData({...formData, weightKg: e.target.value})} className="w-full border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-primary-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" />
                           </div>
                           <div>
                               <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-1">Height (cm)</label>
-                              <input type="number" step="0.1" value={formData.heightCm} onChange={(e) => setFormData({...formData, heightCm: e.target.value})} className="w-full border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" />
+                              <input type="number" step="0.1" value={formData.heightCm} onChange={(e) => setFormData({...formData, heightCm: e.target.value})} className="w-full border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-primary-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" />
                           </div>
                       </div>
                       <div>
                           <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-1">Head Circumference (cm)</label>
-                          <input type="number" step="0.1" value={formData.headCircumCm} onChange={(e) => setFormData({...formData, headCircumCm: e.target.value})} className="w-full border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" />
+                          <input type="number" step="0.1" value={formData.headCircumCm} onChange={(e) => setFormData({...formData, headCircumCm: e.target.value})} className="w-full border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-primary-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" />
                       </div>
                       <div>
                           <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide mb-1">Clinical / Developmental Notes</label>
-                          <textarea value={formData.milestoneNotes} onChange={(e) => setFormData({...formData, milestoneNotes: e.target.value})} className="w-full h-24 border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" placeholder="e.g., patient is walking..."></textarea>
+                          <textarea value={formData.milestoneNotes} onChange={(e) => setFormData({...formData, milestoneNotes: e.target.value})} className="w-full h-24 border border-[var(--border)] rounded-lg px-4 py-2 text-[var(--text-primary)] bg-[var(--surface-soft)] outline-none focus:ring-2 focus:ring-primary-500/50 focus:bg-[var(--surface)] transition-all shadow-sm" placeholder="e.g., patient is walking..."></textarea>
                       </div>
                       <div className="pt-4 flex gap-3">
                           <Button type="button" onClick={() => setIsModalOpen(false)} variant="outline" className="flex-1">Cancel</Button>
-                          <Button type="submit" isLoading={submitRecord.isPending} className="flex-1 bg-blue-600 hover:bg-blue-700">Save Record</Button>
+                          <Button type="submit" isLoading={submitRecord.isPending} className="flex-1 bg-primary-600 hover:bg-primary-700">Save Record</Button>
                       </div>
                   </form>
               </div>

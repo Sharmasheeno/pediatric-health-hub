@@ -11,43 +11,43 @@ const roleConfig = {
     DOCTOR: {
         primaryHeader: "Clinical Portfolio",
         secondaryHeader: "Appointment Volume",
-        chartMetrics: { left: "Confirmed Consults", right: "Pending Reviews", leftColor: "#22C55E", rightColor: "#3B82F6" },
+        chartMetrics: { left: "Confirmed Consults", right: "Pending Reviews", leftColor: "var(--color-primary-600)", rightColor: "#F59E0B" },
         miniMetrics: { left: "Patient Flow", right: "EMR Sync", leftVal: "Active", rightVal: "Online" },
         widgets: {
-            analytics: { label: "Patient Adherence Matrix", color: "#22C55E" },
-            email: { title: "Urgent Support Line", email: "clinic@pediatric-hub.com", bg: "from-teal to-emerald-700" },
+            analytics: { label: "Patient Adherence Matrix", color: "var(--color-primary-600)" },
+            email: { title: "Urgent Support Line", email: "clinic@pediatric-hub.com", bg: "from-primary-700 to-primary-950" },
             server: { label: "Clinical Roster Status", status: "Available", lightStatusColor: "#22C55E" }
         }
     },
     PARENT: {
         primaryHeader: "Family Health Portfolio",
         secondaryHeader: "Clinical Interactions",
-        chartMetrics: { left: "Visits Completed", right: "Vaccines Due", leftColor: "#2563EB", rightColor: "#F59E0B" },
+        chartMetrics: { left: "Visits Completed", right: "Vaccines Due", leftColor: "var(--color-primary-600)", rightColor: "#F59E0B" },
         miniMetrics: { left: "Growth Track", right: "Vax Track", leftVal: "On Curve", rightVal: "Protected" },
         widgets: {
-            analytics: { label: "Wellness Trajectory", color: "#2563EB" },
+            analytics: { label: "Wellness Trajectory", color: "var(--color-primary-600)" },
             email: { title: "Pediatrician Contact", email: "dr.admin@pediatric-hub.com", bg: "from-primary-500 to-primary-800" },
-            server: { label: "Health Record Integrity", status: "Encrypted", lightStatusColor: "#2563EB" }
+            server: { label: "Health Record Integrity", status: "Encrypted", lightStatusColor: "var(--color-primary-600)" }
         }
     },
     FACILITY: {
         primaryHeader: "Facility Operations",
         secondaryHeader: "Throughput Volume",
-        chartMetrics: { left: "Provider Activity", right: "Patient Intake", leftColor: "#2563EB", rightColor: "#1D4ED8" },
+        chartMetrics: { left: "Provider Activity", right: "Patient Intake", leftColor: "var(--color-primary-600)", rightColor: "var(--color-primary-800)" },
         miniMetrics: { left: "Capacity", right: "Utilization", leftVal: "68%", rightVal: "Optimal" },
         widgets: {
-            analytics: { label: "Resource Optimization", color: "#2563EB" },
+            analytics: { label: "Resource Optimization", color: "var(--color-primary-600)" },
             email: { title: "Network Administrator", email: "sysadmin@pediatric-hub.com", bg: "from-primary-600 to-primary-900" },
-            server: { label: "Server Cloud Health", status: "Operational", lightStatusColor: "#2563EB" }
+            server: { label: "Server Cloud Health", status: "Operational", lightStatusColor: "var(--color-primary-600)" }
         }
     },
     ADMIN: {
         primaryHeader: "System Operations",
         secondaryHeader: "System Event Volume",
-        chartMetrics: { left: "API Ingress", right: "Web Exits", leftColor: "#2563EB", rightColor: "#14B8A6" },
+        chartMetrics: { left: "API Ingress", right: "Web Exits", leftColor: "var(--color-primary-600)", rightColor: "var(--color-primary-800)" },
         miniMetrics: { left: "CPU", right: "MEM", leftVal: "2%", rightVal: "42 MB" },
         widgets: {
-            analytics: { label: "Analytics Matrix", color: "#2563EB" },
+            analytics: { label: "Analytics Matrix", color: "var(--color-primary-600)" },
             email: { title: "Connect Support Email", email: "secure@pediatric-hub.com", bg: "from-primary-600 to-primary-900" },
             server: { label: "Server Health", status: "Zero Downtime", lightStatusColor: "#14B8A6" }
         }
