@@ -28,7 +28,10 @@ export const DashboardLayout = () => {
         queryKey: ['incomingDoctorCall', user?.id],
         enabled: user?.role === 'PARENT',
         queryFn: async () => {
-            const response = await api.get('/appointments/my-schedule');
+            const response = await api.get('/appointments/my-schedule', {
+                params: { _callPoll: Date.now() },
+                headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' }
+            });
             return response.data.data.appointments?.find(appointment =>
                 appointment.status === 'CONFIRMED' &&
                 appointment.teleconsultation?.initiatedByRole !== 'PARENT' &&
