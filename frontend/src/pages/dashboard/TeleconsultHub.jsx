@@ -21,7 +21,7 @@ export const TeleconsultHub = () => {
     const { data: upcomingSessions, isLoading } = useQuery({
         queryKey: ['teleconsultAppointments'],
         queryFn: async () => {
-            const res = await api.get('/appointments/my-schedule');
+            const res = await api.get('/appointments/my-schedule', { params: { _callPoll: Date.now() }, headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' } });
             return res.data.data.appointments?.filter(app => {
                 if (isDoctor) return app.status === 'CONFIRMED';
                 return app.status === 'PENDING' || app.status === 'CONFIRMED';
@@ -31,7 +31,7 @@ export const TeleconsultHub = () => {
     });
 
     const activeCall = isDoctor
-        ? upcomingSessions?.find(session => session.teleconsultation && !session.teleconsultation.endedAt)
+        ? upcomingSessions?.find(session => session.teleconsultation?.initiatedByRole === 'PARENT' && !session.teleconsultation.endedAt)
         : null;
     const activeCallId = activeCall?.id;
 
@@ -138,7 +138,7 @@ export const TeleconsultHub = () => {
                         
                         <div className="flex gap-4">
                             <Button 
-                                onClick={() => startSession.mutate(activeCall.id)}
+                                onClick={() => navigate(`/teleconsult/${activeCall.id}`)}
                                 className="flex-1 bg-teal hover:bg-teal/90 text-white font-bold h-12 shadow-lg shadow-teal/20"
                             >
                                 <Phone size={18} className="mr-2" /> Accept Call
