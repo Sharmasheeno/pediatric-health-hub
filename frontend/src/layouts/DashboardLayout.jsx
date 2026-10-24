@@ -31,7 +31,7 @@ export const DashboardLayout = () => {
             const response = await api.get('/appointments/my-schedule');
             return response.data.data.appointments?.find(appointment =>
                 appointment.status === 'CONFIRMED' &&
-                appointment.teleconsultation?.initiatedByRole === 'DOCTOR' &&
+                appointment.teleconsultation?.initiatedByRole !== 'PARENT' &&
                 appointment.teleconsultation.startedAt &&
                 !appointment.teleconsultation.endedAt
             ) || null;
